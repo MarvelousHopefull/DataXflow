@@ -18,6 +18,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Vector;
 import java.util.regex.Matcher;
@@ -43,7 +44,9 @@ import javax.swing.border.Border;
 import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
 
+import jimena.binaryrn.RegulatoryNetwork;
 import jimena.gui.main.Main;
+import jimena.weightsCalculator.fileCreator.DefCreator;
 
 /**
  * Switch Analyzer frame (SolverFrame)
@@ -607,10 +610,17 @@ public class SolverFrame extends JFrame implements ActionListener {
 //		for (int i : negCtlT.getSelectedRows()) System.out.print(negCtlT.getValueAt(i, 0) + "\t");	
 //		System.out.println();
 
+		
 		JFileChooser fc = new JFileChooser();
 		int result = fc.showOpenDialog(this);
 		if (result == JFileChooser.APPROVE_OPTION) {
 			File selectedFile = fc.getSelectedFile();
+			//
+			File selectedDefFile = new File(selectedFile.toString()+".def");
+			RegulatoryNetwork network = new RegulatoryNetwork();
+	        // Load a yED GraphML file into the network
+	        network.loadYEdFile(Main.currentFile);
+	        //
 			if (!selectedFile.toString().endsWith(".m")) {
 				selectedFile=new File(selectedFile.toString()+".m");
 			}
@@ -624,6 +634,34 @@ public class SolverFrame extends JFrame implements ActionListener {
 				bw.write(matlab_footer());
 				bw.write(getCommentNodes());
 				bw.close();
+				
+				//
+				ArrayList<String> upRNList = new ArrayList<>();
+		        ArrayList<String> downRNList = new ArrayList<>();
+		        
+		        for(Integer i : nodeMap.keySet()) {
+		        	if (ctlP.containsKey(nodeMap.get(i).getName())) {
+						upRNList.add(nodeMap.get(i).getName());
+		        	}
+					if (ctlN.containsKey(nodeMap.get(i).getName())) {
+						downRNList.add(nodeMap.get(i).getName());				
+					}
+		        }
+		        
+		        String[] upRNodes = null; 
+		        if(upRNList != null) {
+		        	upRNodes = new String[1];
+		        	upRNodes = upRNList.toArray(upRNodes);
+		        }
+		        String[] downRNodes = null;
+				if(downRNList != null) {
+					downRNodes = new String[1];
+					downRNodes = downRNList.toArray(downRNodes);
+				}
+				
+				DefCreator.createFile(selectedDefFile.toString(), network, upRNodes, downRNodes);
+				//
+				
 			} catch (Exception ex) {
 				ex.printStackTrace();
 			}
