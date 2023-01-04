@@ -15,7 +15,7 @@ import jimena.binaryrn.RegulatoryNetwork;
 import java.io.File;
 
 /**
- * Used for creating .def files. For ...
+ * Used for creating .def files. Used by D2D, to calculated best fitting weights.
  * 
  * @author Jan Krause
  * @since 23.11.2022
@@ -29,6 +29,14 @@ public class DefCreator {
 		return file.exists();
 	}
 	
+	/**
+	 * Creates a File from a given Network in the format that is requested by D2D.
+	 * @param path The String Path where the File should be saved to.
+	 * @param network The Network in question. 
+	 * @param upRNodes Nodes that will be up-regulated.
+	 * @param downRNodes Nodes that will be down-regulated.
+	 * @throws IOException
+	 */
 	public static void createFile(String path, RegulatoryNetwork network, String[] upRNodes, String[] downRNodes) throws IOException{
 		if(fileExists(path)) { 
 			File file = new File(path); 
