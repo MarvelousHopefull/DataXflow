@@ -73,8 +73,10 @@ import jimena.simulationmethods.HillCubeMethod;
 import jimena.simulationmethods.NormalizedHillCubeMethod;
 import jimena.simulationmethods.SQUADMethod;
 import jimena.simulationmethods.SimulationMethod;
+import jimena.solver.SolverFrame;
 import jimena.sssearcher.RandomSearcher;
 import jimena.sssearcher.StepwiseSearcher;
+import jimena.weightsCalculator.fileCreator.D2DFrame;
 
 /**
  * 
@@ -1215,6 +1217,21 @@ public class Main extends JFrame implements RegulatoryNetworkObserver {
             }
         });
          menuAnalysis.add(menuConnectionCentrality);
+         
+         //changes for D2D start
+         // ANALYSIS | SEPARATOR
+         menuAnalysis.addSeparator();
+         
+         // ANALYSIS | D2D
+         JMenuItem menuD2D = new JMenuItem("D2D");
+         menuD2D.addActionListener(new ActionListener() {
+             @Override
+             public void actionPerformed(ActionEvent arg0) {
+                 runD2D();
+             }
+         });
+         menuAnalysis.add(menuD2D);
+         //changes for D2D end
 
         // HELP
         JMenu menuHelp = new JMenu("Help");
@@ -1274,6 +1291,27 @@ public class Main extends JFrame implements RegulatoryNetworkObserver {
         menuHelp.add(menuAbout);
 
         return menubar;
+    }
+    
+    /**
+     * Opens the D2DFrame
+     */
+    private void runD2D() {    	
+    	D2DFrame f = null;
+		try {
+			f = new D2DFrame(currentFile);
+		} catch (NumberFormatException e1) {			
+			e1.printStackTrace();
+		} 
+    	f.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+    	try {
+    		UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());    		
+    	} catch (Exception e) {
+    		e.printStackTrace();
+    	}
+    	f.pack();
+    	f.setLocationRelativeTo(null); 
+    	f.setVisible(true);    	    	
     }
 
     /**
