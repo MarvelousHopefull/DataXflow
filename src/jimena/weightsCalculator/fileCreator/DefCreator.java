@@ -15,14 +15,12 @@ import jimena.binaryrn.RegulatoryNetwork;
 import java.io.File;
 
 /**
- * Used for creating .def files. Used by D2D, to calculated best fitting weights.
+ * Used for creating model.def files. Used by D2D, to calculated best fitting weights.
  * 
  * @author Jan Krause
  * @since 23.11.2022
  * */
 public class DefCreator {
-	
-	
 	
 	private static boolean fileExists(String path) {
 		File file = new File(path);
@@ -30,14 +28,16 @@ public class DefCreator {
 	}
 	
 	/**
-	 * Creates a File from a given Network in the format that is requested by D2D.
+	 * Creates a model.def File from a given Network in the format that is requested by D2D.
 	 * @param path The String Path where the File should be saved to.
 	 * @param network The Network in question. 
+	 * @param dataNodes Nodes where there exist experiment data.
 	 * @param upRNodes Nodes that will be up-regulated.
 	 * @param downRNodes Nodes that will be down-regulated.
+	 * @param finalTime The finish time of experiment.
 	 * @throws IOException
 	 */
-	public static void createFile(String path, RegulatoryNetwork network, String[] upRNodes, String[] downRNodes) throws IOException{
+	public static void createFiles(String path, RegulatoryNetwork network, String[] dataNodes , String[] upRNodes, String[] downRNodes, int finalTime) throws IOException{
 		if(fileExists(path)) { 
 			File file = new File(path); 
 			file.delete();
@@ -90,11 +90,65 @@ public class DefCreator {
 		
 		String[][] kMapping = getKMapping(network, mapping);
 		
-		String text = getDescriptionAndPredictor();
-		text += getCompartments();
-		text += getStates(mapping, network);
-		text += getInputs(rMapping);
-		text += getODEs(network,mapping,kMapping, rMapping);
+		createDataFile(path, network, dataNodes, rMapping, finalTime);
+		createModelFile(path, network, mapping, rMapping, kMapping, finalTime);
+	}
+	
+	/**
+	 * Creates a data.def File from a given Network in the format that is requested by D2D.
+	 * @param path The String Path where the File should be saved to.
+	 * @param network The Network in question. 
+	 * @param dataNodes Nodes where there exist experiment data.
+	 * @param finalTime The finish time of experiment.
+	 * @throws IOException
+	 */
+	private static void createDataFile(String path, RegulatoryNetwork network, String[] dataNodes, String[][] rMapping, int finalTime) throws IOException{
+		
+		if (!path.endsWith("_data.def")) {
+			path = path +"_data.def";
+		}
+		
+		if(fileExists(path)) { 
+			File file = new File(path); 
+			file.delete();
+		}
+		
+		String text = getDataDescriptionAndPredictor(finalTime);
+		text += getDataInputs(rMapping);
+		text += getDataObservables(dataNodes);
+		text += getDataErrors(dataNodes);
+		BufferedWriter fw = new BufferedWriter(new FileWriter(path));
+		
+		fw.write(text);
+		fw.close();
+	}
+	
+	/**
+	 * Creates a model.def File from a given Network in the format that is requested by D2D.
+	 * @param path The String Path where the File should be saved to.
+	 * @param network The Network in question. 
+	 * @param upRNodes Nodes that will be up-regulated.
+	 * @param downRNodes Nodes that will be down-regulated.
+	 * @param finalTime The finish time of experiment.
+	 * @throws IOException
+	 */
+	private static void createModelFile(String path, RegulatoryNetwork network, String[][] mapping, String[][] rMapping, String[][] kMapping, int finalTime) throws IOException{
+
+		if (!path.endsWith("_model.def")) {
+			path = path +"_model.def";
+		}
+		
+		if(fileExists(path)) { 
+			File file = new File(path); 
+			file.delete();
+		}
+		//if(fileExists(path)) { return; }
+
+		String text = getModelDescriptionAndPredictor(finalTime);
+		text += getModelCompartments();
+		text += getModelStates(mapping, network);
+		text += getModelInputs(rMapping);
+		text += getModelODEs(network,mapping,kMapping, rMapping);
 		BufferedWriter fw = new BufferedWriter(new FileWriter(path));
 		
 		fw.write(text);
@@ -105,9 +159,89 @@ public class DefCreator {
 	
 	/**
 	 * 
-	 * @return The String that is the Head of the Document.
+	 * @return The string that is the head of the Data.def document.
 	 */
-	private static String getDescriptionAndPredictor() {
+	private static String getDataDescriptionAndPredictor(int finalTime) {
+		Date date = new Date();
+        SimpleDateFormat getYearFormat = new SimpleDateFormat("yyyy");
+        String currentYear = getYearFormat.format(date);
+		
+		//description
+		String text = "DESCRIPTION" + 
+				"\n" + "\"" + "Potterswheel Data Test" +"\"" +
+				"\n" + "\"" + "by Jan" + "\"" +
+				"\n" + "\"" + "Date: " + currentYear + "\"" +
+				"\n" + "\"" + "Version: 1.0" + "\"" +
+				"\n";
+		//predictor
+		text = text + "\n" + "PREDICTOR" + 
+				"\n" + "t	T	" + "\"" + "min" + "\"" + "	" + "\"" + "time" + "\"" + "	0	" + String.valueOf(finalTime) +
+				"\n";
+		return text;
+	}
+	
+	/**
+	 * missing: a check if the correspondent nodes are actual nodes 
+	 * @param rMapping The mapping of the regulated Nodes to their alias.
+	 * @return The String that are the Inputs.
+	 */
+	private static String getDataInputs(String[][] rMapping) {
+		String text = "\n" + "INPUTS" + 
+				"\n";
+		if(rMapping != null) {
+			for(int i = 0; i < rMapping.length; i++) {
+				text = text + "\n" + rMapping[i][0] + "	" + "\"" + "step1(t, 0, 0, 1)" + "\"";
+				//u1	"step1(t, 0, 0, 1)"
+			}
+		}
+		text = text + "\n";
+		
+		return text;
+	}
+	
+	/**
+	 * 
+	 * @param dataNodes
+	 * @return
+	 */
+	private static String getDataObservables(String[] dataNodes) {
+		String text = "\n" + "OBSERVABLES";
+		
+		if(dataNodes != null && dataNodes.length > 0) {
+			for(int i = 0; i < dataNodes.length; i++) {
+				text = text + "\n" + dataNodes[i] + "_obs" + "	" + "C";
+				//name_obs	"C"
+			}
+			text = text + "\n" ;
+		}
+		
+		return text;
+	}
+	
+	/**
+	 * 
+	 * @param dataNodes
+	 * @return
+	 */
+	private static String getDataErrors(String[] dataNodes) {
+		String text = "\n" + "ERRORS";
+		
+		if(dataNodes != null && dataNodes.length > 0) {
+			for(int i = 0; i < dataNodes.length; i++) {
+				text = text + "\n" + dataNodes[i] + "_obs" + "	" + "sd_" + dataNodes[i] + "_obs";
+				//name_obs	"sd_name_obs"
+			}
+			text = text + "\n" ;
+		}
+		
+		return text;
+	}
+	
+	/**
+	 * 
+	 * @return The string that is the head of the Model.def document.
+	 */
+	private static String getModelDescriptionAndPredictor(int finalTime) {
 		Date date = new Date();
         SimpleDateFormat getYearFormat = new SimpleDateFormat("yyyy");
         String currentYear = getYearFormat.format(date);
@@ -121,7 +255,7 @@ public class DefCreator {
 				"\n";
 		//predictor
 		text = text + "\n" + "PREDICTOR" + 
-				"\n" + "t	T	" + "\"" + "min" + "\"" + "	" + "\"" + "time" + "\"" + "	0	10" +
+				"\n" + "t	T	" + "\"" + "min" + "\"" + "	" + "\"" + "time" + "\"" + "	0	" + String.valueOf(finalTime) +
 				"\n";
 		return text;
 	}
@@ -130,7 +264,7 @@ public class DefCreator {
 	 * 
 	 * @return The String that represents the Compartments Part for the Document.
 	 */
-	private static String getCompartments(){
+	private static String getModelCompartments(){
 		
 		String text = "";
 		//compartments
@@ -149,7 +283,7 @@ public class DefCreator {
 	 * @param network The Network.
 	 * @return The String that is the list of Nodes in the Network.
 	 */
-	private static String getStates(String[][] mapping, RegulatoryNetwork network){
+	private static String getModelStates(String[][] mapping, RegulatoryNetwork network){
 		
 		//States
 		String text = "\n" + "STATES" + 
@@ -177,7 +311,7 @@ public class DefCreator {
 	 * @param rMapping The mapping of the regulated Nodes to their alias.
 	 * @return The String that are the Inputs.
 	 */
-	private static String getInputs(String[][] rMapping) {
+	private static String getModelInputs(String[][] rMapping) {
 		String text = "\n" + "INPUTS" + 
 				"\n";
 		if(rMapping != null) {
@@ -271,7 +405,7 @@ public class DefCreator {
 	 * @param rMapping
 	 * @return
 	 */
-	private static String getODEs(RegulatoryNetwork network, String[][] mapping, String[][] kMapping, String[][] rMapping){
+	private static String getModelODEs(RegulatoryNetwork network, String[][] mapping, String[][] kMapping, String[][] rMapping){
 		String text = "\n" + "ODES" + 
 				"\n";
 		NetworkNode[] nodes = network.getNetworkNodes();
@@ -418,8 +552,11 @@ public class DefCreator {
 	        String[] upRNodes = null;//new String[1];
 	        //upRNodes[0] = "TRPM7";
 			String[] downRNodes = null;
+			
+			String[] dataNodes = null;
+			
 	        // specify where to put the new File and how to name it, it will override any existing file with the same name at the same place
-			createFile("C:\\Uni\\Job\\Jimena\\WorkingGraphs\\20221221_lungcancer_D2D_short.def", network, upRNodes, downRNodes);
+			createFiles("C:\\Uni\\Job\\Jimena\\WorkingGraphs\\20221221_lungcancer_D2D_short.def", network, dataNodes, upRNodes, downRNodes, 10);
 			text = "c";
 		}
 		catch(Exception e) {

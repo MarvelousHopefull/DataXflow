@@ -33,6 +33,10 @@ import jimena.gui.main.Main;
 import jimena.solver.NodeTableModel;
 
 /**
+ * GUI for D2D. 
+ * For now only creates the model.def and data.def files.
+ * 
+ * The GUI is mostly copy&paste from SolverFrame. (Thanks Chunguang Liang!)
  * 
  * @author Jan Krause
  * @since 13.01.2023
@@ -45,6 +49,9 @@ public class D2DFrame extends JFrame implements ActionListener{
 	private JTable posReg;	
 	private JTable negReg;
 	
+	//to select Nodes where experiment data is available 
+	private JTable eDataNodes;
+	
 	//private HashMap<Integer, Node> nodeMap = new HashMap<Integer, Node>(); // Network
 	private NetworkNode[] nodes = null;
 	private File currentFile = null;
@@ -54,7 +61,7 @@ public class D2DFrame extends JFrame implements ActionListener{
 		super("D2D - ver. "+Main.ver);
 		setIconImage(new ImageIcon("images" + File.separator + "chart16.png").getImage());
 		setMinimumSize(new Dimension(500, 400));
-		this.setPreferredSize(new Dimension(624, 450));
+		this.setPreferredSize(new Dimension(964, 450));
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		getContentPane().setLayout(new BorderLayout());
 	}
@@ -84,12 +91,12 @@ public class D2DFrame extends JFrame implements ActionListener{
 
 		NodeTableModel nodeM = new NodeTableModel(nodesV, colNames);
 		
+		// Regulation Positive
 		posReg = new JTable(nodeM);
 		TableRowSorter sorterP = new TableRowSorter(nodeM);		
 		posReg.setRowSorter(sorterP);
 		posReg.getRowSorter().toggleSortOrder(0);
 
-		// Regulation Positive
 		JScrollPane posCtlSP = new JScrollPane(posReg);
 		posCtlSP.setPreferredSize(new Dimension(300, 310));
 		JPanel posCtlP = new JPanel();
@@ -104,12 +111,11 @@ public class D2DFrame extends JFrame implements ActionListener{
 				posReg.clearSelection();
 			}
 		});
-		
 		posCtlTB.add(unSelAllBtn1);
 		posCtlP.add(posCtlTB, BorderLayout.NORTH);
 		posCtlP.add(posCtlSP, BorderLayout.CENTER);
 
-		// Negative Positive
+		// Regulation Negative
 		negReg = new JTable(nodeM);
 		TableRowSorter sorterN = new TableRowSorter(nodeM);		
 		negReg.setRowSorter(sorterN);
@@ -132,7 +138,37 @@ public class D2DFrame extends JFrame implements ActionListener{
 		negCtlP.setLayout(new BorderLayout());
 		negCtlP.add(negCtlTB, BorderLayout.NORTH);
 		negCtlP.add(negCtlSP, BorderLayout.CENTER);
+		
+		// Experiment Nodes
+		eDataNodes = new JTable(nodeM);
+		TableRowSorter sorterE = new TableRowSorter(nodeM);		
+		eDataNodes.setRowSorter(sorterE);
+		eDataNodes.getRowSorter().toggleSortOrder(0);
+		JScrollPane dataNodesSP = new JScrollPane(eDataNodes);
 
+		dataNodesSP.setPreferredSize(new Dimension(300, 310));
+		JToolBar dataNodesTB = new JToolBar("Experiment Nodes", JToolBar.HORIZONTAL);
+		JLabel dataNodesLbl = new JLabel("Experiment Nodes");
+		dataNodesLbl.setForeground(Color.BLUE.darker());
+		dataNodesTB.add(dataNodesLbl);
+		JButton unSelAllBtn3 = new JButton("UnselectAll");
+		unSelAllBtn3.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				eDataNodes.clearSelection();
+			}
+		});
+		dataNodesTB.add(unSelAllBtn3);
+		JPanel dataNodesP = new JPanel();
+		dataNodesP.setLayout(new BorderLayout());
+		dataNodesP.add(dataNodesTB, BorderLayout.NORTH);
+		dataNodesP.add(dataNodesSP, BorderLayout.CENTER);	
+		
+		Border dataNodesBorder = BorderFactory.createTitledBorder("Data Nodes (press ctl to select)");
+		dataNodesP.setBorder(dataNodesBorder);
+		
+		
+		// the panels
+		// the regulation panels
 		JSplitPane regP = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
 		regP.add(posCtlP, JSplitPane.LEFT);
 		regP.add(negCtlP, JSplitPane.RIGHT);
@@ -142,7 +178,16 @@ public class D2DFrame extends JFrame implements ActionListener{
 		
 		Border regulationBorder = BorderFactory.createTitledBorder("Regulations (press ctl to select)");
 		regVP.setBorder(regulationBorder);
-		p.add(regVP);
+		
+		
+		JSplitPane listP = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
+		listP.add(regVP, JSplitPane.LEFT);
+		listP.add(dataNodesP, JSplitPane.RIGHT);
+		listP.setDividerLocation(0.5);
+		JPanel listVP = new JPanel();
+		listVP.add(listP, BorderLayout.CENTER);
+		
+		p.add(listVP);
 		
 		p.add(createToolBar());
 		this.getContentPane().add(BorderLayout.CENTER, p);
@@ -155,16 +200,19 @@ public class D2DFrame extends JFrame implements ActionListener{
 		
 		ArrayList<String> upRNList = new ArrayList<String>();
 		ArrayList<String> downRNList = new ArrayList<String>();
+		ArrayList<String> dataNodeList = new ArrayList<String>();
 		for (int i1 : posReg.getSelectedRows()) upRNList.add(posReg.getValueAt(i1, 0).toString());		
 		for (int i1 : negReg.getSelectedRows()) downRNList.add(negReg.getValueAt(i1, 0).toString());
-	
+		for (int i1 : eDataNodes.getSelectedRows()) dataNodeList.add(eDataNodes.getValueAt(i1, 0).toString());
+		
+		
 		JFileChooser fc = new JFileChooser();
 		int result = fc.showOpenDialog(this);
 		if (result == JFileChooser.APPROVE_OPTION) {
 			File selectedFile = fc.getSelectedFile();
-			if (!selectedFile.toString().endsWith(".def")) {
+			/*if (!selectedFile.toString().endsWith(".def")) {
 				selectedFile=new File(selectedFile.toString()+".def");
-			}
+			}*/
 			
 			try {
 		        
@@ -179,11 +227,17 @@ public class D2DFrame extends JFrame implements ActionListener{
 					downRNodes = downRNList.toArray(downRNodes);
 				}
 				
+				String[] dataNodes = null;
+				if(dataNodeList != null) {
+					dataNodes = new String[1];
+					dataNodes = dataNodeList.toArray(downRNodes);
+				}
+				
 				RegulatoryNetwork network = new RegulatoryNetwork();
 		        // Load a yED GraphML file into the network
 		        network.loadYEdFile(currentFile);
 				
-				DefCreator.createFile(selectedFile.toString(), network, upRNodes, downRNodes);
+				DefCreator.createFiles(selectedFile.toString(), network, dataNodes, upRNodes, downRNodes, 10);
 				
 			} catch (Exception ex) {
 				ex.printStackTrace();
