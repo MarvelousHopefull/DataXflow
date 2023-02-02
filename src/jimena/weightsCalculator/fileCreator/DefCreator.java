@@ -90,8 +90,9 @@ public class DefCreator {
 		
 		String[][] kMapping = getKMapping(network, mapping);
 		
-		createDataFile(path, network, dataNodes, rMapping, finalTime);
 		createModelFile(path, network, mapping, rMapping, kMapping, finalTime);
+		createDataFile(path, network, dataNodes, rMapping, finalTime);
+		
 	}
 	
 	/**
@@ -193,8 +194,9 @@ public class DefCreator {
 				text = text + "\n" + rMapping[i][0] + "	" + "\"" + "step1(t, 0, 0, 1)" + "\"";
 				//u1	"step1(t, 0, 0, 1)"
 			}
+			text = text + "\n";
 		}
-		text = text + "\n";
+		
 		
 		return text;
 	}
@@ -205,7 +207,8 @@ public class DefCreator {
 	 * @return
 	 */
 	private static String getDataObservables(String[] dataNodes) {
-		String text = "\n" + "OBSERVABLES";
+		String text = "\n" + "OBSERVABLES" + 
+				"\n";
 		
 		if(dataNodes != null && dataNodes.length > 0) {
 			for(int i = 0; i < dataNodes.length; i++) {
@@ -224,7 +227,8 @@ public class DefCreator {
 	 * @return
 	 */
 	private static String getDataErrors(String[] dataNodes) {
-		String text = "\n" + "ERRORS";
+		String text = "\n" + "ERRORS" + 
+		"\n";
 		
 		if(dataNodes != null && dataNodes.length > 0) {
 			for(int i = 0; i < dataNodes.length; i++) {

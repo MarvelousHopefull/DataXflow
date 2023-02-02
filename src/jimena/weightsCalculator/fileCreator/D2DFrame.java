@@ -218,19 +218,19 @@ public class D2DFrame extends JFrame implements ActionListener{
 		        
 		        String[] upRNodes = null; 
 		        if(upRNList != null) {
-		        	upRNodes = new String[1];
+		        	upRNodes = new String[0];
 		        	upRNodes = upRNList.toArray(upRNodes);
 		        }
 		        String[] downRNodes = null;
 				if(downRNList != null) {
-					downRNodes = new String[1];
+					downRNodes = new String[0];
 					downRNodes = downRNList.toArray(downRNodes);
 				}
 				
 				String[] dataNodes = null;
 				if(dataNodeList != null) {
-					dataNodes = new String[1];
-					dataNodes = dataNodeList.toArray(downRNodes);
+					dataNodes = new String[0];
+					dataNodes = dataNodeList.toArray(dataNodes);
 				}
 				
 				RegulatoryNetwork network = new RegulatoryNetwork();
