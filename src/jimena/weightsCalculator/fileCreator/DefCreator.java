@@ -28,20 +28,18 @@ public class DefCreator {
 	}
 	
 	/**
-	 * Creates a model.def File from a given Network in the format that is requested by D2D.
-	 * @param path The String Path where the File should be saved to.
+	 * Creates a model.def and a data.def file from a given Network in the format that is requested by D2D.
+	 * The two files will be saved as name_model.def and name_data.def. Where name stands for the selected file name.
+	 * If in the folder there are already files with those names they will be overridden.
+	 * @param path The String Path where the Files should be saved to.
 	 * @param network The Network in question. 
 	 * @param dataNodes Nodes where there exist experiment data.
 	 * @param upRNodes Nodes that will be up-regulated.
 	 * @param downRNodes Nodes that will be down-regulated.
-	 * @param finalTime The finish time of experiment.
+	 * @param finalTime The finish time of the experiment.
 	 * @throws IOException
 	 */
 	public static void createFiles(String path, RegulatoryNetwork network, String[] dataNodes , String[] upRNodes, String[] downRNodes, int finalTime) throws IOException{
-		if(fileExists(path)) { 
-			File file = new File(path); 
-			file.delete();
-		}
 		//if(fileExists(path)) { return; }
 		
 		//mapping to node alias (x1, x2, ...)
@@ -91,7 +89,7 @@ public class DefCreator {
 		String[][] kMapping = getKMapping(network, mapping);
 		
 		createModelFile(path, network, mapping, rMapping, kMapping, finalTime);
-		createDataFile(path, network, dataNodes, rMapping, finalTime);
+		createDataFile(path, network, dataNodes, mapping, rMapping, finalTime);
 		
 	}
 	
@@ -103,7 +101,7 @@ public class DefCreator {
 	 * @param finalTime The finish time of experiment.
 	 * @throws IOException
 	 */
-	private static void createDataFile(String path, RegulatoryNetwork network, String[] dataNodes, String[][] rMapping, int finalTime) throws IOException{
+	private static void createDataFile(String path, RegulatoryNetwork network, String[] dataNodes, String[][] mapping, String[][] rMapping, int finalTime) throws IOException{
 		
 		if (!path.endsWith("_data.def")) {
 			path = path +"_data.def";
@@ -116,7 +114,7 @@ public class DefCreator {
 		
 		String text = getDataDescriptionAndPredictor(finalTime);
 		text += getDataInputs(rMapping);
-		text += getDataObservables(dataNodes);
+		text += getDataObservables(dataNodes, mapping);
 		text += getDataErrors(dataNodes);
 		BufferedWriter fw = new BufferedWriter(new FileWriter(path));
 		
@@ -206,14 +204,22 @@ public class DefCreator {
 	 * @param dataNodes
 	 * @return
 	 */
-	private static String getDataObservables(String[] dataNodes) {
+	private static String getDataObservables(String[] dataNodes, String[][] mapping) {
 		String text = "\n" + "OBSERVABLES" + 
 				"\n";
 		
 		if(dataNodes != null && dataNodes.length > 0) {
+			String symbol = "!Missing!";
 			for(int i = 0; i < dataNodes.length; i++) {
-				text = text + "\n" + dataNodes[i] + "_obs" + "	" + "C";
-				//name_obs	"C"
+				for(int j = 0; j<mapping.length; j++) {
+					if(mapping[j][1].equals(dataNodes[i])) {
+						symbol = mapping[j][0];
+					}
+				}
+				text = text + "\n" + dataNodes[i] + "_obs" + "	" + "C" + "	" 
+					+ "\"" + "au" + "\"" + "	" + "\"" + "conc." + "\"" + "	" + "0" 
+					+ "	" + "0" + "	" + "\"" + symbol + "\"";
+				//name_obs	"C" "au" "conc." 0 0 "xi"
 			}
 			text = text + "\n" ;
 		}
@@ -433,7 +439,8 @@ public class DefCreator {
 			for(int j = 0; j < kMapping.length; j++) {
 				if(kMapping[j][1].equals(t)) {
 					h = kMapping[j][0];
-					y = kMapping[j+1][0];
+					//y = kMapping[j+1][0];
+					y = "1";
 					break;
 				}
 			}
