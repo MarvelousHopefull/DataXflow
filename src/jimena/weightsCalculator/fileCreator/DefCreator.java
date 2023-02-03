@@ -116,6 +116,7 @@ public class DefCreator {
 		text += getDataInputs(rMapping);
 		text += getDataObservables(dataNodes, mapping);
 		text += getDataErrors(dataNodes);
+		text += getDataTail();
 		BufferedWriter fw = new BufferedWriter(new FileWriter(path));
 		
 		fw.write(text);
@@ -148,6 +149,7 @@ public class DefCreator {
 		text += getModelStates(mapping, network);
 		text += getModelInputs(rMapping);
 		text += getModelODEs(network,mapping,kMapping, rMapping);
+		text += getModelTail();
 		BufferedWriter fw = new BufferedWriter(new FileWriter(path));
 		
 		fw.write(text);
@@ -243,6 +245,17 @@ public class DefCreator {
 			}
 			text = text + "\n" ;
 		}
+		
+		return text;
+	}
+	
+	/**
+	 * 
+	 * @return The string at the end of the data.def file.
+	 */
+	private static String getDataTail() {
+		String text = "\n" + "CONDITIONS" + 
+				"\n";
 		
 		return text;
 	}
@@ -547,6 +560,22 @@ public class DefCreator {
 		... +u(2)*(1-x(16))
 		"k12 - k5*x3*x2/(k6+x2) - k7*x4*x2/(k8+x2) - k9*x5*x2/(k10+x2) + x12" */
 		
+		return text;
+	}
+	
+	/**
+	 * 
+	 * @return The string at the end of the model.def file.
+	 */
+	private static String getModelTail() {
+		String text = "\n" + "DERIVED" + 
+				"\n" +
+				"\n" + "OBSERVABLES" + 
+				"\n" +
+				"\n" + "ERRORS" + 
+				"\n" +
+				"\n" + "CONDITIONS" + 
+				"\n";
 		return text;
 	}
 	
