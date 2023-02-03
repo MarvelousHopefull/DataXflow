@@ -163,7 +163,11 @@ public class RegulatoryNetworkLib {
             }
 
             // Descend to the real data
-            Node graphelementData = getKeyedDataNode(graphelement, "d10").getChildNodes().item(1);
+            Node graphelementData = getKeyedDataNode(graphelement, "d10");
+            if(graphelementData != null) {
+            	graphelementData = graphelementData.getChildNodes().item(1);
+            } 		
+        		
             if (graphelementData == null) {
                 graphelementData = getKeyedDataNode(graphelement, "d11").getChildNodes().item(1);
             }
