@@ -11,11 +11,12 @@ import jimena.binarybf.BinaryBooleanFunction;
 import jimena.binarybf.actinhibitf.ActivatorInhibitorFunction;
 import jimena.binaryrn.NetworkNode;
 import jimena.binaryrn.RegulatoryNetwork;
+import jimena.weightsCalculator.fileCreator.InitialValuesFileCreator;
 
 import java.io.File;
 
 /**
- * Used for creating model.def files. Used by D2D, to calculated best fitting weights.
+ * Used for creating model.def & data.def files. Used by D2D, to calculated best fitting weights and other parameters.
  * 
  * @author Jan Krause
  * @since 23.11.2022
@@ -66,13 +67,14 @@ public class DefCreator {
 			if(downRNodes != null) {
 				downL = downRNodes.length;
 			}
-			rMapping = new String[upL + downL][3];
+			rMapping = new String[upL + downL][4];
 			int i = 0;
 			if(upRNodes != null) {
 				for(int j = 0; j < upRNodes.length; j++) {
 					rMapping[i][0] = "u" + (i+1);
 					rMapping[i][1] = upRNodes[j];
 					rMapping[i][2] = "u";
+					rMapping[i][3] = "delta_" + (i+1);
 					i++;
 				}
 			}
@@ -81,6 +83,7 @@ public class DefCreator {
 					rMapping[i][0] = "u" + (i+1);
 					rMapping[i][1] = downRNodes[j];
 					rMapping[i][2] = "d";
+					rMapping[i][3] = "delta_" + (i+1);
 					i++;
 				}
 			}
@@ -91,6 +94,7 @@ public class DefCreator {
 		createModelFile(path, network, mapping, rMapping, kMapping, finalTime);
 		createDataFile(path, network, dataNodes, mapping, rMapping, finalTime);
 		
+		InitialValuesFileCreator.createInitValuesFile(path, kMapping, mapping, rMapping);
 	}
 	
 	/**
@@ -321,7 +325,7 @@ public class DefCreator {
 			}
 			text = text + 
 					"\n" + symbol + "	C	" + "\"" + "nM" +  "\"" + "	" + "\"" + "conc." + 
-					"\"" + "	cyt 1 " + "\"" + nodes[i].getName() +  "\"" + "	1";
+					"\"" + "	cyt 1 " + "\"" + nodes[i].getName() +  "\"" + "	0";
 		}
 		text = text + "\n";
 		//x2	C   "nM"      "conc."       cyt 1 "x2"       	1
@@ -350,7 +354,7 @@ public class DefCreator {
 	}
 	
 	/**
-	 * Maps all variables (h, alpha, beta, gamma) to their node and for alpha and beta their corresponding position in the list of input nodes.
+	 * Maps all variables/parameters (h, alpha, beta, gamma) to their node and for alpha and beta their corresponding position in the list of input nodes.
 	 * @param network The Network.
 	 * @return The Mapped Array where: [i][0] := name of the i'te variable, [i][1] := the node number, [i][2] := -1 for h&gamma and the position of the input node for alpha&beta.
 	 */
@@ -417,6 +421,7 @@ public class DefCreator {
 				i++;
 			}
 		}
+		
 		return kMapping;
 	}
 	
@@ -532,6 +537,7 @@ public class DefCreator {
 			boolean regulated = false;
 			boolean up = true;
 			String rAlias = "";
+			String deltaAlias = "";
 			if(rMapping != null) {
 				for(int j = 0; j <rMapping.length; j++) {
 					System.out.print(i + " " + j);
@@ -539,6 +545,7 @@ public class DefCreator {
 					if(rMapping[j][1].equals(nodes[i].getName())) {
 						regulated = true;
 						rAlias = rMapping[j][0];
+						deltaAlias = rMapping[j][3];
 						if(rMapping[j][2].equals("d")) {
 							up = false;
 						}
@@ -548,8 +555,8 @@ public class DefCreator {
 			}
 			
 			if(regulated) {
-				if(up) { text += " + " + rAlias + "*(1-" + nodeName + ")"; }
-				else { text += " - " + rAlias + "*" + nodeName; }
+				if(up) { text += " + " + deltaAlias + "*" + rAlias + "*(1-" + nodeName + ")"; }
+				else { text += " - " + deltaAlias + "*" + rAlias + "*" + nodeName; }
 			}
 			
 			text = text + "\"";
