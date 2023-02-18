@@ -5,8 +5,6 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 
-import jimena.binaryrn.RegulatoryNetwork;
-
 /**
  * Used for creating initialValues.txt files. Used by D2D, to get the initial values for all parameters and nodes.
  * 

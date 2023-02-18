@@ -4,14 +4,12 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
-import java.io.FileReader;
 import java.io.IOException;
 
 import jimena.binarybf.BinaryBooleanFunction;
 import jimena.binarybf.actinhibitf.ActivatorInhibitorFunction;
 import jimena.binaryrn.NetworkNode;
 import jimena.binaryrn.RegulatoryNetwork;
-import jimena.weightsCalculator.fileCreator.InitialValuesFileCreator;
 
 import java.io.File;
 
@@ -95,6 +93,7 @@ public class DefCreator {
 		createDataFile(path, network, dataNodes, mapping, rMapping, finalTime);
 		
 		InitialValuesFileCreator.createInitValuesFile(path, kMapping, mapping, rMapping);
+		DataNodeNamesFileCreator.createNodeNamesFile(path, dataNodes);
 	}
 	
 	/**
@@ -594,16 +593,17 @@ public class DefCreator {
 			RegulatoryNetwork network = new RegulatoryNetwork();
 
 	        // Load a yED GraphML file into the network
-	        network.loadYEdFile(new File("C:\\Uni\\Job\\Jimena\\WorkingGraphs\\20221221_lungcancer_D2D_short.graphml"));
+	        network.loadYEdFile(new File("C:\\Uni\\Job\\Jimena\\ExampleGraphs\\WorkingGraphs\\20221221_lungcancer_D2D_short.graphml"));
 	        text = "b";
 	        String[] upRNodes = null;//new String[1];
 	        //upRNodes[0] = "TRPM7";
 			String[] downRNodes = null;
 			
 			String[] dataNodes = null;
-			
+			//String[] dataNodes = new String[1];
+			//dataNodes[0] = "TRPM7";
 	        // specify where to put the new File and how to name it, it will override any existing file with the same name at the same place
-			createFiles("C:\\Uni\\Job\\Jimena\\WorkingGraphs\\20221221_lungcancer_D2D_short.def", network, dataNodes, upRNodes, downRNodes, 10);
+			createFiles("C:\\Uni\\Job\\Jimena\\ExampleGraphs\\WorkingGraphs\\test.txt", network, dataNodes, upRNodes, downRNodes, 10);
 			text = "c";
 		}
 		catch(Exception e) {

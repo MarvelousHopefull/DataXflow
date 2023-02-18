@@ -8,6 +8,13 @@ import java.io.IOException;
 import jimena.binaryrn.NetworkNode;
 import jimena.binaryrn.RegulatoryNetwork;
 
+
+/**
+ * To get a list of all Node Names in the network as a .csv file.
+ * 
+ * @author Jan Krause
+ * @since 23.11.2022
+ * */
 public class CSVNodeNamesCreator {
 
 	public static void createFile(String path, RegulatoryNetwork network) throws IOException{
@@ -15,9 +22,9 @@ public class CSVNodeNamesCreator {
 		
 		File file = new File(path);
 		if (!file.toString().endsWith(".csv")) {
-			file = new File(file.toString()+".csv");
+			path = path +"_NodeNames.csv";
 		}
-		
+		file = new File(path);
 		if(file.exists()) { 
 			file.delete();
 		}
