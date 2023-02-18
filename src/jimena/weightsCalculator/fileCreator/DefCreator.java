@@ -243,7 +243,7 @@ public class DefCreator {
 		
 		if(dataNodes != null && dataNodes.length > 0) {
 			for(int i = 0; i < dataNodes.length; i++) {
-				text = text + "\n" + dataNodes[i] + "_obs" + "	" + "sd_" + dataNodes[i] + "_obs";
+				text = text + "\n" + dataNodes[i] + "_obs" + "	" + dataNodes[i] + "_obs" + "_std";
 				//name_obs	"sd_name_obs"
 			}
 			text = text + "\n" ;
