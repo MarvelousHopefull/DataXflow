@@ -35,7 +35,7 @@ public class DataNodeNamesFileCreator {
 			file.delete();
 		}
 		
-		String text = "";
+		String text = "gene_name" + "\n";
 		for(String s : nodes) {
 			text += s + "\n";
 		}
