@@ -46,42 +46,56 @@ public class InitialValuesFileCreator {
 		String text = "";
 		String t1 = "arSetPars(" + "\'";
 		String t2 = "\'" + ",";
-		String t3 = ");";
+		String t3 = ",1,0,";
+		String tLower = "";
+		String t4 = ",";
+		String tHigh = "";
+		String tEnd = ");";
 		double v = 0.0;
 		for(int i = 0; i < kMapping.length; i++) {
 			switch (kMapping[i][3]) {
 				case "a":
 					v = alpha;
+					tLower = "0";
+					tHigh = "1000";
 					break;
 				case "b":
 					v = beta;
+					tLower = "0";
+					tHigh = "1000";
 					break;
 				case "h":
 					v = h;
+					tLower = "1";
+					tHigh = "1000";
 					break;
 				case "delta":
 		  			v = delta;
+		  			tLower = "0";
+					tHigh = "1000";
 		  			break;
 				default:
 					v = 0.0;
 			}
 			if(v != 0.0) {
-				text += t1 + kMapping[i][0] + t2 + v + t3;
+				text += t1 + kMapping[i][0] + t2 + v + t3 + tLower + t4 + tHigh + tEnd;
 				text += "\n";
 			}
 			
 		}
 		
 		v = initNodeValue;
+		tLower = "0";
+		tHigh = "1";
 		for(int i = 0; i < nodeMapping.length; i++) {
-			text += t1 + nodeMapping[i][0] + t2 + v + t3;
+			text += t1 + "init_" + nodeMapping[i][0] + t2 + v + t3 + tLower + t4 + tHigh + tEnd;
 			text += "\n";
 		}
 		
 		if (rMapping != null) {
 			v = delta;
 			for(int i = 0; i < rMapping.length; i++) {
-				text += t1 + rMapping[i][3] + t2 + v + t3;
+				text += t1 + rMapping[i][3] + t2 + v + t3 + tLower + t4 + tHigh + tEnd;
 				text += "\n";
 			}
 		}

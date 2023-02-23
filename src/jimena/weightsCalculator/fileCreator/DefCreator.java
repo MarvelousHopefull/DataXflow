@@ -364,7 +364,10 @@ public class DefCreator {
 		
 		for(int i = 0; i < nodes.length; i++) {
 			bbf = nodes[i].getFunction();
-			length += (2 + bbf.getArity());
+			length += (1 + bbf.getArity());
+			if(bbf.getArity() > 0) {
+				length += 1;
+			}
 		}
 		
 		String[][] kMapping = new String[length][5];
@@ -372,19 +375,20 @@ public class DefCreator {
 		boolean[] activators;
 		int i = 0;
 		for(int n = 0; n < nodes.length; n++) {
-			//h
-			kMapping[i][0] = "h_" + (n+1);
-			kMapping[i][1] = "" + (n+1);
-			kMapping[i][2] = "" + -1;
-			kMapping[i][3] = "h";
-			kMapping[i][4] = "h";
-			i++;
 			//gamma
 			kMapping[i][0] = "y_" + (n+1);
 			kMapping[i][1] = "" + (n+1);
 			kMapping[i][2] = "" + -1;
 			kMapping[i][3] = "y";
 			kMapping[i][4] = "y";
+			i++;
+			if(nodes[n].getFunction().getArity()==0) { continue; }
+			//h
+			kMapping[i][0] = "h_" + (n+1);
+			kMapping[i][1] = "" + (n+1);
+			kMapping[i][2] = "" + -1;
+			kMapping[i][3] = "h";
+			kMapping[i][4] = "h";
 			i++;
 			activators = ((ActivatorInhibitorFunction)nodes[n].getFunction()).getActivators();
 			//int a = 1;
