@@ -94,6 +94,8 @@ public class InitialValuesFileCreator {
 		
 		if (rMapping != null) {
 			v = delta;
+			tLower = "0";
+			tHigh = "1000";
 			for(int i = 0; i < rMapping.length; i++) {
 				text += t1 + rMapping[i][3] + t2 + v + t3 + tLower + t4 + tHigh + tEnd;
 				text += "\n";
