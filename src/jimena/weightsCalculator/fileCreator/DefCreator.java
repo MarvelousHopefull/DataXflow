@@ -27,18 +27,19 @@ public class DefCreator {
 	}
 	
 	/**
-	 * Creates a model.def and a data.def file from a given Network in the format that is requested by D2D.
-	 * The two files will be saved as name_model.def and name_data.def. Where name stands for the selected file name.
+	 * Creates a model.def, a data.def, a initValues.txt and a dataNodeNames.csv (if needed) file from a given Network in the format that is requested by D2D.
+	 * The four files will be saved as name_model.def, name_data.def, name_initValues.txt and name_DataNodeNames.csv. Where name stands for the selected file name.
 	 * If in the folder there are already files with those names they will be overridden.
 	 * @param path The String Path where the Files should be saved to.
 	 * @param network The Network in question. 
 	 * @param dataNodes Nodes where there exist experiment data.
 	 * @param upRNodes Nodes that will be up-regulated.
 	 * @param downRNodes Nodes that will be down-regulated.
+	 * @param initValues The list of initial values and upper and lower bounds as needed by the InitialValuesFileCreator class. Has to be 13 values in the correct order! If not 13 values, the default values will be used.
 	 * @param finalTime The finish time of the experiment.
 	 * @throws IOException
 	 */
-	public static void createFiles(String path, RegulatoryNetwork network, String[] dataNodes , String[] upRNodes, String[] downRNodes, int finalTime) throws IOException{
+	public static void createFiles(String path, RegulatoryNetwork network, String[] dataNodes , String[] upRNodes, String[] downRNodes, double[] initValues, int finalTime) throws IOException{
 		//if(fileExists(path)) { return; }
 		
 		//mapping to node alias (x1, x2, ...)
@@ -92,7 +93,12 @@ public class DefCreator {
 		createModelFile(path, network, mapping, rMapping, kMapping, finalTime);
 		createDataFile(path, network, dataNodes, mapping, rMapping, finalTime);
 		
-		InitialValuesFileCreator.createInitValuesFile(path, kMapping, mapping, rMapping);
+		if(initValues == null || initValues.length != 13) {
+			InitialValuesFileCreator.createInitValuesFile(path, kMapping, mapping, rMapping);
+		}
+		else {
+			InitialValuesFileCreator.createInitValuesFile(path, kMapping, mapping, rMapping, initValues[0], initValues[1], initValues[2], initValues[3], initValues[4], initValues[5], initValues[6], initValues[7], initValues[8], initValues[9], initValues[10], initValues[11], initValues[12]);
+		}
 		DataNodeNamesFileCreator.createNodeNamesFile(path, dataNodes);
 	}
 	
@@ -607,7 +613,7 @@ public class DefCreator {
 			//String[] dataNodes = new String[1];
 			//dataNodes[0] = "TRPM7";
 	        // specify where to put the new File and how to name it, it will override any existing file with the same name at the same place
-			createFiles("C:\\Uni\\Job\\Jimena\\ExampleGraphs\\WorkingGraphs\\test.txt", network, dataNodes, upRNodes, downRNodes, 10);
+			createFiles("C:\\Uni\\Job\\Jimena\\ExampleGraphs\\WorkingGraphs\\test.txt", network, dataNodes, upRNodes, downRNodes, null, 10);
 			text = "c";
 		}
 		catch(Exception e) {

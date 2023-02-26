@@ -615,12 +615,13 @@ public class SolverFrame extends JFrame implements ActionListener {
 		int result = fc.showOpenDialog(this);
 		if (result == JFileChooser.APPROVE_OPTION) {
 			File selectedFile = fc.getSelectedFile();
-			//
+			/*
 			File selectedDefFile = new File(selectedFile.toString()+".def");
+			File selectedCSVNodeNamesFile = new File(selectedFile.toString()+".csv");
 			RegulatoryNetwork network = new RegulatoryNetwork();
 	        // Load a yED GraphML file into the network
 	        network.loadYEdFile(Main.currentFile);
-	        //
+	        */
 			if (!selectedFile.toString().endsWith(".m")) {
 				selectedFile=new File(selectedFile.toString()+".m");
 			}
@@ -635,7 +636,7 @@ public class SolverFrame extends JFrame implements ActionListener {
 				bw.write(getCommentNodes());
 				bw.close();
 				
-				//
+				/*
 				ArrayList<String> upRNList = new ArrayList<>();
 		        ArrayList<String> downRNList = new ArrayList<>();
 		        
@@ -660,7 +661,8 @@ public class SolverFrame extends JFrame implements ActionListener {
 				}
 				
 				DefCreator.createFile(selectedDefFile.toString(), network, upRNodes, downRNodes);
-				//
+				CSVNodeNamesCreator.createFile(selectedCSVNodeNamesFile.toString(), network);
+				*/
 				
 			} catch (Exception ex) {
 				ex.printStackTrace();
