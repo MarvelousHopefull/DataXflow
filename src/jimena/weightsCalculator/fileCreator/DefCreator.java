@@ -93,11 +93,11 @@ public class DefCreator {
 		createModelFile(path, network, mapping, rMapping, kMapping, finalTime);
 		createDataFile(path, network, dataNodes, mapping, rMapping, finalTime);
 		
-		if(initValues == null || initValues.length != 13) {
+		if(initValues == null || initValues.length != 15) {
 			InitialValuesFileCreator.createInitValuesFile(path, kMapping, mapping, rMapping);
 		}
 		else {
-			InitialValuesFileCreator.createInitValuesFile(path, kMapping, mapping, rMapping, initValues[0], initValues[1], initValues[2], initValues[3], initValues[4], initValues[5], initValues[6], initValues[7], initValues[8], initValues[9], initValues[10], initValues[11], initValues[12]);
+			InitialValuesFileCreator.createInitValuesFile(path, kMapping, mapping, rMapping, initValues[0], initValues[1], initValues[2], initValues[3], initValues[4], initValues[5], initValues[6], initValues[7], initValues[8], initValues[9], initValues[10], initValues[11], initValues[12], initValues[13], initValues[14]);
 		}
 		DataNodeNamesFileCreator.createNodeNamesFile(path, dataNodes);
 	}

@@ -79,6 +79,8 @@ public class D2DFrame extends JFrame implements ActionListener{
 	private double ubDelta = 1000;
 	
 	private double initNodeValue = 0.5;
+	private double lbNodeValue = 0;
+	private double ubNodeValue = 1;
 	
 	// for input text field (initial values, lower bound, upper bound)
 	private JTextField initValueAlpha;
@@ -97,7 +99,9 @@ public class D2DFrame extends JFrame implements ActionListener{
 	private JTextField lbValueDelta;
 	private JTextField ubValueDelta;
 	
-	private JTextField initValueX;	
+	private JTextField initValueX;
+	private JTextField lbValueX;
+	private JTextField ubValueX;
 	//alpha, beta, h, delta, init_x
 
 	
@@ -263,6 +267,8 @@ public class D2DFrame extends JFrame implements ActionListener{
 		initValuesList.add(Double.parseDouble(lbValueDelta.getText()));
 		initValuesList.add(Double.parseDouble(ubValueDelta.getText()));
 		initValuesList.add(Double.parseDouble(initValueX.getText()));
+		initValuesList.add(Double.parseDouble(lbValueX.getText()));
+		initValuesList.add(Double.parseDouble(ubValueX.getText()));
 		
 		JFileChooser fc = new JFileChooser();
 		int result = fc.showOpenDialog(this);
@@ -292,9 +298,9 @@ public class D2DFrame extends JFrame implements ActionListener{
 				}
 				
 				double[] initValues = null;
-				if(initValuesList != null && initValuesList.size() == 13) {
-					initValues = new double[13];
-					for(int i = 0; i < 13; i++) {
+				if(initValuesList != null && initValuesList.size() == 15) {
+					initValues = new double[15];
+					for(int i = 0; i < 15; i++) {
 						initValues[i] = initValuesList.get(i);
 					}
 				}
@@ -443,7 +449,24 @@ public class D2DFrame extends JFrame implements ActionListener{
 		initValueX.setEditable(true);
 		toolbar.add(initValueX,new GridBagConstraints(9,0,1,1,2.0,1.0,GridBagConstraints.SOUTHWEST,GridBagConstraints.NONE,new Insets(0,0,0,0),0,0));
 
-		
+		JLabel labelLBNodeValue = new JLabel("LB NodeValue:");
+		toolbar.add(labelLBNodeValue);		
+		toolbar.add(labelLBNodeValue,new GridBagConstraints(8,1,1,1,1.0,1.0,GridBagConstraints.SOUTHWEST,GridBagConstraints.NONE,new Insets(0,0,0,0),0,0));
+		lbValueX = new JTextField(Double.toString(lbNodeValue));
+		lbValueX.setSize(60, 20);
+		lbValueX.setPreferredSize(new Dimension(100, 20));
+		lbValueX.setEditable(true);
+		toolbar.add(lbValueX,new GridBagConstraints(9,1,1,1,2.0,1.0,GridBagConstraints.SOUTHWEST,GridBagConstraints.NONE,new Insets(0,0,0,0),0,0));
+
+		JLabel labelUBNodeValue = new JLabel("UB NodeValue:");
+		toolbar.add(labelUBNodeValue);		
+		toolbar.add(labelUBNodeValue,new GridBagConstraints(8,2,1,1,1.0,1.0,GridBagConstraints.SOUTHWEST,GridBagConstraints.NONE,new Insets(0,0,0,0),0,0));
+		ubValueX = new JTextField(Double.toString(ubNodeValue));
+		ubValueX.setSize(60, 20);
+		ubValueX.setPreferredSize(new Dimension(100, 20));
+		ubValueX.setEditable(true);
+		toolbar.add(ubValueX,new GridBagConstraints(9,2,1,1,2.0,1.0,GridBagConstraints.SOUTHWEST,GridBagConstraints.NONE,new Insets(0,0,0,0),0,0));
+
 		return toolbar;
 	}
 	

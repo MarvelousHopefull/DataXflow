@@ -45,7 +45,7 @@ public class InitialValuesFileCreator {
 	 * @throws IOException
 	 */
 	public static void createInitValuesFile(String path, String[][] kMapping, String[][] nodeMapping, String[][] rMapping) throws IOException{
-		createInitValuesFile(path,kMapping,nodeMapping,rMapping,sAlpha,sLBAlpha,sUBAlpha,sBeta,sLBBeta,sUBBeta,sH,sLBH,sUBH,sDelta,sLBDelta,sUBDelta,sInitNodeValue);
+		createInitValuesFile(path,kMapping,nodeMapping,rMapping,sAlpha,sLBAlpha,sUBAlpha,sBeta,sLBBeta,sUBBeta,sH,sLBH,sUBH,sDelta,sLBDelta,sUBDelta,sInitNodeValue,sLBNodeValue,sUBNodeValue);
 	}
 	
 	
@@ -71,7 +71,7 @@ public class InitialValuesFileCreator {
 	 * @throws IOException
 	 */
 	public static void createInitValuesFile(String path, String[][] kMapping, String[][] nodeMapping, String[][] rMapping, 
-			double initAlpha, double lbAlpha, double ubAlpha, double initBeta, double lbBeta, double ubBeta, double initH, double lbH, double ubH, double initDelta, double lbDelta, double ubDelta, double initNodeValue) throws IOException{
+			double initAlpha, double lbAlpha, double ubAlpha, double initBeta, double lbBeta, double ubBeta, double initH, double lbH, double ubH, double initDelta, double lbDelta, double ubDelta, double initNodeValue, double lbNodeValue, double ubNodeValue) throws IOException{
 		if(nodeMapping == null || kMapping == null) {
 			return;
 		}
@@ -121,8 +121,8 @@ public class InitialValuesFileCreator {
 		}
 		
 		v = initNodeValue;
-		lb = sLBNodeValue;
-		ub = sUBNodeValue;
+		lb = lbNodeValue;
+		ub = ubNodeValue;
 		for(int i = 0; i < nodeMapping.length; i++) {
 			text += t1 + "init_" + nodeMapping[i][0] + t2 + v + t3 + lb + t4 + ub + tEnd;
 			text += "\n";
