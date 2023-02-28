@@ -39,7 +39,7 @@ public class DefCreator {
 	 * @param finalTime The finish time of the experiment.
 	 * @throws IOException
 	 */
-	public static void createFiles(String path, RegulatoryNetwork network, String[] dataNodes , String[] upRNodes, String[] downRNodes, double[] initValues, int finalTime) throws IOException{
+	public static void createFiles(String path, RegulatoryNetwork network, String[] dataNodes , String[] upRNodes, String[] downRNodes, double[] initValues, String[] constantNodes, int finalTime) throws IOException{
 		//if(fileExists(path)) { return; }
 		
 		//mapping to node alias (x1, x2, ...)
@@ -90,7 +90,7 @@ public class DefCreator {
 		
 		String[][] kMapping = getKMapping(network, mapping);
 		
-		createModelFile(path, network, mapping, rMapping, kMapping, finalTime);
+		createModelFile(path, network, mapping, rMapping, kMapping, constantNodes, finalTime);
 		createDataFile(path, network, dataNodes, mapping, rMapping, finalTime);
 		
 		if(initValues == null || initValues.length != 15) {
@@ -141,7 +141,7 @@ public class DefCreator {
 	 * @param finalTime The finish time of experiment.
 	 * @throws IOException
 	 */
-	private static void createModelFile(String path, RegulatoryNetwork network, String[][] mapping, String[][] rMapping, String[][] kMapping, int finalTime) throws IOException{
+	private static void createModelFile(String path, RegulatoryNetwork network, String[][] mapping, String[][] rMapping, String[][] kMapping, String[] constantNodes, int finalTime) throws IOException{
 
 		if (!path.endsWith("_model.def")) {
 			path = path +"_model.def";
@@ -157,7 +157,7 @@ public class DefCreator {
 		text += getModelCompartments();
 		text += getModelStates(mapping, network);
 		text += getModelInputs(rMapping);
-		text += getModelODEs(network,mapping,kMapping, rMapping);
+		text += getModelODEs(network,mapping,kMapping, rMapping, constantNodes);
 		text += getModelTail();
 		BufferedWriter fw = new BufferedWriter(new FileWriter(path));
 		
@@ -440,9 +440,10 @@ public class DefCreator {
 	 * @param mapping
 	 * @param kMapping
 	 * @param rMapping
+	 * @param constantNodes
 	 * @return
 	 */
-	private static String getModelODEs(RegulatoryNetwork network, String[][] mapping, String[][] kMapping, String[][] rMapping){
+	private static String getModelODEs(RegulatoryNetwork network, String[][] mapping, String[][] kMapping, String[][] rMapping, String[] constantNodes){
 		String text = "\n" + "ODES" + 
 				"\n";
 		NetworkNode[] nodes = network.getNetworkNodes();
@@ -451,6 +452,7 @@ public class DefCreator {
 		String h;
 		String y;
 		String w;
+		boolean isConstant = false;
 		for(int i = 0; i < nodes.length; i++ ) {
 			nodeName = "";
 			for(int j = 0; j < mapping.length; j++) {
@@ -459,6 +461,16 @@ public class DefCreator {
 					break;
 				}
 			}
+			if(constantNodes != null) {
+				isConstant = false;
+				for(int j = 0; j < constantNodes.length; j++) {
+					if(constantNodes[j].equals(nodes[i].getName())) {
+						isConstant = true;
+						break;
+					}
+				}
+			}
+			
 			
 			h = "";
 			y = "";
@@ -534,7 +546,7 @@ public class DefCreator {
 				w = acti + inhi;
 			}
 			
-			text += "\n" + "\"";
+			text += "\n" + "\"" + "(";
 			if(bbf.getArity()>0) {
 				text += "((-exp(0.5*" + h + ")+exp(-" + h + "*(" + w + "-0.5)))"
 					+ " / ((1-exp(0.5*" + h + "))*(1+exp(-" + h + "*(" + w + "-0.5))))" + ")";
@@ -568,7 +580,11 @@ public class DefCreator {
 				else { text += " - " + deltaAlias + "*" + rAlias + "*" + nodeName; }
 			}
 			
-			text = text + "\"";
+			text += ")";
+			if(isConstant) {
+				text +=  " * 0";
+			}
+			text += "\"";
 		}
 		text = text + "\n";
 		/*((-exp(5.0)+exp(-10.0*(((2.0/1.0)*((x(34))/(1+x(34))))-0.5)))
@@ -612,8 +628,14 @@ public class DefCreator {
 			String[] dataNodes = null;
 			//String[] dataNodes = new String[1];
 			//dataNodes[0] = "TRPM7";
+			
+			//String[] constantNodes = null;
+			String[] constantNodes = new String[1];
+			constantNodes[0] = "TGFR";
+			
+			
 	        // specify where to put the new File and how to name it, it will override any existing file with the same name at the same place
-			createFiles("C:\\Uni\\Job\\Jimena\\ExampleGraphs\\WorkingGraphs\\test.txt", network, dataNodes, upRNodes, downRNodes, null, 10);
+			createFiles("C:\\Uni\\Job\\Jimena\\ExampleGraphs\\WorkingGraphs\\test.txt", network, dataNodes, upRNodes, downRNodes, null, constantNodes, 10);
 			text = "c";
 		}
 		catch(Exception e) {

@@ -47,8 +47,8 @@ public class D2DFrame extends JFrame implements ActionListener{
 	private static final long serialVersionUID = 1L;
 	
 	//Frame Size
-	private static int width = 964;	//x
-	private static int hight = 450;	//y
+	private static int width = 884;	//x
+	private static int hight = 475;	//y
 
 	//to select up and down regulated notes
 	private JTable posReg;	
@@ -56,6 +56,9 @@ public class D2DFrame extends JFrame implements ActionListener{
 	
 	//to select Nodes where experiment data is available 
 	private JTable eDataNodes;
+	
+	//to select Nodes that should be seen as having a constant value 
+	private JTable constantNodes;
 	
 	//private HashMap<Integer, Node> nodeMap = new HashMap<Integer, Node>(); // Network
 	private NetworkNode[] nodes = null;
@@ -146,7 +149,7 @@ public class D2DFrame extends JFrame implements ActionListener{
 		posReg.getRowSorter().toggleSortOrder(0);
 
 		JScrollPane posCtlSP = new JScrollPane(posReg);
-		posCtlSP.setPreferredSize(new Dimension(300, 310));
+		posCtlSP.setPreferredSize(new Dimension(200, 310));
 		JPanel posCtlP = new JPanel();
 		posCtlP.setLayout(new BorderLayout());
 		JToolBar posCtlTB = new JToolBar("Positive regulation", JToolBar.HORIZONTAL);
@@ -168,9 +171,9 @@ public class D2DFrame extends JFrame implements ActionListener{
 		TableRowSorter sorterN = new TableRowSorter(nodeM);		
 		negReg.setRowSorter(sorterN);
 		negReg.getRowSorter().toggleSortOrder(0);
+		
 		JScrollPane negCtlSP = new JScrollPane(negReg);
-
-		negCtlSP.setPreferredSize(new Dimension(300, 310));
+		negCtlSP.setPreferredSize(new Dimension(200, 310));
 		JToolBar negCtlTB = new JToolBar("Negative regulation", JToolBar.HORIZONTAL);
 		JLabel negCtlLbl = new JLabel("Negative regulation");
 		negCtlLbl.setForeground(Color.BLUE.darker());
@@ -192,9 +195,9 @@ public class D2DFrame extends JFrame implements ActionListener{
 		TableRowSorter sorterE = new TableRowSorter(nodeM);		
 		eDataNodes.setRowSorter(sorterE);
 		eDataNodes.getRowSorter().toggleSortOrder(0);
+		
 		JScrollPane dataNodesSP = new JScrollPane(eDataNodes);
-
-		dataNodesSP.setPreferredSize(new Dimension(300, 310));
+		dataNodesSP.setPreferredSize(new Dimension(200, 310));
 		JToolBar dataNodesTB = new JToolBar("Experiment Nodes", JToolBar.HORIZONTAL);
 		JLabel dataNodesLbl = new JLabel("Experiment Nodes");
 		dataNodesLbl.setForeground(Color.BLUE.darker());
@@ -214,8 +217,35 @@ public class D2DFrame extends JFrame implements ActionListener{
 		Border dataNodesBorder = BorderFactory.createTitledBorder("Data Nodes (press ctl to select)");
 		dataNodesP.setBorder(dataNodesBorder);
 		
+		// Constant Nodes
+		constantNodes = new JTable(nodeM);
+		TableRowSorter sorterC = new TableRowSorter(nodeM);		
+		constantNodes.setRowSorter(sorterC);
+		constantNodes.getRowSorter().toggleSortOrder(0);
 		
-		// the panels
+		JScrollPane constantNodesSP = new JScrollPane(constantNodes);
+		constantNodesSP.setPreferredSize(new Dimension(200, 310));
+		JToolBar constantNodesTB = new JToolBar("Constant Nodes", JToolBar.HORIZONTAL);
+		JLabel constantNodesLbl = new JLabel("Constant Nodes");
+		constantNodesLbl.setForeground(Color.BLUE.darker());
+		constantNodesTB.add(constantNodesLbl);
+		JButton unSelAllBtnC = new JButton("UnselectAll");
+		unSelAllBtnC.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				constantNodes.clearSelection();
+			}
+		});
+		constantNodesTB.add(unSelAllBtnC);
+		JPanel constantNodesP = new JPanel();
+		constantNodesP.setLayout(new BorderLayout());
+		constantNodesP.add(constantNodesTB, BorderLayout.NORTH);
+		constantNodesP.add(constantNodesSP, BorderLayout.CENTER);	
+				
+		Border constantNodesBorder = BorderFactory.createTitledBorder("Constant Nodes (press ctl to select)");
+		constantNodesP.setBorder(constantNodesBorder);
+				
+		
+		// the panels, for separating the different selection sections
 		// the regulation panels
 		JSplitPane regP = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
 		regP.add(posCtlP, JSplitPane.LEFT);
@@ -227,14 +257,23 @@ public class D2DFrame extends JFrame implements ActionListener{
 		Border regulationBorder = BorderFactory.createTitledBorder("Regulations (press ctl to select)");
 		regVP.setBorder(regulationBorder);
 		
+		//separating regulation panels and dataNodes panel
+		JSplitPane dataRegP = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
+		dataRegP.add(regVP, JSplitPane.LEFT);
+		dataRegP.add(dataNodesP, JSplitPane.RIGHT);
+		dataRegP.setDividerLocation(0.5);
+		JPanel dataRegVP = new JPanel();
+		dataRegVP.add(dataRegP, BorderLayout.CENTER);
 		
+		//separating constant Nodes panel from the rest
 		JSplitPane listP = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
-		listP.add(regVP, JSplitPane.LEFT);
-		listP.add(dataNodesP, JSplitPane.RIGHT);
+		listP.add(dataRegVP, JSplitPane.LEFT);
+		listP.add(constantNodesP, JSplitPane.RIGHT);
 		listP.setDividerLocation(0.5);
 		JPanel listVP = new JPanel();
 		listVP.add(listP, BorderLayout.CENTER);
 		
+		//adding all panels
 		p.add(listVP);
 		
 		p.add(createToolBar());
@@ -247,12 +286,15 @@ public class D2DFrame extends JFrame implements ActionListener{
 	public void actionPerformed(ActionEvent e) {
 		
 		ArrayList<String> upRNList = new ArrayList<String>();
-		ArrayList<String> downRNList = new ArrayList<String>();
-		ArrayList<String> dataNodeList = new ArrayList<String>();
-		ArrayList<Double> initValuesList = new ArrayList<Double>();
 		for (int i1 : posReg.getSelectedRows()) upRNList.add(posReg.getValueAt(i1, 0).toString());		
+		ArrayList<String> downRNList = new ArrayList<String>();
 		for (int i1 : negReg.getSelectedRows()) downRNList.add(negReg.getValueAt(i1, 0).toString());
+		ArrayList<String> dataNodeList = new ArrayList<String>();
 		for (int i1 : eDataNodes.getSelectedRows()) dataNodeList.add(eDataNodes.getValueAt(i1, 0).toString());
+		ArrayList<String> constantNodeList = new ArrayList<String>();
+		for (int i1 : constantNodes.getSelectedRows()) constantNodeList.add(constantNodes.getValueAt(i1, 0).toString());
+		
+		ArrayList<Double> initValuesList = new ArrayList<Double>();
 		
 		initValuesList.add(Double.parseDouble(initValueAlpha.getText()));
 		initValuesList.add(Double.parseDouble(lbValueAlpha.getText()));
@@ -297,6 +339,12 @@ public class D2DFrame extends JFrame implements ActionListener{
 					dataNodes = dataNodeList.toArray(dataNodes);
 				}
 				
+				String[] constantNodes = null;
+				if(constantNodeList != null) {
+					constantNodes = new String[0];
+					constantNodes = constantNodeList.toArray(constantNodes);
+				}
+				
 				double[] initValues = null;
 				if(initValuesList != null && initValuesList.size() == 15) {
 					initValues = new double[15];
@@ -309,7 +357,7 @@ public class D2DFrame extends JFrame implements ActionListener{
 		        // Load a yED GraphML file into the network
 		        network.loadYEdFile(currentFile);
 				
-				DefCreator.createFiles(selectedFile.toString(), network, dataNodes, upRNodes, downRNodes, initValues, 10);
+				DefCreator.createFiles(selectedFile.toString(), network, dataNodes, upRNodes, downRNodes, initValues, constantNodes, 10);
 				
 			} catch (Exception ex) {
 				ex.printStackTrace();
