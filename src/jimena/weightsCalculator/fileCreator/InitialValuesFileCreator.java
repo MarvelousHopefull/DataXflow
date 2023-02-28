@@ -17,7 +17,7 @@ public class InitialValuesFileCreator {
 	//change the values for different initial values here
 	//but don't change to 0 or 0.0! (or change the code in createInitValuesFile too!! around line 70)
 	private static double sAlpha = 1;
-	private static double sLBAlpha = 1;
+	private static double sLBAlpha = 0;
 	private static double sUBAlpha = 1000.0;
 	
 	private static double sBeta = 10;
@@ -25,7 +25,7 @@ public class InitialValuesFileCreator {
 	private static double sUBBeta = 1000.0;
 	
 	private static double sH = 10;
-	private static double sLBH = 0.0;
+	private static double sLBH = 1;
 	private static double sUBH = 1000.0;
 	
 	private static double sDelta = 1;

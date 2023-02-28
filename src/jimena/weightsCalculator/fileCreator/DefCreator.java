@@ -1,7 +1,10 @@
 package jimena.weightsCalculator.fileCreator;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -39,7 +42,7 @@ public class DefCreator {
 	 * @param finalTime The finish time of the experiment.
 	 * @throws IOException
 	 */
-	public static void createFiles(String path, RegulatoryNetwork network, String[] dataNodes , String[] upRNodes, String[] downRNodes, double[] initValues, String[] constantNodes, int finalTime) throws IOException{
+	public static void createFiles(String path, RegulatoryNetwork network, String[] dataNodes , String[] upRNodes, String[] downRNodes, double[] initValues, String[] constantNodes, double finalTime) throws IOException{
 		//if(fileExists(path)) { return; }
 		
 		//mapping to node alias (x1, x2, ...)
@@ -52,21 +55,58 @@ public class DefCreator {
 			mapping[i][1] = nodes[i].getName();
 		}
 		
+		List<String> cNList = null; 
+		if(constantNodes != null) {
+			cNList = Arrays.asList(constantNodes);
+		}
 		//mapping of the regulated nodes, up regulated Nodes before down regulated Nodes
 		//[i][0] := alias (u1|u2|...)
 		//[i][1] := Node-Name
 		//[i][2] := up or down (u|d)
 		String[][] rMapping = null;
 		if((upRNodes != null && upRNodes.length > 0) || (downRNodes != null && downRNodes.length > 0 )) {
-			int upL = 0; 
+			ArrayList<ArrayList<String>> rMList = new ArrayList<ArrayList<String>>();
+			ArrayList<String> rMNode;
+			int i = 0;
 			if(upRNodes != null) {
-				upL = upRNodes.length;
+				for(int j = 0; j < upRNodes.length; j++) {
+					if(constantNodes != null && cNList.contains(upRNodes[j])) {
+						continue;
+					}
+					rMNode = new ArrayList<String>();
+					rMNode.add("u" + (i+1));
+					rMNode.add(upRNodes[j]);
+					rMNode.add("u");
+					rMNode.add("delta_" + (i+1));
+					rMList.add(rMNode);
+					i++;
+					
+				}
 			}
-			int downL = 0;
 			if(downRNodes != null) {
-				downL = downRNodes.length;
+				for(int j = 0; j < downRNodes.length; j++) {
+					if(constantNodes != null && cNList.contains(downRNodes[j])) {
+						continue;
+					}
+					rMNode = new ArrayList<String>();
+					rMNode.add("u" + (i+1));
+					rMNode.add(downRNodes[j]);
+					rMNode.add("d");
+					rMNode.add("delta_" + (i+1));
+					rMList.add(rMNode);
+					i++;
+				}
 			}
-			rMapping = new String[upL + downL][4];
+			rMapping = new String[i][4];
+			for(int j = 0; j < i; j++) {
+				for(int k = 0; k < 4; k++) {
+					rMapping[j][k] = rMList.get(j).get(k);
+				}
+			}
+			
+			//rMapping = rMList.toArray(rMapping);
+			
+			/*rMapping = new String[upL + downL][4];
 			int i = 0;
 			if(upRNodes != null) {
 				for(int j = 0; j < upRNodes.length; j++) {
@@ -85,10 +125,11 @@ public class DefCreator {
 					rMapping[i][3] = "delta_" + (i+1);
 					i++;
 				}
-			}
+			}*/
+			
+			
 		}
-		
-		String[][] kMapping = getKMapping(network, mapping);
+		String[][] kMapping = getKMapping(network, mapping, cNList);
 		
 		createModelFile(path, network, mapping, rMapping, kMapping, constantNodes, finalTime);
 		createDataFile(path, network, dataNodes, mapping, rMapping, finalTime);
@@ -110,7 +151,7 @@ public class DefCreator {
 	 * @param finalTime The finish time of experiment.
 	 * @throws IOException
 	 */
-	private static void createDataFile(String path, RegulatoryNetwork network, String[] dataNodes, String[][] mapping, String[][] rMapping, int finalTime) throws IOException{
+	private static void createDataFile(String path, RegulatoryNetwork network, String[] dataNodes, String[][] mapping, String[][] rMapping, double finalTime) throws IOException{
 		
 		if (!path.endsWith("_data.def")) {
 			path = path +"_data.def";
@@ -141,7 +182,7 @@ public class DefCreator {
 	 * @param finalTime The finish time of experiment.
 	 * @throws IOException
 	 */
-	private static void createModelFile(String path, RegulatoryNetwork network, String[][] mapping, String[][] rMapping, String[][] kMapping, String[] constantNodes, int finalTime) throws IOException{
+	private static void createModelFile(String path, RegulatoryNetwork network, String[][] mapping, String[][] rMapping, String[][] kMapping, String[] constantNodes, double finalTime) throws IOException{
 
 		if (!path.endsWith("_model.def")) {
 			path = path +"_model.def";
@@ -171,7 +212,7 @@ public class DefCreator {
 	 * 
 	 * @return The string that is the head of the Data.def document.
 	 */
-	private static String getDataDescriptionAndPredictor(int finalTime) {
+	private static String getDataDescriptionAndPredictor(double finalTime) {
 		Date date = new Date();
         SimpleDateFormat getYearFormat = new SimpleDateFormat("yyyy");
         String currentYear = getYearFormat.format(date);
@@ -273,7 +314,7 @@ public class DefCreator {
 	 * 
 	 * @return The string that is the head of the Model.def document.
 	 */
-	private static String getModelDescriptionAndPredictor(int finalTime) {
+	private static String getModelDescriptionAndPredictor(double finalTime) {
 		Date date = new Date();
         SimpleDateFormat getYearFormat = new SimpleDateFormat("yyyy");
         String currentYear = getYearFormat.format(date);
@@ -361,41 +402,66 @@ public class DefCreator {
 	/**
 	 * Maps all variables/parameters (h, alpha, beta, gamma) to their node and for alpha and beta their corresponding position in the list of input nodes.
 	 * @param network The Network.
+	 * @param mapping 
+	 * @param constNodes
 	 * @return The Mapped Array where: [i][0] := name of the i'te variable, [i][1] := the node number, [i][2] := -1 for h&gamma and the position of the input node for alpha&beta.
 	 */
-	private static String[][] getKMapping(RegulatoryNetwork network, String[][] mapping){
-		int length = 0;
+	private static String[][] getKMapping(RegulatoryNetwork network, String[][] mapping, List<String> constNodes){
+		//int length = 0;
 		NetworkNode[] nodes = network.getNetworkNodes();
 		BinaryBooleanFunction bbf;
 		
-		for(int i = 0; i < nodes.length; i++) {
+		/*for(int i = 0; i < nodes.length; i++) {
 			bbf = nodes[i].getFunction();
 			length += (1 + bbf.getArity());
 			if(bbf.getArity() > 0) {
 				length += 1;
 			}
-		}
+		}*/
 		
-		String[][] kMapping = new String[length][5];
-		
+		String[][] kMapping = null;// = new String[length][5];
+		ArrayList<ArrayList<String>> kMList = new ArrayList<ArrayList<String>>();
+		ArrayList<String> kMNode; //one kMapping Node
 		boolean[] activators;
 		int i = 0;
 		for(int n = 0; n < nodes.length; n++) {
+			if(constNodes != null && constNodes.contains(mapping[n][1])) {
+				continue;
+			}
+			
 			//gamma
-			kMapping[i][0] = "y_" + (n+1);
+			/*kMapping[i][0] = "y_" + (n+1);
 			kMapping[i][1] = "" + (n+1);
 			kMapping[i][2] = "" + -1;
 			kMapping[i][3] = "y";
-			kMapping[i][4] = "y";
+			kMapping[i][4] = "y";*/
+			
+			/*kMNode = new ArrayList<String>();
+			kMNode.add("y_" + (n+1));
+			kMNode.add("" + (n+1));
+			kMNode.add("" + -1);
+			kMNode.add("y");
+			kMNode.add("y");
 			i++;
+			kMList.add(kMNode);*/
+			
 			if(nodes[n].getFunction().getArity()==0) { continue; }
+			
 			//h
-			kMapping[i][0] = "h_" + (n+1);
+			kMNode = new ArrayList<String>();
+			kMNode.add("h_" + (n+1));
+			kMNode.add("" + (n+1));
+			kMNode.add("" + -1);
+			kMNode.add("h");
+			kMNode.add("h");
+			/*kMapping[i][0] = "h_" + (n+1);
 			kMapping[i][1] = "" + (n+1);
 			kMapping[i][2] = "" + -1;
 			kMapping[i][3] = "h";
-			kMapping[i][4] = "h";
+			kMapping[i][4] = "h";*/
 			i++;
+			kMList.add(kMNode);
+			
 			activators = ((ActivatorInhibitorFunction)nodes[n].getFunction()).getActivators();
 			//int a = 1;
 			//int b = 1;
@@ -412,25 +478,44 @@ public class DefCreator {
 						break;
 					}
 				}
+				kMNode = new ArrayList<String>();
 				if(activators[j]) {
-					kMapping[i][0] = "a_" + nodeNumber + "_" + (n+1);
+					kMNode.add("a_" + nodeNumber + "_" + (n+1));
+					kMNode.add("" + (n+1));
+					kMNode.add("" + j);
+					kMNode.add("a");
+					kMNode.add("" + nodeSymbol);
+					/*kMapping[i][0] = "a_" + nodeNumber + "_" + (n+1);
 					kMapping[i][1] = "" + (n+1);
 					kMapping[i][2] = "" + j;
 					kMapping[i][3] = "a";
-					kMapping[i][4] = nodeSymbol;
+					kMapping[i][4] = nodeSymbol;*/
 				}
 				else {
-					kMapping[i][0] = "b_" + nodeNumber + "_" + (n+1);
+					kMNode.add("b_" + nodeNumber + "_" + (n+1));
+					kMNode.add("" + (n+1));
+					kMNode.add("" + j);
+					kMNode.add("b");
+					kMNode.add("" + nodeSymbol);
+					/*kMapping[i][0] = "b_" + nodeNumber + "_" + (n+1);
 					kMapping[i][1] = "" + (n+1);
 					kMapping[i][2] = "" + j;
 					kMapping[i][3] = "b";
-					kMapping[i][4] = nodeSymbol;
+					kMapping[i][4] = nodeSymbol;*/
 				}
 				j++;
 				i++;
+				kMList.add(kMNode);
 			}
 		}
 		
+		kMapping = new String[i][5];
+		for(int j = 0; j < i; j++) {
+			for(int k = 0; k < 5; k++) {
+				kMapping[j][k] = kMList.get(j).get(k);
+			}
+		}
+		//kMapping = kMList.toArray(kMapping);
 		return kMapping;
 	}
 	
@@ -469,8 +554,11 @@ public class DefCreator {
 						break;
 					}
 				}
+				if(isConstant) {
+					text += "\n" + "\"" + "0" + "\"";
+					continue;
+				}
 			}
-			
 			
 			h = "";
 			y = "";
@@ -546,7 +634,9 @@ public class DefCreator {
 				w = acti + inhi;
 			}
 			
-			text += "\n" + "\"" + "(";
+			text += "\n" + "\"";
+			//text += "(";
+			
 			if(bbf.getArity()>0) {
 				text += "((-exp(0.5*" + h + ")+exp(-" + h + "*(" + w + "-0.5)))"
 					+ " / ((1-exp(0.5*" + h + "))*(1+exp(-" + h + "*(" + w + "-0.5))))" + ")";
@@ -561,7 +651,6 @@ public class DefCreator {
 			String deltaAlias = "";
 			if(rMapping != null) {
 				for(int j = 0; j <rMapping.length; j++) {
-					System.out.print(i + " " + j);
 					
 					if(rMapping[j][1].equals(nodes[i].getName())) {
 						regulated = true;
@@ -580,14 +669,15 @@ public class DefCreator {
 				else { text += " - " + deltaAlias + "*" + rAlias + "*" + nodeName; }
 			}
 			
-			text += ")";
+			/*text += ")";
 			if(isConstant) {
 				text +=  " * 0";
-			}
+			}*/
 			text += "\"";
 		}
 		text = text + "\n";
-		/*((-exp(5.0)+exp(-10.0*(((2.0/1.0)*((x(34))/(1+x(34))))-0.5)))
+		/*how the text should look like:
+		((-exp(5.0)+exp(-10.0*(((2.0/1.0)*((x(34))/(1+x(34))))-0.5)))
 		/((1-exp(5.0))*(1+exp(-10.0*(((2.0/1.0)*((x(34))/(1+x(34))))-0.5)))))-x(9)-u(5)*x(9)
 		... +u(2)*(1-x(16))
 		"k12 - k5*x3*x2/(k6+x2) - k7*x4*x2/(k8+x2) - k9*x5*x2/(k10+x2) + x12" */
@@ -621,17 +711,18 @@ public class DefCreator {
 	        // Load a yED GraphML file into the network
 	        network.loadYEdFile(new File("C:\\Uni\\Job\\Jimena\\ExampleGraphs\\WorkingGraphs\\20221221_lungcancer_D2D_short.graphml"));
 	        text = "b";
-	        String[] upRNodes = null;//new String[1];
-	        //upRNodes[0] = "TRPM7";
+	        //String[] upRNodes = null;
+	        String[] upRNodes = new String[1];
+	        upRNodes[0] = "TGFR";
 			String[] downRNodes = null;
 			
 			String[] dataNodes = null;
 			//String[] dataNodes = new String[1];
 			//dataNodes[0] = "TRPM7";
 			
-			//String[] constantNodes = null;
-			String[] constantNodes = new String[1];
-			constantNodes[0] = "TGFR";
+			String[] constantNodes = null;
+			//String[] constantNodes = new String[1];
+			//constantNodes[0] = "TGFR";
 			
 			
 	        // specify where to put the new File and how to name it, it will override any existing file with the same name at the same place
@@ -639,7 +730,7 @@ public class DefCreator {
 			text = "c";
 		}
 		catch(Exception e) {
-			System.out.print(text + e.getMessage());
+			System.out.print(text + "\n" + e.getMessage());
 		}
 		
 		

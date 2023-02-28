@@ -48,7 +48,7 @@ public class D2DFrame extends JFrame implements ActionListener{
 	
 	//Frame Size
 	private static int width = 884;	//x
-	private static int hight = 475;	//y
+	private static int hight = 520;	//y
 
 	//to select up and down regulated notes
 	private JTable posReg;	
@@ -66,7 +66,7 @@ public class D2DFrame extends JFrame implements ActionListener{
 	
 	//default values
 	private double alpha = 1;
-	private double lbAlpha = 1;
+	private double lbAlpha = 0;
 	private double ubAlpha = 1000;
 	
 	private double beta = 10;
@@ -74,7 +74,7 @@ public class D2DFrame extends JFrame implements ActionListener{
 	private double ubBeta = 1000;
 	
 	private double h = 10;
-	private double lbH = 0;
+	private double lbH = 1;
 	private double ubH = 1000;
 	
 	private double delta = 1;
@@ -84,6 +84,8 @@ public class D2DFrame extends JFrame implements ActionListener{
 	private double initNodeValue = 0.5;
 	private double lbNodeValue = 0;
 	private double ubNodeValue = 1;
+	
+	private double initTime = 10;
 	
 	// for input text field (initial values, lower bound, upper bound)
 	private JTextField initValueAlpha;
@@ -106,6 +108,8 @@ public class D2DFrame extends JFrame implements ActionListener{
 	private JTextField lbValueX;
 	private JTextField ubValueX;
 	//alpha, beta, h, delta, init_x
+	
+	private JTextField time;
 
 	
 	public D2DFrame() {
@@ -353,11 +357,13 @@ public class D2DFrame extends JFrame implements ActionListener{
 					}
 				}
 				
+				double fTime = Double.parseDouble(time.getText());
+				
 				RegulatoryNetwork network = new RegulatoryNetwork();
 		        // Load a yED GraphML file into the network
 		        network.loadYEdFile(currentFile);
 				
-				DefCreator.createFiles(selectedFile.toString(), network, dataNodes, upRNodes, downRNodes, initValues, constantNodes, 10);
+				DefCreator.createFiles(selectedFile.toString(), network, dataNodes, upRNodes, downRNodes, initValues, constantNodes, fTime);
 				
 			} catch (Exception ex) {
 				ex.printStackTrace();
@@ -371,7 +377,7 @@ public class D2DFrame extends JFrame implements ActionListener{
 		//toolbar.setLayout(new FlowLayout(FlowLayout.LEFT));
 		toolbar.setLayout(new GridBagLayout());
 		toolbar.setRollover(true);
-		toolbar.setMaximumSize(new Dimension(width, 25));
+		toolbar.setMaximumSize(new Dimension(width, 39));
 		toolbar.setFloatable(false);
 		
 		JButton generateScriptBtn = new JButton("Generate");
@@ -514,6 +520,15 @@ public class D2DFrame extends JFrame implements ActionListener{
 		ubValueX.setPreferredSize(new Dimension(100, 20));
 		ubValueX.setEditable(true);
 		toolbar.add(ubValueX,new GridBagConstraints(9,2,1,1,2.0,1.0,GridBagConstraints.SOUTHWEST,GridBagConstraints.NONE,new Insets(0,0,0,0),0,0));
+
+		JLabel labelTime = new JLabel("Time:");
+		toolbar.add(labelTime);		
+		toolbar.add(labelTime,new GridBagConstraints(0,3,1,1,1.0,1.0,GridBagConstraints.SOUTHWEST,GridBagConstraints.NONE,new Insets(0,0,0,0),0,0));
+		time = new JTextField(Double.toString(initTime));
+		time.setSize(60, 20);
+		time.setPreferredSize(new Dimension(100, 20));
+		time.setEditable(true);
+		toolbar.add(time,new GridBagConstraints(1,3,1,1,2.0,1.0,GridBagConstraints.SOUTHWEST,GridBagConstraints.NONE,new Insets(0,0,0,0),0,0));
 
 		return toolbar;
 	}
