@@ -561,13 +561,13 @@ public class DefCreator {
 			}
 			
 			h = "";
-			y = "";
+			y = "1";
 			String t = "" + (i+1);
 			for(int j = 0; j < kMapping.length; j++) {
 				if(kMapping[j][1].equals(t)) {
 					h = kMapping[j][0];
 					//y = kMapping[j+1][0];
-					y = "1";
+					//y = "1";
 					break;
 				}
 			}
