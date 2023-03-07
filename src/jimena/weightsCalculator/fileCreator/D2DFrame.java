@@ -521,7 +521,7 @@ public class D2DFrame extends JFrame implements ActionListener{
 		ubValueX.setEditable(true);
 		toolbar.add(ubValueX,new GridBagConstraints(9,2,1,1,2.0,1.0,GridBagConstraints.SOUTHWEST,GridBagConstraints.NONE,new Insets(0,0,0,0),0,0));
 
-		JLabel labelTime = new JLabel("Time:");
+		JLabel labelTime = new JLabel("Final Time:");
 		toolbar.add(labelTime);		
 		toolbar.add(labelTime,new GridBagConstraints(0,3,1,1,1.0,1.0,GridBagConstraints.SOUTHWEST,GridBagConstraints.NONE,new Insets(0,0,0,0),0,0));
 		time = new JTextField(Double.toString(initTime));
