@@ -33,26 +33,28 @@ public class DefCreator {
 	 * Creates a model.def, a data.def, a initValues.txt and a dataNodeNames.csv (if needed) file from a given Network in the format that is requested by D2D.
 	 * The four files will be saved as name_model.def, name_data.def, name_initValues.txt and name_DataNodeNames.csv. Where name stands for the selected file name.
 	 * If in the folder there are already files with those names they will be overridden.
-	 * @param path The String Path where the Files should be saved to.
+	 * @param path The String Path where the new Files should be saved to.
 	 * @param network The Network in question. 
 	 * @param dataNodes Nodes where there exist experiment data.
 	 * @param upRNodes Nodes that will be up-regulated.
 	 * @param downRNodes Nodes that will be down-regulated.
 	 * @param initValues The list of initial values and upper and lower bounds as needed by the InitialValuesFileCreator class. Has to be 13 values in the correct order! If not 13 values, the default values will be used.
+	 * @param constantNodes The Nodes that have a constant value.
 	 * @param finalTime The finish time of the experiment.
 	 * @throws IOException
 	 */
-	public static void createFiles(String path, RegulatoryNetwork network, String[] dataNodes , String[] upRNodes, String[] downRNodes, double[] initValues, String[] constantNodes, double finalTime) throws IOException{
+	public static D2DMapping createFiles(String path, RegulatoryNetwork network, String[] dataNodes , String[] upRNodes, String[] downRNodes, double[] initValues, String[] constantNodes, double finalTime) throws IOException{
 		//if(fileExists(path)) { return; }
 		
 		//mapping to node alias (x1, x2, ...)
 		//[i][0] := alias (x1|x2|...)
 		//[i][1] := Node-Name
 		NetworkNode[] nodes = network.getNetworkNodes();
-		String[][] mapping = new String[nodes.length][2];
+		String[][] mapping = new String[nodes.length][3];
 		for(int i = 0; i < nodes.length; i++ ) {
 			mapping[i][0] = "x" + (i+1);
 			mapping[i][1] = nodes[i].getName();
+			mapping[i][2] = "" + (i+1);
 		}
 		
 		List<String> cNList = null; 
@@ -63,6 +65,7 @@ public class DefCreator {
 		//[i][0] := alias (u1|u2|...)
 		//[i][1] := Node-Name
 		//[i][2] := up or down (u|d)
+		//[i][3] := delta-Alias
 		String[][] rMapping = null;
 		if((upRNodes != null && upRNodes.length > 0) || (downRNodes != null && downRNodes.length > 0 )) {
 			ArrayList<ArrayList<String>> rMList = new ArrayList<ArrayList<String>>();
@@ -141,6 +144,8 @@ public class DefCreator {
 			InitialValuesFileCreator.createInitValuesFile(path, kMapping, mapping, rMapping, initValues[0], initValues[1], initValues[2], initValues[3], initValues[4], initValues[5], initValues[6], initValues[7], initValues[8], initValues[9], initValues[10], initValues[11], initValues[12], initValues[13], initValues[14]);
 		}
 		DataNodeNamesFileCreator.createNodeNamesFile(path, dataNodes);
+		
+		return new D2DMapping(mapping, rMapping, kMapping);
 	}
 	
 	/**
@@ -148,6 +153,8 @@ public class DefCreator {
 	 * @param path The String Path where the File should be saved to.
 	 * @param network The Network in question. 
 	 * @param dataNodes Nodes where there exist experiment data.
+	 * @param mapping Mapping of the nodes.
+	 * @param rMapping Mapping of the regulated nodes.
 	 * @param finalTime The finish time of experiment.
 	 * @throws IOException
 	 */
@@ -177,8 +184,10 @@ public class DefCreator {
 	 * Creates a model.def File from a given Network in the format that is requested by D2D.
 	 * @param path The String Path where the File should be saved to.
 	 * @param network The Network in question. 
-	 * @param upRNodes Nodes that will be up-regulated.
-	 * @param downRNodes Nodes that will be down-regulated.
+	 * @param mapping Mapping of the nodes.
+	 * @param rMapping Mapping of the regulated nodes.
+	 * @param kMapping Mapping of the parameters.
+	 * @param constantNodes All Nodes that have a constant value.
 	 * @param finalTime The finish time of experiment.
 	 * @throws IOException
 	 */
@@ -454,27 +463,23 @@ public class DefCreator {
 			kMNode.add("" + -1);
 			kMNode.add("h");
 			kMNode.add("h");
-			/*kMapping[i][0] = "h_" + (n+1);
-			kMapping[i][1] = "" + (n+1);
-			kMapping[i][2] = "" + -1;
-			kMapping[i][3] = "h";
-			kMapping[i][4] = "h";*/
+			kMNode.add("" + 0);
 			i++;
 			kMList.add(kMNode);
 			
 			activators = ((ActivatorInhibitorFunction)nodes[n].getFunction()).getActivators();
-			//int a = 1;
-			//int b = 1;
 			int j = 0;
 			//alpha, beta
 			while(j < nodes[n].getFunction().getArity()) {
-				String nodeName = network.getConnectionSourceName(n,j);
+				String sourceNodeName = network.getConnectionSourceName(n,j);
 				String nodeNumber = "x";
-				String nodeSymbol = "";
+				String sourceNodeSymbol = "";
+				String sourceNodeNumber = "";
 				for(int l = 0; l<mapping.length; l++) {
-					if(mapping[l][1] == nodeName) {
+					if(mapping[l][1] == sourceNodeName) {
 						nodeNumber = "" + (l+1);
-						nodeSymbol = mapping[l][0];
+						sourceNodeSymbol = mapping[l][0];
+						sourceNodeNumber = mapping[l][2];
 						break;
 					}
 				}
@@ -484,24 +489,16 @@ public class DefCreator {
 					kMNode.add("" + (n+1));
 					kMNode.add("" + j);
 					kMNode.add("a");
-					kMNode.add("" + nodeSymbol);
-					/*kMapping[i][0] = "a_" + nodeNumber + "_" + (n+1);
-					kMapping[i][1] = "" + (n+1);
-					kMapping[i][2] = "" + j;
-					kMapping[i][3] = "a";
-					kMapping[i][4] = nodeSymbol;*/
+					kMNode.add("" + sourceNodeSymbol);
+					kMNode.add(sourceNodeNumber);
 				}
 				else {
 					kMNode.add("b_" + nodeNumber + "_" + (n+1));
 					kMNode.add("" + (n+1));
 					kMNode.add("" + j);
 					kMNode.add("b");
-					kMNode.add("" + nodeSymbol);
-					/*kMapping[i][0] = "b_" + nodeNumber + "_" + (n+1);
-					kMapping[i][1] = "" + (n+1);
-					kMapping[i][2] = "" + j;
-					kMapping[i][3] = "b";
-					kMapping[i][4] = nodeSymbol;*/
+					kMNode.add("" + sourceNodeSymbol);
+					kMNode.add(sourceNodeNumber);
 				}
 				j++;
 				i++;
@@ -509,9 +506,9 @@ public class DefCreator {
 			}
 		}
 		
-		kMapping = new String[i][5];
+		kMapping = new String[i][6];
 		for(int j = 0; j < i; j++) {
-			for(int k = 0; k < 5; k++) {
+			for(int k = 0; k < 6; k++) {
 				kMapping[j][k] = kMList.get(j).get(k);
 			}
 		}
@@ -588,7 +585,6 @@ public class DefCreator {
 				}
 			}
 			
-			w = "w_" + i;
 			String acti = "";
 			String aSum = ""; //Sum of alpha
 			String aWSum = ""; //Sum of weighted nodes
@@ -724,9 +720,11 @@ public class DefCreator {
 			//String[] constantNodes = new String[1];
 			//constantNodes[0] = "TGFR";
 			
-			
+			String path = "C:\\Uni\\Job\\Jimena\\ExampleGraphs\\WorkingGraphs\\test.txt";
+			String parameterPath = "C:\\Uni\\Job\\Jimena\\JimenaDocs\\Rueckweg\\20230302_ErsterVersuch_parameters.tsv";
 	        // specify where to put the new File and how to name it, it will override any existing file with the same name at the same place
-			createFiles("C:\\Uni\\Job\\Jimena\\ExampleGraphs\\WorkingGraphs\\test.txt", network, dataNodes, upRNodes, downRNodes, null, constantNodes, 10);
+			D2DMapping mapping = createFiles(path, network, dataNodes, upRNodes, downRNodes, null, constantNodes, 10);
+			ExternalStimuliFileCreator.createFile(path, parameterPath, mapping, network, constantNodes);
 			text = "c";
 		}
 		catch(Exception e) {
