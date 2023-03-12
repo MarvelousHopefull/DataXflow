@@ -33,11 +33,10 @@ import jimena.binaryrn.RegulatoryNetwork;
 import jimena.gui.main.Main;
 import jimena.solver.NodeTableModel;
 
+//The GUI is in some parts mostly copy&paste from SolverFrame. (Thanks Chunguang Liang!) 
 /**
  * GUI for D2D. 
- * For now only creates the model.def and data.def files.
- * 
- * The GUI is mostly copy&paste from SolverFrame. (Thanks Chunguang Liang!)
+ * Used for creating the model.def, data.def, initValues.txt and DataNodeNames.csv files, needed when working with D2D.
  * 
  * @author Jan Krause
  * @since 13.01.2023

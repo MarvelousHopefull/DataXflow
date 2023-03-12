@@ -43,7 +43,7 @@ public class DefCreator {
 	 * @param finalTime The finish time of the experiment.
 	 * @throws IOException
 	 */
-	public static D2DMapping createFiles(String path, RegulatoryNetwork network, String[] dataNodes , String[] upRNodes, String[] downRNodes, double[] initValues, String[] constantNodes, double finalTime) throws IOException{
+	public static D2DMapping createFiles(String path, RegulatoryNetwork network, String[] dataNodes , String[] upRNodes, String[] downRNodes, double[] initValues, String[] constantNodes, double finalTime) throws IOException, Exception{
 		//if(fileExists(path)) { return; }
 		
 		//mapping to node alias (x1, x2, ...)
@@ -145,7 +145,7 @@ public class DefCreator {
 		}
 		DataNodeNamesFileCreator.createNodeNamesFile(path, dataNodes);
 		
-		return new D2DMapping(mapping, rMapping, kMapping);
+		return new D2DMapping(mapping, rMapping, kMapping, finalTime);
 	}
 	
 	/**
@@ -477,7 +477,7 @@ public class DefCreator {
 				String sourceNodeNumber = "";
 				for(int l = 0; l<mapping.length; l++) {
 					if(mapping[l][1] == sourceNodeName) {
-						nodeNumber = "" + (l+1);
+						nodeNumber = "" + (l+1); //same as sourceNodeNumber
 						sourceNodeSymbol = mapping[l][0];
 						sourceNodeNumber = mapping[l][2];
 						break;
@@ -724,8 +724,12 @@ public class DefCreator {
 			String parameterPath = "C:\\Uni\\Job\\Jimena\\JimenaDocs\\Rueckweg\\20230302_ErsterVersuch_parameters.tsv";
 	        // specify where to put the new File and how to name it, it will override any existing file with the same name at the same place
 			D2DMapping mapping = createFiles(path, network, dataNodes, upRNodes, downRNodes, null, constantNodes, 10);
-			ExternalStimuliFileCreator.createFile(path, parameterPath, mapping, network, constantNodes);
+			String mappingFile = D2DMappingFileInteractor.createD2DMappingFile(path, mapping);
 			text = "c";
+			D2DMapping recreatedMapping = D2DMappingFileInteractor.getD2DMapping(mappingFile);
+			text = "c1";
+			ExternalStimuliFileCreator.createFile(path, parameterPath, recreatedMapping, network, constantNodes, 10);
+			text = "d";
 		}
 		catch(Exception e) {
 			System.out.print(text + "\n" + e.getMessage());

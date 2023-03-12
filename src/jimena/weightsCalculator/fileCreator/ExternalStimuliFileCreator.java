@@ -13,7 +13,7 @@ import jimena.binaryrn.NetworkNode;
 import jimena.binaryrn.RegulatoryNetwork;
 
 /**
- * Used for creating the main.m file for the External Stimuli.
+ * Used for creating the main.m file for the External Stimuli. Can only be used together with D2D, as some here needed configuration are provided by D2D.
  * 
  * @author Jan Krause
  * @since 07.03.2023
@@ -24,13 +24,13 @@ public class ExternalStimuliFileCreator {
 	 * Creates the file for the External Stimuli.
 	 * 
 	 * @param path The String Path where the new File should be saved to.
-	 * @param parametersPath The String Path where the File with the calculated values for the Parameters is to be found.
-	 * @param mapping The saved mapping, done by the DefCreator Class, during the initial usage of the D2DGUI.
+	 * @param parametersPath The String Path where the File, with the (by D2D) calculated values for the Parameters, is to be found.
+	 * @param mapping The saved mapping, done by the DefCreator Class, during the initial usage of the D2D-GUI.
 	 * @param network The Network in question. 
 	 * @param constantNodes The Nodes that have a constant value.
 	 * @throws Exception
 	 */
-	public static void createFile(String path, String parametersPath, D2DMapping mapping, RegulatoryNetwork network, String[] constanNodes) throws Exception {
+	public static void createFile(String path, String parametersPath, D2DMapping mapping, RegulatoryNetwork network, String[] constanNodes, double finalTime) throws Exception {
 		if (!path.endsWith("_main.m")) {
 			path = path +"_main.m";
 		}
@@ -42,7 +42,7 @@ public class ExternalStimuliFileCreator {
 		String text = getTextHeader();
 		text += getParameters(parametersPath, mapping.parameterMapping());
 		text += getA();
-		text += getOCP(parametersPath, mapping.nodeMapping(), mapping.regualtorMapping());
+		text += getOCP(parametersPath, mapping.nodeMapping(), mapping.regualtorMapping(), finalTime);
 		text += getODEs(network, mapping, constanNodes);
 		text += getTextTail();
 		BufferedWriter fw = new BufferedWriter(new FileWriter(path));
@@ -153,7 +153,7 @@ public class ExternalStimuliFileCreator {
 		return text;
 	}
 	
-	private static String getOCP(String parametersPath, String[][] nodeMapping, String[][] regulatorMapping) throws Exception {
+	private static String getOCP(String parametersPath, String[][] nodeMapping, String[][] regulatorMapping, double finalTime) throws Exception {
 		String text = "";
 		BufferedReader reader = new BufferedReader(new FileReader(parametersPath));
 		String line = reader.readLine();
@@ -191,7 +191,7 @@ public class ExternalStimuliFileCreator {
 				+ numberOfNodes
 				+ ",'numControls',"
 				+ numberOfControls
-				+ ",'timeInterval',0.1,'timeHorizon',20,'alpha',0,'initialState',[";
+				+ ",'timeInterval',0.1,'timeHorizon'," + finalTime + ",'alpha',0,'initialState',[";
 		text += nodeValueText;
 		text += "],'DataNoi',A);" + "\r\n"
 				+ "\r\n";
