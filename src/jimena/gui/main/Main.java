@@ -76,6 +76,7 @@ import jimena.simulationmethods.SimulationMethod;
 import jimena.solver.SolverFrame;
 import jimena.sssearcher.RandomSearcher;
 import jimena.sssearcher.StepwiseSearcher;
+import jimena.weightsCalculator.fileCreator.D2DExternalStimuliFrame;
 import jimena.weightsCalculator.fileCreator.D2DFrame;
 
 /**
@@ -1231,6 +1232,15 @@ public class Main extends JFrame implements RegulatoryNetworkObserver {
              }
          });
          menuAnalysis.add(menuD2D);
+         
+         JMenuItem menuD2DExternalStimuli = new JMenuItem("D2D ExternalStimuli");
+         menuD2DExternalStimuli.addActionListener(new ActionListener() {
+             @Override
+             public void actionPerformed(ActionEvent arg0) {
+                 runD2DExternalStimuli();
+             }
+         });
+         menuAnalysis.add(menuD2DExternalStimuli);
          //changes for D2D end
 
         // HELP
@@ -1300,6 +1310,27 @@ public class Main extends JFrame implements RegulatoryNetworkObserver {
     	D2DFrame f = null;
 		try {
 			f = new D2DFrame(currentFile);
+		} catch (NumberFormatException e1) {			
+			e1.printStackTrace();
+		} 
+    	f.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+    	try {
+    		UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());    		
+    	} catch (Exception e) {
+    		e.printStackTrace();
+    	}
+    	f.pack();
+    	f.setLocationRelativeTo(null); 
+    	f.setVisible(true);    	    	
+    }
+    
+    /**
+     * Opens the D2DExternalStimuliFrame
+     */
+    private void runD2DExternalStimuli() {    	
+    	D2DExternalStimuliFrame f = null;
+		try {
+			f = new D2DExternalStimuliFrame();
 		} catch (NumberFormatException e1) {			
 			e1.printStackTrace();
 		} 
