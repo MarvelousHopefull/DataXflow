@@ -1,4 +1,4 @@
-package jimena.weightsCalculator.fileCreator;
+package jimena.weightsCalculator.gui;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -20,7 +20,11 @@ import javax.swing.JTextField;
 import javax.swing.JToolBar;
 import javax.swing.filechooser.FileFilter;
 
+import jimena.binaryrn.RegulatoryNetwork;
 import jimena.gui.main.Main;
+import jimena.weightsCalculator.D2DMapping;
+import jimena.weightsCalculator.fileCreator.D2DMappingFileInteractor;
+import jimena.weightsCalculator.fileCreator.ExternalStimuliFileCreator;
 
 public class D2DExternalStimuliFrame extends JFrame implements ActionListener {
 
@@ -30,10 +34,12 @@ public class D2DExternalStimuliFrame extends JFrame implements ActionListener {
 	private static int width = 800;	//x
 	private static int hight = 500;	//y
 
+	private File currentFile = null;
+	
+	
 	private File d2dFile = null;
 	private String d2dFileName = "no File selected";
 	JTextField d2dF = null;
-	
 	
 	private File mappingFile = null;
 	private String mappingFileName = "no File selected";
@@ -47,7 +53,15 @@ public class D2DExternalStimuliFrame extends JFrame implements ActionListener {
 		setMinimumSize(new Dimension(500, 400));
 		this.setPreferredSize(new Dimension(width, hight));
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		getContentPane().setLayout(new BorderLayout());
+		getContentPane().setLayout(new BorderLayout());		
+	}
+	
+	public D2DExternalStimuliFrame(File currentFile) throws Exception {
+		this();
+		if(currentFile == null) {
+			throw new Exception("No RN File selected!");
+		}
+		this.currentFile = currentFile;
 		
 		JPanel p = new JPanel();
 		p.setLayout(new BoxLayout(p, BoxLayout.Y_AXIS));
@@ -62,7 +76,25 @@ public class D2DExternalStimuliFrame extends JFrame implements ActionListener {
 	
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		// TODO Auto-generated method stub
+		JFileChooser fc = new JFileChooser();
+		int result = fc.showOpenDialog(this);
+		if (result == JFileChooser.APPROVE_OPTION) {
+			File selectedFile = fc.getSelectedFile();
+			
+			try {
+				
+				RegulatoryNetwork network = new RegulatoryNetwork();
+		        // Load a yED GraphML file into the network
+		        network.loadYEdFile(currentFile);
+				
+				D2DMapping mapping = D2DMappingFileInteractor.getD2DMapping(mappingFile.toString());
+				ExternalStimuliFileCreator.createFile(selectedFile.toString(), d2dFile.toString(), mapping, network);
+				
+			} catch (Exception ex) {
+				ex.printStackTrace();
+			}
+			
+		}
 
 	}
 	
@@ -74,8 +106,7 @@ public class D2DExternalStimuliFrame extends JFrame implements ActionListener {
 		loadD2DFileBtn.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent arg0) {
-                // Exceptions are caught by the loadFile() method
-                JFileChooser filechooser = new JFileChooser();
+               JFileChooser filechooser = new JFileChooser();
 
                 // Remove standard filters (JFileChooser is not completely adapted to the current locale)
                 for (FileFilter filter : filechooser.getChoosableFileFilters()) {
@@ -116,7 +147,6 @@ public class D2DExternalStimuliFrame extends JFrame implements ActionListener {
 		loadMappingFileBtn.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent arg0) {
-                // Exceptions are caught by the loadFile() method
                 JFileChooser filechooser = new JFileChooser();
 
                 // Remove standard filters (JFileChooser is not completely adapted to the current locale)
@@ -152,6 +182,13 @@ public class D2DExternalStimuliFrame extends JFrame implements ActionListener {
 		mappingF.setPreferredSize(new Dimension(300, 20));
 		mappingF.setEditable(false);
 		toolbar.add(mappingF,new GridBagConstraints(1,1,3,1,1.0,1.0,GridBagConstraints.NORTHWEST,GridBagConstraints.NONE,new Insets(0,0,0,0),0,0));
+
+		
+		JButton generateScriptBtn = new JButton("Generate");
+		generateScriptBtn.addActionListener(this);
+		generateScriptBtn.setIcon(new ImageIcon("images" + File.separator + "chart16.png"));
+		generateScriptBtn.setForeground(Color.MAGENTA.darker());
+		toolbar.add(generateScriptBtn, new GridBagConstraints(10,2,1,1,1.0,1.0,GridBagConstraints.SOUTHEAST,GridBagConstraints.NONE,new Insets(0,0,0,0),0,0));
 
 		
 		return toolbar;

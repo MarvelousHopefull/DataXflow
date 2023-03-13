@@ -11,6 +11,7 @@ import jimena.binarybf.BinaryBooleanFunction;
 import jimena.binarybf.actinhibitf.ActivatorInhibitorFunction;
 import jimena.binaryrn.NetworkNode;
 import jimena.binaryrn.RegulatoryNetwork;
+import jimena.weightsCalculator.D2DMapping;
 
 /**
  * Used for creating the main.m file for the External Stimuli. Can only be used together with D2D, as some here needed configuration are provided by D2D.
@@ -30,7 +31,7 @@ public class ExternalStimuliFileCreator {
 	 * @param constantNodes The Nodes that have a constant value.
 	 * @throws Exception
 	 */
-	public static void createFile(String path, String parametersPath, D2DMapping mapping, RegulatoryNetwork network, String[] constanNodes, double finalTime) throws Exception {
+	public static void createFile(String path, String parametersPath, D2DMapping mapping, RegulatoryNetwork network) throws Exception {
 		if (!path.endsWith("_main.m")) {
 			path = path +"_main.m";
 		}
@@ -39,11 +40,14 @@ public class ExternalStimuliFileCreator {
 			file.delete();
 		}
 		
+		double finalTime = mapping.finalTime();
+		String[] constantNodes = mapping.constNodes();
+		
 		String text = getTextHeader();
 		text += getParameters(parametersPath, mapping.parameterMapping());
 		text += getA();
 		text += getOCP(parametersPath, mapping.nodeMapping(), mapping.regualtorMapping(), finalTime);
-		text += getODEs(network, mapping, constanNodes);
+		text += getODEs(network, mapping, constantNodes);
 		text += getTextTail();
 		BufferedWriter fw = new BufferedWriter(new FileWriter(path));
 		

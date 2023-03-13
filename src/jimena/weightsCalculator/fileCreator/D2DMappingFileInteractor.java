@@ -7,14 +7,18 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.util.ArrayList;
 
+import jimena.weightsCalculator.D2DMapping;
+
 public class D2DMappingFileInteractor {
 	
+	//text that shows up in the file, edit it here or problems with reading the file can occur
 	static String nodeMappingStart = "Mapping of Nodes";
 	static String nodeMappingColumnNames = "Node-Alias	Node-Name	Node-Number";
 	static String regulatorMappingStart = "Mapping of Regulated Nodes";
 	static String regulatorMappingColumnNames = "Regulated-Alias	Node-Name	up or down	delta-Alias";
 	static String parameterMappingStart = "Mapping of Parameters";
 	static String parameterMappingColumnNames = "Parameter-Alias	Node-Number	i'te Connection(or -1)	Parameter-Type	Source-Node-Alias(or Parameter-Type)	Source-Node-Number(or 0)";
+	static String constNodesStart = "List of Nodes that are constant";
 	static String finalTimeStart = "The final Time";
 	
 	public static D2DMapping getD2DMapping(String path) throws Exception{
@@ -29,6 +33,7 @@ public class D2DMappingFileInteractor {
 		String[][] nodeMapping;
 		String[][] regulatorMapping;
 		String[][] parameterMapping;
+		String[] constNodes;
 		double finalTime;
 		
 		BufferedReader reader = new BufferedReader(new FileReader(path));
@@ -149,6 +154,40 @@ public class D2DMappingFileInteractor {
 			}
 		}
 		
+		//Constant Nodes
+		//empty line(s)
+		while(line != null && line.isEmpty()) {
+			line = reader.readLine();
+		}
+		//text lines
+		while(line != null && line.startsWith(constNodesStart)) {
+			line = reader.readLine();
+		}	
+		amount = 0;
+		aLine = new ArrayList<String>();
+		while(line != null) {
+			if(!line.startsWith("node:")) {
+				break;
+			}
+			String[] parts = line.split("\\	");
+			if(parts.length < 2) {
+				throw new Exception("Some lines in the _D2DMapping.tsv File seam to be missing Information!");
+			}
+			aLine.add(parts[1]);
+			amount++;
+			
+			line = reader.readLine();
+		}
+		if(amount > 0) {
+			constNodes = new String[amount];
+			for(int i = 0; i < amount; i++) {
+				constNodes[i] = aLine.get(i);
+			}
+		}
+		else {
+			constNodes = null;
+		}
+		
 		//Final Time
 		//empty line(s)
 		while(line != null && line.isEmpty()) {
@@ -160,7 +199,7 @@ public class D2DMappingFileInteractor {
 		}
 		finalTime = Double.parseDouble(line);
 		
-		return new D2DMapping(nodeMapping,regulatorMapping,parameterMapping,finalTime);
+		return new D2DMapping(nodeMapping,regulatorMapping,parameterMapping,constNodes,finalTime);
 	}
 	
 	public static String createD2DMappingFile(String path, D2DMapping mapping) throws Exception {
@@ -175,6 +214,7 @@ public class D2DMappingFileInteractor {
 		String[][] nodeMapping = mapping.nodeMapping();
 		String[][] regulatorMapping = mapping.regualtorMapping();
 		String[][] parameterMapping = mapping.parameterMapping();
+		String[] constNodes = mapping.constNodes();
 		double finalTime = mapping.finalTime();
 		
 		String text = "";
@@ -195,13 +235,12 @@ public class D2DMappingFileInteractor {
 		text += regulatorMappingColumnNames + "\r\n";
 		if(regulatorMapping != null) {
 			for(int i = 0; i<regulatorMapping.length; i++) {
-			for(int j = 0; j<regulatorMapping[i].length; j++) {
-				text += regulatorMapping[i][j] + "	";
-			}
-			text += "\r\n";
-		}	
+				for(int j = 0; j<regulatorMapping[i].length; j++) {
+					text += regulatorMapping[i][j] + "	";
+				}
+				text += "\r\n";
+			}	
 		}
-		
 		text += "\r\n";
 		
 		//Parameter Mapping
@@ -214,6 +253,16 @@ public class D2DMappingFileInteractor {
 			text += "\r\n";
 		}
 		text += "\r\n";
+		
+		//Constant Nodes
+		text += constNodesStart + "\r\n";
+		if(constNodes != null) {
+			for(int i = 0; i<constNodes.length; i++) {
+				text += "node:" + "	" + constNodes[i];
+				text += "\r\n";
+			}
+		}
+		text += "\r\n";		
 		
 		//Final Time
 		text += finalTimeStart + "\r\n";

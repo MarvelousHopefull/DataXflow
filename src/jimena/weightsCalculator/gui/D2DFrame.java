@@ -1,4 +1,4 @@
-package jimena.weightsCalculator.fileCreator;
+package jimena.weightsCalculator.gui;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -32,6 +32,9 @@ import jimena.binaryrn.NetworkNode;
 import jimena.binaryrn.RegulatoryNetwork;
 import jimena.gui.main.Main;
 import jimena.solver.NodeTableModel;
+import jimena.weightsCalculator.D2DMapping;
+import jimena.weightsCalculator.fileCreator.D2DMappingFileInteractor;
+import jimena.weightsCalculator.fileCreator.DefCreator;
 
 //The GUI is in some parts mostly copy&paste from SolverFrame. (Thanks Chunguang Liang!) 
 /**
@@ -120,8 +123,11 @@ public class D2DFrame extends JFrame implements ActionListener{
 		getContentPane().setLayout(new BorderLayout());
 	}
 	
-	public D2DFrame(File currentFile) {
+	public D2DFrame(File currentFile) throws Exception {
 		this();
+		if(currentFile == null) {
+			throw new Exception("No RN File selected!");
+		}
 		this.currentFile = currentFile;
 		RegulatoryNetwork network = new RegulatoryNetwork();
         // Load a yED GraphML file into the network
@@ -362,8 +368,8 @@ public class D2DFrame extends JFrame implements ActionListener{
 		        // Load a yED GraphML file into the network
 		        network.loadYEdFile(currentFile);
 				
-				DefCreator.createFiles(selectedFile.toString(), network, dataNodes, upRNodes, downRNodes, initValues, constantNodes, fTime);
-				
+				D2DMapping mapping = DefCreator.createFiles(selectedFile.toString(), network, dataNodes, upRNodes, downRNodes, initValues, constantNodes, fTime);
+				D2DMappingFileInteractor.createD2DMappingFile(selectedFile.toString(), mapping);
 			} catch (Exception ex) {
 				ex.printStackTrace();
 			}

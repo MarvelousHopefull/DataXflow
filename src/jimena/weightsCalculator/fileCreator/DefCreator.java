@@ -13,6 +13,7 @@ import jimena.binarybf.BinaryBooleanFunction;
 import jimena.binarybf.actinhibitf.ActivatorInhibitorFunction;
 import jimena.binaryrn.NetworkNode;
 import jimena.binaryrn.RegulatoryNetwork;
+import jimena.weightsCalculator.D2DMapping;
 
 import java.io.File;
 
@@ -145,7 +146,7 @@ public class DefCreator {
 		}
 		DataNodeNamesFileCreator.createNodeNamesFile(path, dataNodes);
 		
-		return new D2DMapping(mapping, rMapping, kMapping, finalTime);
+		return new D2DMapping(mapping, rMapping, kMapping, constantNodes, finalTime);
 	}
 	
 	/**
@@ -728,7 +729,7 @@ public class DefCreator {
 			text = "c";
 			D2DMapping recreatedMapping = D2DMappingFileInteractor.getD2DMapping(mappingFile);
 			text = "c1";
-			ExternalStimuliFileCreator.createFile(path, parameterPath, recreatedMapping, network, constantNodes, 10);
+			ExternalStimuliFileCreator.createFile(path, parameterPath, recreatedMapping, network);
 			text = "d";
 		}
 		catch(Exception e) {
