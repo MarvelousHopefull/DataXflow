@@ -8,7 +8,11 @@ import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Vector;
 
+import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -16,10 +20,15 @@ import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.JToolBar;
+import javax.swing.border.Border;
 import javax.swing.filechooser.FileFilter;
+import javax.swing.table.TableRowSorter;
 
+import jimena.binaryrn.NetworkNode;
 import jimena.binaryrn.RegulatoryNetwork;
 import jimena.gui.main.Main;
 import jimena.weightsCalculator.D2DMapping;
@@ -36,6 +45,8 @@ public class D2DExternalStimuliFrame extends JFrame implements ActionListener {
 
 	private File currentFile = null;
 	
+	private JTable nodesTable;
+	NodesOfInterestTableModel model;
 	
 	private File d2dFile = null;
 	private String d2dFileName = "no File selected";
@@ -63,10 +74,46 @@ public class D2DExternalStimuliFrame extends JFrame implements ActionListener {
 		}
 		this.currentFile = currentFile;
 		
+		RegulatoryNetwork network = new RegulatoryNetwork();
+        // Load a yED GraphML file into the network
+        network.loadYEdFile(currentFile);
+		NetworkNode[] nodes = network.getNetworkNodes();
+		//System.out.println(nodes.length);
+		List<NodeOfInterest> nodesOfInterest = new ArrayList<NodeOfInterest>();
+		for (int i = 0; i < nodes.length; i++) {
+			nodesOfInterest.add(NodeOfInterest.createNode((i+1), nodes[i].getName()));
+		}
+		model = new NodesOfInterestTableModel(nodesOfInterest);
+		
 		JPanel p = new JPanel();
 		p.setLayout(new BoxLayout(p, BoxLayout.Y_AXIS));
 		p.setOpaque(true);
 		
+		// Node of Interest Selection
+		nodesTable = new JTable(model);
+
+		JScrollPane nodesSP = new JScrollPane(nodesTable);
+		nodesSP.setPreferredSize(new Dimension(200, 310));
+		JToolBar nodesTB = new JToolBar("Nodes Of Interest:", JToolBar.HORIZONTAL);
+		JLabel nodesL = new JLabel("Nodes");
+		nodesL.setForeground(Color.RED.darker());
+		nodesTB.add(nodesL);
+		JButton unSelAllBtn1 = new JButton("UnselectAll");
+		unSelAllBtn1.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				nodesTable.clearSelection();
+			}
+		});
+		nodesTB.add(unSelAllBtn1);
+		JPanel nodesP = new JPanel();
+		nodesP.setLayout(new BorderLayout());
+		nodesP.add(nodesTB, BorderLayout.NORTH);
+		nodesP.add(nodesSP, BorderLayout.CENTER);
+		
+		Border nodesBorder = BorderFactory.createTitledBorder("Nodes of Interest (press ctl to select)");
+		nodesP.setBorder(nodesBorder);
+		
+		p.add(nodesP);
 		
 		p.add(createToolBar());
 		this.getContentPane().add(BorderLayout.CENTER, p);
@@ -76,6 +123,14 @@ public class D2DExternalStimuliFrame extends JFrame implements ActionListener {
 	
 	@Override
 	public void actionPerformed(ActionEvent e) {
+		List<NodeOfInterest> nodesList = new ArrayList<NodeOfInterest>();
+		for (int i = 0; i < model.getRowCount(); i++) {
+			if(model.isNodeOfInterest(i)) {
+				nodesList.add(model.getNode(i));
+			}		
+		}
+		
+		
 		JFileChooser fc = new JFileChooser();
 		int result = fc.showOpenDialog(this);
 		if (result == JFileChooser.APPROVE_OPTION) {
@@ -86,9 +141,8 @@ public class D2DExternalStimuliFrame extends JFrame implements ActionListener {
 				RegulatoryNetwork network = new RegulatoryNetwork();
 		        // Load a yED GraphML file into the network
 		        network.loadYEdFile(currentFile);
-				
 				D2DMapping mapping = D2DMappingFileInteractor.getD2DMapping(mappingFile.toString());
-				ExternalStimuliFileCreator.createFile(selectedFile.toString(), d2dFile.toString(), mapping, network);
+				ExternalStimuliFileCreator.createFile(selectedFile.toString(), d2dFile.toString(), mapping, network, nodesList);
 				
 			} catch (Exception ex) {
 				ex.printStackTrace();

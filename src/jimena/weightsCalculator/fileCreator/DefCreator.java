@@ -729,7 +729,7 @@ public class DefCreator {
 			text = "c";
 			D2DMapping recreatedMapping = D2DMappingFileInteractor.getD2DMapping(mappingFile);
 			text = "c1";
-			ExternalStimuliFileCreator.createFile(path, parameterPath, recreatedMapping, network);
+			ExternalStimuliFileCreator.createFile(path, parameterPath, recreatedMapping, network,null);
 			text = "d";
 		}
 		catch(Exception e) {

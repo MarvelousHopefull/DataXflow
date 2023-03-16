@@ -153,9 +153,6 @@ public class D2DFrame extends JFrame implements ActionListener{
 		
 		// Regulation Positive
 		posReg = new JTable(nodeM);
-		TableRowSorter sorterP = new TableRowSorter(nodeM);		
-		posReg.setRowSorter(sorterP);
-		posReg.getRowSorter().toggleSortOrder(0);
 
 		JScrollPane posCtlSP = new JScrollPane(posReg);
 		posCtlSP.setPreferredSize(new Dimension(200, 310));
@@ -177,9 +174,6 @@ public class D2DFrame extends JFrame implements ActionListener{
 
 		// Regulation Negative
 		negReg = new JTable(nodeM);
-		TableRowSorter sorterN = new TableRowSorter(nodeM);		
-		negReg.setRowSorter(sorterN);
-		negReg.getRowSorter().toggleSortOrder(0);
 		
 		JScrollPane negCtlSP = new JScrollPane(negReg);
 		negCtlSP.setPreferredSize(new Dimension(200, 310));
@@ -201,9 +195,9 @@ public class D2DFrame extends JFrame implements ActionListener{
 		
 		// Experiment Nodes
 		eDataNodes = new JTable(nodeM);
-		TableRowSorter sorterE = new TableRowSorter(nodeM);		
+		/*TableRowSorter sorterE = new TableRowSorter(nodeM);		
 		eDataNodes.setRowSorter(sorterE);
-		eDataNodes.getRowSorter().toggleSortOrder(0);
+		eDataNodes.getRowSorter().toggleSortOrder(0);*/
 		
 		JScrollPane dataNodesSP = new JScrollPane(eDataNodes);
 		dataNodesSP.setPreferredSize(new Dimension(200, 310));
@@ -228,9 +222,6 @@ public class D2DFrame extends JFrame implements ActionListener{
 		
 		// Constant Nodes
 		constantNodes = new JTable(nodeM);
-		TableRowSorter sorterC = new TableRowSorter(nodeM);		
-		constantNodes.setRowSorter(sorterC);
-		constantNodes.getRowSorter().toggleSortOrder(0);
 		
 		JScrollPane constantNodesSP = new JScrollPane(constantNodes);
 		constantNodesSP.setPreferredSize(new Dimension(200, 310));

@@ -6,12 +6,14 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.List;
 
 import jimena.binarybf.BinaryBooleanFunction;
 import jimena.binarybf.actinhibitf.ActivatorInhibitorFunction;
 import jimena.binaryrn.NetworkNode;
 import jimena.binaryrn.RegulatoryNetwork;
 import jimena.weightsCalculator.D2DMapping;
+import jimena.weightsCalculator.gui.NodeOfInterest;
 
 /**
  * Used for creating the main.m file for the External Stimuli. Can only be used together with D2D, as some here needed configuration are provided by D2D.
@@ -31,7 +33,7 @@ public class ExternalStimuliFileCreator {
 	 * @param constantNodes The Nodes that have a constant value.
 	 * @throws Exception
 	 */
-	public static void createFile(String path, String parametersPath, D2DMapping mapping, RegulatoryNetwork network) throws Exception {
+	public static void createFile(String path, String parametersPath, D2DMapping mapping, RegulatoryNetwork network, List<NodeOfInterest> nodesOfInterestList) throws Exception {
 		if (!path.endsWith("_main.m")) {
 			path = path +"_main.m";
 		}
@@ -45,7 +47,7 @@ public class ExternalStimuliFileCreator {
 		
 		String text = getTextHeader();
 		text += getParameters(parametersPath, mapping.parameterMapping());
-		text += getA();
+		text += getA(nodesOfInterestList);
 		text += getOCP(parametersPath, mapping.nodeMapping(), mapping.regualtorMapping(), finalTime);
 		text += getODEs(network, mapping, constantNodes);
 		text += getTextTail();
@@ -148,9 +150,19 @@ public class ExternalStimuliFileCreator {
 		return text;
 	}
 	
-	private static String getA() {
+	private static String getA(List<NodeOfInterest> nodesOfInterestList) {
 		String text = "";
 		String nodeValueText = "";
+		boolean firstElement = true;
+		for(NodeOfInterest node : nodesOfInterestList) {
+			if(!firstElement) {
+				nodeValueText += ";";
+			}
+			else {
+				firstElement = false;
+			}
+			nodeValueText += node.getNodeNumber() + "," + node.getNodeWeight() + "," + node.getTargetedValue();
+		}
 		text += "A=[" + nodeValueText + "];";
 		text += "           %Matrix where each row is for a node of interest, first column is for its index which it has in the network, second column is its desired constant activity level, third column is its corresponding weight in the target functional\r\n";
 		text += "\r\n";
