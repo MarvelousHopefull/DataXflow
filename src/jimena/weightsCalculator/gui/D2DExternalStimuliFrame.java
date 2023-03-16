@@ -91,26 +91,16 @@ public class D2DExternalStimuliFrame extends JFrame implements ActionListener {
 		
 		// Node of Interest Selection
 		nodesTable = new JTable(model);
+		nodesTable.setCellSelectionEnabled(false);
 
 		JScrollPane nodesSP = new JScrollPane(nodesTable);
 		nodesSP.setPreferredSize(new Dimension(200, 310));
-		JToolBar nodesTB = new JToolBar("Nodes Of Interest:", JToolBar.HORIZONTAL);
-		JLabel nodesL = new JLabel("Nodes");
-		nodesL.setForeground(Color.RED.darker());
-		nodesTB.add(nodesL);
-		JButton unSelAllBtn1 = new JButton("UnselectAll");
-		unSelAllBtn1.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				nodesTable.clearSelection();
-			}
-		});
-		nodesTB.add(unSelAllBtn1);
+		
 		JPanel nodesP = new JPanel();
 		nodesP.setLayout(new BorderLayout());
-		nodesP.add(nodesTB, BorderLayout.NORTH);
 		nodesP.add(nodesSP, BorderLayout.CENTER);
 		
-		Border nodesBorder = BorderFactory.createTitledBorder("Nodes of Interest (press ctl to select)");
+		Border nodesBorder = BorderFactory.createTitledBorder("Nodes of Interest");
 		nodesP.setBorder(nodesBorder);
 		
 		p.add(nodesP);
