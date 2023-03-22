@@ -132,6 +132,7 @@ public class D2DExternalStimuliFrame extends JFrame implements ActionListener {
 		        // Load a yED GraphML file into the network
 		        network.loadYEdFile(currentFile);
 				D2DMapping mapping = D2DMappingFileInteractor.getD2DMapping(mappingFile.toString());
+				//... change mapping ...
 				ExternalStimuliFileCreator.createFile(selectedFile.toString(), d2dFile.toString(), mapping, network, nodesList);
 				
 			} catch (Exception ex) {

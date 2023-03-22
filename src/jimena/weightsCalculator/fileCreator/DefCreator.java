@@ -107,31 +107,6 @@ public class DefCreator {
 					rMapping[j][k] = rMList.get(j).get(k);
 				}
 			}
-			
-			//rMapping = rMList.toArray(rMapping);
-			
-			/*rMapping = new String[upL + downL][4];
-			int i = 0;
-			if(upRNodes != null) {
-				for(int j = 0; j < upRNodes.length; j++) {
-					rMapping[i][0] = "u" + (i+1);
-					rMapping[i][1] = upRNodes[j];
-					rMapping[i][2] = "u";
-					rMapping[i][3] = "delta_" + (i+1);
-					i++;
-				}
-			}
-			if(downRNodes != null) {
-				for(int j = 0; j < downRNodes.length; j++) {
-					rMapping[i][0] = "u" + (i+1);
-					rMapping[i][1] = downRNodes[j];
-					rMapping[i][2] = "d";
-					rMapping[i][3] = "delta_" + (i+1);
-					i++;
-				}
-			}*/
-			
-			
 		}
 		String[][] kMapping = getKMapping(network, mapping, cNList);
 		
@@ -417,17 +392,7 @@ public class DefCreator {
 	 * @return The Mapped Array where: [i][0] := name of the i'te variable, [i][1] := the node number, [i][2] := -1 for h&gamma and the position of the input node for alpha&beta.
 	 */
 	private static String[][] getKMapping(RegulatoryNetwork network, String[][] mapping, List<String> constNodes){
-		//int length = 0;
 		NetworkNode[] nodes = network.getNetworkNodes();
-		BinaryBooleanFunction bbf;
-		
-		/*for(int i = 0; i < nodes.length; i++) {
-			bbf = nodes[i].getFunction();
-			length += (1 + bbf.getArity());
-			if(bbf.getArity() > 0) {
-				length += 1;
-			}
-		}*/
 		
 		String[][] kMapping = null;// = new String[length][5];
 		ArrayList<ArrayList<String>> kMList = new ArrayList<ArrayList<String>>();
