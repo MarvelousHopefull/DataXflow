@@ -6,6 +6,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import jimena.binarybf.BinaryBooleanFunction;
@@ -23,6 +24,8 @@ import jimena.weightsCalculator.gui.NodeOfInterest;
  * */
 public class ExternalStimuliFileCreator {
 
+	private static double delta = 1;
+	
 	/**
 	 * Creates the file for the External Stimuli.
 	 * 
@@ -46,7 +49,7 @@ public class ExternalStimuliFileCreator {
 		String[] constantNodes = mapping.constNodes();
 		
 		String text = getTextHeader();
-		text += getParameters(parametersPath, mapping.parameterMapping());
+		text += getParameters(parametersPath, mapping.parameterMapping(), mapping.regualtorMapping());
 		text += getA(nodesOfInterestList);
 		text += getOCP(parametersPath, mapping.nodeMapping(), mapping.regualtorMapping(), finalTime);
 		text += getODEs(network, mapping, constantNodes);
@@ -112,11 +115,13 @@ public class ExternalStimuliFileCreator {
 		return text;
 	}
 	
-	private static String getParameters(String parametersPath, String[][] parameterMapping) throws Exception {
+	private static String getParameters(String parametersPath, String[][] parameterMapping, String[][] regulatorMapping) throws Exception {
 		File file = new File(parametersPath);
 		if(!file.exists()) { 
 			throw new Exception("Parameter File doesn't exist!");
 		}
+		
+		ArrayList<String> deltasList = new ArrayList<String>();
 		String text = "";
 		String parametersText = "";
 		BufferedReader reader = new BufferedReader(new FileReader(parametersPath));
@@ -137,6 +142,9 @@ public class ExternalStimuliFileCreator {
 					parameterValue = parts[5];
 					parametersText += parameterName + "=" + parameterValue + "\r\n";
 					parameterLinesAmount++;
+					if(line.startsWith("delta_")) {
+						deltasList.add(parts[0]);
+					}
 				}
 				
 			}
@@ -144,6 +152,13 @@ public class ExternalStimuliFileCreator {
 		}
 		if(parameterLinesAmount != parameterMapping.length) {
 			//throw new Exception("There seem to be an unequal amount of parameters in the referenced topology and the File provided by D2D!");
+		}
+		for(int i = 0; i < regulatorMapping.length; i++) {
+			if(!deltasList.contains(regulatorMapping[i][3])) {
+				parameterName = regulatorMapping[i][3];
+				parameterValue = "" + delta;
+				parametersText += parameterName + "=" + parameterValue + "\r\n";
+			}
 		}
 		parametersText += "\r\n";
 		text += parametersText;

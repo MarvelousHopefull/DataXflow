@@ -21,6 +21,7 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JSplitPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.JToolBar;
@@ -31,6 +32,7 @@ import javax.swing.table.TableRowSorter;
 import jimena.binaryrn.NetworkNode;
 import jimena.binaryrn.RegulatoryNetwork;
 import jimena.gui.main.Main;
+import jimena.solver.NodeTableModel;
 import jimena.weightsCalculator.D2DMapping;
 import jimena.weightsCalculator.fileCreator.D2DMappingFileInteractor;
 import jimena.weightsCalculator.fileCreator.ExternalStimuliFileCreator;
@@ -41,12 +43,15 @@ public class D2DExternalStimuliFrame extends JFrame implements ActionListener {
 	
 	//Frame Size
 	private static int width = 800;	//x
-	private static int hight = 500;	//y
+	private static int hight = 450;	//y
 
 	private File currentFile = null;
 	
 	private JTable nodesTable;
-	NodesOfInterestTableModel model;
+	private NodesOfInterestTableModel model;
+	
+	private JTable posReg;
+	private JTable negReg;
 	
 	private File d2dFile = null;
 	private String d2dFileName = "no File selected";
@@ -94,7 +99,7 @@ public class D2DExternalStimuliFrame extends JFrame implements ActionListener {
 		nodesTable.setCellSelectionEnabled(false);
 
 		JScrollPane nodesSP = new JScrollPane(nodesTable);
-		nodesSP.setPreferredSize(new Dimension(200, 310));
+		nodesSP.setPreferredSize(new Dimension(300, 310));
 		
 		JPanel nodesP = new JPanel();
 		nodesP.setLayout(new BorderLayout());
@@ -103,7 +108,81 @@ public class D2DExternalStimuliFrame extends JFrame implements ActionListener {
 		Border nodesBorder = BorderFactory.createTitledBorder("Nodes of Interest");
 		nodesP.setBorder(nodesBorder);
 		
-		p.add(nodesP);
+		//Regulation model
+		Vector<String> colNames = new Vector<String>();
+		colNames.add("Node");
+		Vector<Vector<Object>> nodesV = new Vector<Vector<Object>>();
+		for (NetworkNode i : nodes) {
+			Vector<Object> r = new Vector<Object>();
+			r.add(i.getName());
+			nodesV.add(r);
+		}
+
+		NodeTableModel nodeM = new NodeTableModel(nodesV, colNames);
+		
+		// Regulation Positive
+		posReg = new JTable(nodeM);
+
+		JScrollPane posCtlSP = new JScrollPane(posReg);
+		posCtlSP.setPreferredSize(new Dimension(200, 310));
+		JToolBar posCtlTB = new JToolBar("Positive regulation", JToolBar.HORIZONTAL);
+		JLabel posCtlLbl = new JLabel("Positive regulation");
+		posCtlLbl.setForeground(Color.RED.darker());
+		posCtlTB.add(posCtlLbl);
+		JButton unSelAllBtn1 = new JButton("UnselectAll");
+		unSelAllBtn1.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				posReg.clearSelection();
+			}
+		});
+		posCtlTB.add(unSelAllBtn1);
+		JPanel posCtlP = new JPanel();
+		posCtlP.setLayout(new BorderLayout());
+		posCtlP.add(posCtlTB, BorderLayout.NORTH);
+		posCtlP.add(posCtlSP, BorderLayout.CENTER);		
+		
+		// Regulation Negative
+		negReg = new JTable(nodeM);
+		
+		JScrollPane negCtlSP = new JScrollPane(negReg);
+		negCtlSP.setPreferredSize(new Dimension(200, 310));
+		JToolBar negCtlTB = new JToolBar("Negative regulation", JToolBar.HORIZONTAL);
+		JLabel negCtlLbl = new JLabel("Negative regulation");
+		negCtlLbl.setForeground(Color.BLUE.darker());
+		negCtlTB.add(negCtlLbl);
+		JButton unSelAllBtn2 = new JButton("UnselectAll");
+		unSelAllBtn2.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				negReg.clearSelection();
+			}
+		});
+		negCtlTB.add(unSelAllBtn2);
+		JPanel negCtlP = new JPanel();
+		negCtlP.setLayout(new BorderLayout());
+		negCtlP.add(negCtlTB, BorderLayout.NORTH);
+		negCtlP.add(negCtlSP, BorderLayout.CENTER);
+		
+		// the panels, for separating the different selection sections
+		// the regulation panels
+		JSplitPane regP = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
+		regP.add(posCtlP, JSplitPane.LEFT);
+		regP.add(negCtlP, JSplitPane.RIGHT);
+		regP.setDividerLocation(0.5);
+		JPanel regVP = new JPanel();
+		regVP.add(regP, BorderLayout.CENTER);
+		
+		Border regulationBorder = BorderFactory.createTitledBorder("Regulations (press ctl to select)");
+		regVP.setBorder(regulationBorder);
+		
+		//separating interest panels and dataNodes panel
+		JSplitPane interestRegP = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
+		interestRegP.add(nodesP, JSplitPane.LEFT);
+		interestRegP.add(regVP, JSplitPane.RIGHT);
+		interestRegP.setDividerLocation(0.5);
+		JPanel interestRegVP = new JPanel();
+		interestRegVP.add(interestRegP, BorderLayout.CENTER);
+		
+		p.add(interestRegVP);
 		
 		p.add(createToolBar());
 		this.getContentPane().add(BorderLayout.CENTER, p);
@@ -119,6 +198,11 @@ public class D2DExternalStimuliFrame extends JFrame implements ActionListener {
 				nodesList.add(model.getNode(i));
 			}		
 		}
+		ArrayList<String> upRNList = new ArrayList<String>();
+		for (int i1 : posReg.getSelectedRows()) upRNList.add(posReg.getValueAt(i1, 0).toString());		
+		ArrayList<String> downRNList = new ArrayList<String>();
+		for (int i1 : negReg.getSelectedRows()) downRNList.add(negReg.getValueAt(i1, 0).toString());
+		
 		
 		
 		JFileChooser fc = new JFileChooser();
@@ -127,12 +211,39 @@ public class D2DExternalStimuliFrame extends JFrame implements ActionListener {
 			File selectedFile = fc.getSelectedFile();
 			
 			try {
+		        String[] upRNodes = null; 
+		        if(upRNList != null) {
+		        	upRNodes = new String[0];
+		        	upRNodes = upRNList.toArray(upRNodes);
+		        }
+		        String[] downRNodes = null;
+				if(downRNList != null) {
+					downRNodes = new String[0];
+					downRNodes = downRNList.toArray(downRNodes);
+				}
 				
 				RegulatoryNetwork network = new RegulatoryNetwork();
 		        // Load a yED GraphML file into the network
 		        network.loadYEdFile(currentFile);
 				D2DMapping mapping = D2DMappingFileInteractor.getD2DMapping(mappingFile.toString());
-				//... change mapping ...
+				//change mapping
+				if(upRNodes!=null) {
+					String[][] upNodes = new String[upRNodes.length][2];
+					for(int i = 0; i < upNodes.length; i++) {
+						upNodes[i][0] = upRNodes[i];
+						upNodes[i][1] = "u";
+					}
+					mapping.addRegulatorMapping(upNodes);
+				}
+				if(downRNodes!=null) {
+					String[][] downNodes = new String[downRNodes.length][2];
+					for(int i = 0; i < downNodes.length; i++) {
+						downNodes[i][0] = downRNodes[i];
+						downNodes[i][1] = "d";
+					}
+					mapping.addRegulatorMapping(downNodes);
+				}    
+				
 				ExternalStimuliFileCreator.createFile(selectedFile.toString(), d2dFile.toString(), mapping, network, nodesList);
 				
 			} catch (Exception ex) {

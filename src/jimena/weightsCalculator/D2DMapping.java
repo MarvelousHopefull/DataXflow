@@ -117,7 +117,6 @@ public class D2DMapping {
 				u++;
 			}
 		}
-		regulatorMapping = mapping.toArray(regulatorMapping);
 		regulatorMapping = new String[mapping.size()][4];
 		for(int i = 0; i < mapping.size(); i++) {
 			regulatorMapping[i][0] = mapping.get(i).get(0);

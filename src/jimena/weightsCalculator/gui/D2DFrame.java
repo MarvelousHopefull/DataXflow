@@ -156,8 +156,6 @@ public class D2DFrame extends JFrame implements ActionListener{
 
 		JScrollPane posCtlSP = new JScrollPane(posReg);
 		posCtlSP.setPreferredSize(new Dimension(200, 310));
-		JPanel posCtlP = new JPanel();
-		posCtlP.setLayout(new BorderLayout());
 		JToolBar posCtlTB = new JToolBar("Positive regulation", JToolBar.HORIZONTAL);
 		JLabel posCtlLbl = new JLabel("Positive regulation");
 		posCtlLbl.setForeground(Color.RED.darker());
@@ -169,6 +167,8 @@ public class D2DFrame extends JFrame implements ActionListener{
 			}
 		});
 		posCtlTB.add(unSelAllBtn1);
+		JPanel posCtlP = new JPanel();
+		posCtlP.setLayout(new BorderLayout());
 		posCtlP.add(posCtlTB, BorderLayout.NORTH);
 		posCtlP.add(posCtlSP, BorderLayout.CENTER);
 
@@ -195,9 +195,6 @@ public class D2DFrame extends JFrame implements ActionListener{
 		
 		// Experiment Nodes
 		eDataNodes = new JTable(nodeM);
-		/*TableRowSorter sorterE = new TableRowSorter(nodeM);		
-		eDataNodes.setRowSorter(sorterE);
-		eDataNodes.getRowSorter().toggleSortOrder(0);*/
 		
 		JScrollPane dataNodesSP = new JScrollPane(eDataNodes);
 		dataNodesSP.setPreferredSize(new Dimension(200, 310));
@@ -316,12 +313,8 @@ public class D2DFrame extends JFrame implements ActionListener{
 		int result = fc.showOpenDialog(this);
 		if (result == JFileChooser.APPROVE_OPTION) {
 			File selectedFile = fc.getSelectedFile();
-			/*if (!selectedFile.toString().endsWith(".def")) {
-				selectedFile=new File(selectedFile.toString()+".def");
-			}*/
-			
+
 			try {
-		        
 		        String[] upRNodes = null; 
 		        if(upRNList != null) {
 		        	upRNodes = new String[0];
