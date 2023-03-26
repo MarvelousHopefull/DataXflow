@@ -82,6 +82,7 @@ public class DefCreator {
 					rMNode.add(upRNodes[j]);
 					rMNode.add("u");
 					rMNode.add("delta_" + (i+1));
+					rMNode.add("true");
 					rMList.add(rMNode);
 					i++;
 					
@@ -97,13 +98,14 @@ public class DefCreator {
 					rMNode.add(downRNodes[j]);
 					rMNode.add("d");
 					rMNode.add("delta_" + (i+1));
+					rMNode.add("true");
 					rMList.add(rMNode);
 					i++;
 				}
 			}
-			rMapping = new String[i][4];
+			rMapping = new String[i][5];
 			for(int j = 0; j < i; j++) {
-				for(int k = 0; k < 4; k++) {
+				for(int k = 0; k < 5; k++) {
 					rMapping[j][k] = rMList.get(j).get(k);
 				}
 			}

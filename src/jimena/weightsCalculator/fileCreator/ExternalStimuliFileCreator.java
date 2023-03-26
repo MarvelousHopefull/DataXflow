@@ -14,7 +14,7 @@ import jimena.binarybf.actinhibitf.ActivatorInhibitorFunction;
 import jimena.binaryrn.NetworkNode;
 import jimena.binaryrn.RegulatoryNetwork;
 import jimena.weightsCalculator.D2DMapping;
-import jimena.weightsCalculator.gui.NodeOfInterest;
+import jimena.weightsCalculator.gui.TableModel.NodeOfInterest;
 
 /**
  * Used for creating the main.m file for the External Stimuli. Can only be used together with D2D, as some here needed configuration are provided by D2D.
@@ -138,13 +138,26 @@ public class ExternalStimuliFileCreator {
 				}
 				//all non x parameters
 				if(!line.startsWith("init_x")) {
+					if(line.startsWith("delta_")) {
+						int i;
+						for(i = 0; i < regulatorMapping.length; i++) {
+							if(regulatorMapping[i][3].equals(parts[0])) {
+								break;
+							}
+						}
+						if(i == regulatorMapping.length) {
+							throw new Exception("Some Parameter doesn't appear in the mappint!");
+						}
+						if(regulatorMapping[i][4].equals("false")) {
+							line = reader.readLine();
+							continue;
+						}
+						deltasList.add(parts[0]);
+					}
 					parameterName = parts[0];
 					parameterValue = parts[5];
 					parametersText += parameterName + "=" + parameterValue + "\r\n";
 					parameterLinesAmount++;
-					if(line.startsWith("delta_")) {
-						deltasList.add(parts[0]);
-					}
 				}
 				
 			}
@@ -154,7 +167,7 @@ public class ExternalStimuliFileCreator {
 			//throw new Exception("There seem to be an unequal amount of parameters in the referenced topology and the File provided by D2D!");
 		}
 		for(int i = 0; i < regulatorMapping.length; i++) {
-			if(!deltasList.contains(regulatorMapping[i][3])) {
+			if(!deltasList.contains(regulatorMapping[i][3]) && !regulatorMapping[i][4].equals("false")) {
 				parameterName = regulatorMapping[i][3];
 				parameterValue = "" + delta;
 				parametersText += parameterName + "=" + parameterValue + "\r\n";
@@ -373,6 +386,9 @@ public class ExternalStimuliFileCreator {
 				for(int j = 0; j <rMapping.length; j++) {
 					
 					if(rMapping[j][1].equals(nodes[i].getName())) {
+						if(rMapping[j][4].equals("false")) {
+							continue;
+						}
 						regulated = true;
 						rAlias = rMapping[j][0];
 						deltaAlias = rMapping[j][3];

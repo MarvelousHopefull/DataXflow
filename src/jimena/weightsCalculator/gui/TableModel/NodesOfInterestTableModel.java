@@ -1,4 +1,4 @@
-package jimena.weightsCalculator.gui;
+package jimena.weightsCalculator.gui.TableModel;
 
 import java.util.List;
 
@@ -9,12 +9,12 @@ public class NodesOfInterestTableModel extends AbstractTableModel {
 	private List<NodeOfInterest> list;
 	
 	private final String[] columnNames = new String[] {
-           "Name", "Weight", "Targeted Value"
+		"Name", "Weight", "Targeted Value"
     };
 	
 	private final Class[] columnClass = new Class[] {
-	        String.class, Double.class, Double.class
-	    };
+		String.class, Double.class, Double.class
+	};
 	
 	public NodesOfInterestTableModel(List<NodeOfInterest> list) {
 		this.list = list;

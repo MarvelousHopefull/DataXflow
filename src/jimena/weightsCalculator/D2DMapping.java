@@ -23,6 +23,7 @@ public class D2DMapping {
 	//[i][1] := Node-Name
 	//[i][2] := up or down (u|d)
 	//[i][3] := delta-Alias	(delta_1|delta_2|...)
+	//[i][4] := is Active (true|false)
 	private String[][] regulatorMapping;
 	
 	//mapping of the parameters (k := source node number, j := node number)
@@ -79,6 +80,20 @@ public class D2DMapping {
 		return this.finalTime;
 	}
 	
+	public void setActiveRegulatorMapping(String nodeName, String regulation, boolean active) {
+		for(int i = 0; i < regulatorMapping.length; i++) {
+			if(regulatorMapping[i][1].equals(nodeName) && regulatorMapping[i][2].equals(regulation)) {
+				if(active) {
+					regulatorMapping[i][4] = "true";
+				}
+				else {
+					regulatorMapping[i][4] = "false";
+				}
+				break;
+			}
+		}
+	}
+	
 	/**To add more u's (and delta's) to the mapping.
 	 * 
 	 * @param newUs The new up or down regulated nodes. [i][0] := Node-Name, [i][1] := up or down (u|d)
@@ -88,6 +103,7 @@ public class D2DMapping {
 		//[i][1] := Node-Name
 		//[i][2] := up or down (u|d)
 		//[i][3] := delta-Alias	
+		//[i][4] := active (true|false)
 		ArrayList<ArrayList<String>> mapping = new ArrayList<ArrayList<String>>();
 		ArrayList<String> oneNode;
 		int u = 1; //next free alias
@@ -113,16 +129,19 @@ public class D2DMapping {
 				oneNode.add(newUs[i][0]);
 				oneNode.add(newUs[i][1]);
 				oneNode.add("delta_" + u);
+				oneNode.add("true");
 				mapping.add(oneNode);
 				u++;
 			}
 		}
-		regulatorMapping = new String[mapping.size()][4];
+		regulatorMapping = new String[mapping.size()][5];
 		for(int i = 0; i < mapping.size(); i++) {
 			regulatorMapping[i][0] = mapping.get(i).get(0);
 			regulatorMapping[i][1] = mapping.get(i).get(1);
 			regulatorMapping[i][2] = mapping.get(i).get(2);
 			regulatorMapping[i][3] = mapping.get(i).get(3);
+			regulatorMapping[i][4] = mapping.get(i).get(4);
+			
 		}
 	}
 

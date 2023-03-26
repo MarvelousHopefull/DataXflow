@@ -36,19 +36,27 @@ import jimena.solver.NodeTableModel;
 import jimena.weightsCalculator.D2DMapping;
 import jimena.weightsCalculator.fileCreator.D2DMappingFileInteractor;
 import jimena.weightsCalculator.fileCreator.ExternalStimuliFileCreator;
+import jimena.weightsCalculator.gui.TableModel.Control;
+import jimena.weightsCalculator.gui.TableModel.Control.Regulation;
+import jimena.weightsCalculator.gui.TableModel.ControlsTableModel;
+import jimena.weightsCalculator.gui.TableModel.NodeOfInterest;
+import jimena.weightsCalculator.gui.TableModel.NodesOfInterestTableModel;
 
 public class D2DExternalStimuliFrame extends JFrame implements ActionListener {
 
 	private static final long serialVersionUID = 1L;
 	
 	//Frame Size
-	private static int width = 800;	//x
+	private static int width = 900;	//x
 	private static int hight = 450;	//y
 
 	private File currentFile = null;
 	
 	private JTable nodesTable;
-	private NodesOfInterestTableModel model;
+	private NodesOfInterestTableModel nModel;
+	
+	private JTable controlsTable;
+	private ControlsTableModel cModel;
 	
 	private JTable posReg;
 	private JTable negReg;
@@ -88,18 +96,19 @@ public class D2DExternalStimuliFrame extends JFrame implements ActionListener {
 		for (int i = 0; i < nodes.length; i++) {
 			nodesOfInterest.add(NodeOfInterest.createNode((i+1), nodes[i].getName()));
 		}
-		model = new NodesOfInterestTableModel(nodesOfInterest);
+		nModel = new NodesOfInterestTableModel(nodesOfInterest);
+		cModel = new ControlsTableModel();
 		
 		JPanel p = new JPanel();
 		p.setLayout(new BoxLayout(p, BoxLayout.Y_AXIS));
 		p.setOpaque(true);
 		
 		// Node of Interest Selection
-		nodesTable = new JTable(model);
+		nodesTable = new JTable(nModel);
 		nodesTable.setCellSelectionEnabled(false);
 
 		JScrollPane nodesSP = new JScrollPane(nodesTable);
-		nodesSP.setPreferredSize(new Dimension(300, 310));
+		nodesSP.setPreferredSize(new Dimension(250, 310));
 		
 		JPanel nodesP = new JPanel();
 		nodesP.setLayout(new BorderLayout());
@@ -107,6 +116,20 @@ public class D2DExternalStimuliFrame extends JFrame implements ActionListener {
 		
 		Border nodesBorder = BorderFactory.createTitledBorder("Nodes of Interest");
 		nodesP.setBorder(nodesBorder);
+		
+		// Controls deactivation/activation
+		controlsTable = new JTable(cModel);
+		controlsTable.setCellSelectionEnabled(false);
+		
+		JScrollPane controlsSP = new JScrollPane(controlsTable);
+		controlsSP.setPreferredSize(new Dimension(150, 310));
+		
+		JPanel controlsP = new JPanel();
+		controlsP.setLayout(new BorderLayout());
+		controlsP.add(controlsSP, BorderLayout.CENTER);
+		
+		Border controlsBorder = BorderFactory.createTitledBorder("Set Controls");
+		controlsP.setBorder(controlsBorder);
 		
 		//Regulation model
 		Vector<String> colNames = new Vector<String>();
@@ -174,15 +197,23 @@ public class D2DExternalStimuliFrame extends JFrame implements ActionListener {
 		Border regulationBorder = BorderFactory.createTitledBorder("Regulations (press ctl to select)");
 		regVP.setBorder(regulationBorder);
 		
-		//separating interest panels and dataNodes panel
-		JSplitPane interestRegP = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
-		interestRegP.add(nodesP, JSplitPane.LEFT);
-		interestRegP.add(regVP, JSplitPane.RIGHT);
-		interestRegP.setDividerLocation(0.5);
-		JPanel interestRegVP = new JPanel();
-		interestRegVP.add(interestRegP, BorderLayout.CENTER);
+		//separating nodes of interest and control nodes
+		JSplitPane nodesControlP = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
+		nodesControlP.add(nodesP, JSplitPane.LEFT);
+		nodesControlP.add(controlsP, JSplitPane.RIGHT);
+		nodesControlP.setDividerLocation(0.5);
+		JPanel nodesControlVP = new JPanel();
+		nodesControlVP.add(nodesControlP, BorderLayout.CENTER);
 		
-		p.add(interestRegVP);
+		//separating nodes panels and dataNodes panel
+		JSplitPane nodesRegP = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
+		nodesRegP.add(nodesControlVP, JSplitPane.LEFT);
+		nodesRegP.add(regVP, JSplitPane.RIGHT);
+		nodesRegP.setDividerLocation(0.5);
+		JPanel nodesRegVP = new JPanel();
+		nodesRegVP.add(nodesRegP, BorderLayout.CENTER);
+		
+		p.add(nodesRegVP);
 		
 		p.add(createToolBar());
 		this.getContentPane().add(BorderLayout.CENTER, p);
@@ -193,10 +224,29 @@ public class D2DExternalStimuliFrame extends JFrame implements ActionListener {
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		List<NodeOfInterest> nodesList = new ArrayList<NodeOfInterest>();
-		for (int i = 0; i < model.getRowCount(); i++) {
-			if(model.isNodeOfInterest(i)) {
-				nodesList.add(model.getNode(i));
+		for (int i = 0; i < nModel.getRowCount(); i++) {
+			if(nModel.isNodeOfInterest(i)) {
+				nodesList.add(nModel.getNode(i));
 			}		
+		}
+		ArrayList<ArrayList<String>> controlNodes = new ArrayList<ArrayList<String>>();
+		ArrayList<String> node;
+		Control control;
+		String regulation;
+		for(int i = 0; i < cModel.getRowCount(); i++) {
+			if(!cModel.isActive(i)) {
+				control = cModel.getControl(i);
+				node = new ArrayList<String>();
+				node.add(control.getNodeName());
+				if(control.getRegulation().equals(Regulation.up)) {
+					regulation = "u";
+				}
+				else {
+					regulation = "d";
+				}
+				node.add(regulation);
+				controlNodes.add(node);
+			}
 		}
 		ArrayList<String> upRNList = new ArrayList<String>();
 		for (int i1 : posReg.getSelectedRows()) upRNList.add(posReg.getValueAt(i1, 0).toString());		
@@ -226,6 +276,10 @@ public class D2DExternalStimuliFrame extends JFrame implements ActionListener {
 		        // Load a yED GraphML file into the network
 		        network.loadYEdFile(currentFile);
 				D2DMapping mapping = D2DMappingFileInteractor.getD2DMapping(mappingFile.toString());
+				
+				for(int i = 0; i < controlNodes.size(); i++) {
+					mapping.setActiveRegulatorMapping(controlNodes.get(i).get(0), controlNodes.get(i).get(1), false);
+				}
 				//change mapping
 				if(upRNodes!=null) {
 					String[][] upNodes = new String[upRNodes.length][2];
@@ -360,6 +414,28 @@ public class D2DExternalStimuliFrame extends JFrame implements ActionListener {
 		this.mappingFile = file;
 		mappingFileName = mappingFile.getName();
 		mappingF.setText(mappingFileName);
+		try {
+			D2DMapping mapping = D2DMappingFileInteractor.getD2DMapping(mappingFile.toString());
+			String[][] regulatorMapping = mapping.regualtorMapping();
+			ArrayList<Control> controlsList = new ArrayList<Control>();
+			Regulation reg;
+			for(int i = 0; i < regulatorMapping.length; i++) {
+				if(regulatorMapping[i][2].equals("u")) {
+					reg = Regulation.up;
+				}
+				else {
+					reg = Regulation.down;
+				}
+				controlsList.add(new Control(regulatorMapping[i][1],reg));
+			}
+			cModel = new ControlsTableModel(controlsList);
+			controlsTable.setModel(cModel);
+			
+		}
+		catch(Exception e) {
+			
+		}
+		
 	}
 	
 	private FileFilter tsvFilter = new FileFilter() {

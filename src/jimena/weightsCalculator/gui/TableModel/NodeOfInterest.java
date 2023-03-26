@@ -1,4 +1,4 @@
-package jimena.weightsCalculator.gui;
+package jimena.weightsCalculator.gui.TableModel;
 
 public class NodeOfInterest {
 	private int nodeNumber;
