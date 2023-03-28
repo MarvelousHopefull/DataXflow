@@ -105,10 +105,9 @@ public class NodesOfInterestTableModel extends AbstractTableModel {
 	}
 	
 	 @Override
-	 public Class<?> getColumnClass(int columnIndex)
-	 {
-		 return columnClass[columnIndex];
-	 }
+	public Class<?> getColumnClass(int columnIndex) {
+		return columnClass[columnIndex];
+	}
 	
 	@Override
     public String getColumnName(int column){

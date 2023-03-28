@@ -67,6 +67,8 @@ public class DefCreator {
 		//[i][1] := Node-Name
 		//[i][2] := up or down (u|d)
 		//[i][3] := delta-Alias
+		//[i][4] := is Active (true|false)
+		//[i][5] := alias Number (1|2|...)
 		String[][] rMapping = null;
 		if((upRNodes != null && upRNodes.length > 0) || (downRNodes != null && downRNodes.length > 0 )) {
 			ArrayList<ArrayList<String>> rMList = new ArrayList<ArrayList<String>>();
@@ -83,6 +85,7 @@ public class DefCreator {
 					rMNode.add("u");
 					rMNode.add("delta_" + (i+1));
 					rMNode.add("true");
+					rMNode.add("" + (i+1));
 					rMList.add(rMNode);
 					i++;
 					
@@ -99,13 +102,14 @@ public class DefCreator {
 					rMNode.add("d");
 					rMNode.add("delta_" + (i+1));
 					rMNode.add("true");
+					rMNode.add("" + (i+1));
 					rMList.add(rMNode);
 					i++;
 				}
 			}
-			rMapping = new String[i][5];
+			rMapping = new String[i][6];
 			for(int j = 0; j < i; j++) {
-				for(int k = 0; k < 5; k++) {
+				for(int k = 0; k < 6; k++) {
 					rMapping[j][k] = rMList.get(j).get(k);
 				}
 			}

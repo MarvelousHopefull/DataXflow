@@ -15,7 +15,7 @@ public class D2DMappingFileInteractor {
 	static String nodeMappingStart = "Mapping of Nodes";
 	static String nodeMappingColumnNames = "Node-Alias	Node-Name	Node-Number";
 	static String regulatorMappingStart = "Mapping of Regulated Nodes";
-	static String regulatorMappingColumnNames = "Regulated-Alias	Node-Name	up or down	delta-Alias	is Active";
+	static String regulatorMappingColumnNames = "Regulated-Alias	Node-Name	up or down	delta-Alias	is Active	Alias-Number";
 	static String parameterMappingStart = "Mapping of Parameters";
 	static String parameterMappingColumnNames = "Parameter-Alias	Node-Number	i'te Connection(or -1)	Parameter-Type	Source-Node-Alias(or Parameter-Type)	Source-Node-Number(or 0)";
 	static String constNodesStart = "List of Nodes that are constant";
@@ -91,7 +91,7 @@ public class D2DMappingFileInteractor {
 			
 			aLine = new ArrayList<String>();
 			String[] parts = line.split("\\	");
-			if(parts.length < 5) {
+			if(parts.length < 6) {
 				throw new Exception("Some lines in the _D2DMapping.tsv File seam to be missing Information!");
 			}
 			aLine.add(parts[0]);
@@ -99,15 +99,16 @@ public class D2DMappingFileInteractor {
 			aLine.add(parts[2]);
 			aLine.add(parts[3]);
 			aLine.add(parts[4]);
+			aLine.add(parts[5]);
 			aList.add(aLine);
 			amount++;
 			
 			line = reader.readLine();
 		}
 		if(amount > 0) {
-			regulatorMapping = new String[amount][5];
+			regulatorMapping = new String[amount][6];
 			for(int i = 0; i < amount; i++) {
-				for(int j = 0; j < 5; j++) {
+				for(int j = 0; j < 6; j++) {
 					regulatorMapping[i][j] = aList.get(i).get(j);
 				}
 			}

@@ -390,7 +390,7 @@ public class ExternalStimuliFileCreator {
 							continue;
 						}
 						regulated = true;
-						rAlias = rMapping[j][0];
+						rAlias = "u(" + rMapping[j][5] + ")";
 						deltaAlias = rMapping[j][3];
 						if(rMapping[j][2].equals("d")) {
 							up = false;
