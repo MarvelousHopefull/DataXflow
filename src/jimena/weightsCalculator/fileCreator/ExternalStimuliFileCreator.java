@@ -378,10 +378,12 @@ public class ExternalStimuliFileCreator {
 			text1 += " - " + y + "*" + nodeName;
 			
 			//For Up or Down Regulated nodes
-			boolean regulated = false;
-			boolean up = true;
-			String rAlias = "";
-			String deltaAlias = "";
+			boolean up = false;
+			boolean down = false;
+			String rAliasU = "";
+			String deltaAliasU = "";
+			String rAliasD = "";
+			String deltaAliasD = "";
 			if(rMapping != null) {
 				for(int j = 0; j <rMapping.length; j++) {
 					
@@ -389,21 +391,23 @@ public class ExternalStimuliFileCreator {
 						if(rMapping[j][4].equals("false")) {
 							continue;
 						}
-						regulated = true;
-						rAlias = "u(" + rMapping[j][5] + ")";
-						deltaAlias = rMapping[j][3];
-						if(rMapping[j][2].equals("d")) {
-							up = false;
+						
+						if(!up && rMapping[j][2].equals("u")) {
+							up = true;
+							rAliasU = "u(" + rMapping[j][5] + ")";
+							deltaAliasU = rMapping[j][3];
 						}
-						break;
+						if(!down && rMapping[j][2].equals("d")) {
+							down = true;
+							rAliasD = "u(" + rMapping[j][5] + ")";
+							deltaAliasD = rMapping[j][3];
+						}
 					}
 				}
 			}
+			if(up) { text1 += " + " + deltaAliasU + "*" + rAliasU + "*(1-" + nodeName + ")"; }
+			if(down) { text1 += " - " + deltaAliasD + "*" + rAliasD + "*" + nodeName; }
 			
-			if(regulated) {
-				if(up) { text1 += " + " + deltaAlias + "*" + rAlias + "*(1-" + nodeName + ")"; }
-				else { text1 += " - " + deltaAlias + "*" + rAlias + "*" + nodeName; }
-			}
 			if((i+1) == nodes.length) {
 				text1 += "};" + "\r\n";
 			}

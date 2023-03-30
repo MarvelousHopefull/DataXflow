@@ -613,41 +613,39 @@ public class DefCreator {
 			text += " - " + y + "*" + nodeName;
 			
 			//For Up or Down Regulated nodes
-			boolean regulated = false;
-			boolean up = true;
-			String rAlias = "";
-			String deltaAlias = "";
+			boolean up = false;
+			boolean down = false;
+			String rAliasU = "";
+			String deltaAliasU = "";
+			String rAliasD = "";
+			String deltaAliasD = "";
 			if(rMapping != null) {
 				for(int j = 0; j <rMapping.length; j++) {
 					
 					if(rMapping[j][1].equals(nodes[i].getName())) {
-						regulated = true;
-						rAlias = rMapping[j][0];
-						deltaAlias = rMapping[j][3];
-						if(rMapping[j][2].equals("d")) {
-							up = false;
+						if(!up && rMapping[j][2].equals("u")) {
+							up = true;
+							rAliasU = rMapping[j][0];
+							deltaAliasU = rMapping[j][3];
 						}
-						break;
+						if(!down && rMapping[j][2].equals("d")) {
+							down = true;
+							rAliasD = rMapping[j][0];
+							deltaAliasD = rMapping[j][3];
+						}
 					}
 				}
 			}
+			if(up) { text += " + " + deltaAliasU + "*" + rAliasU + "*(1-" + nodeName + ")"; }
+			if(down) { text += " - " + deltaAliasD + "*" + rAliasD + "*" + nodeName; }
 			
-			if(regulated) {
-				if(up) { text += " + " + deltaAlias + "*" + rAlias + "*(1-" + nodeName + ")"; }
-				else { text += " - " + deltaAlias + "*" + rAlias + "*" + nodeName; }
-			}
-			
-			/*text += ")";
-			if(isConstant) {
-				text +=  " * 0";
-			}*/
 			text += "\"";
 		}
 		text = text + "\n";
-		/*how the text should look like:
-		((-exp(5.0)+exp(-10.0*(((2.0/1.0)*((x(34))/(1+x(34))))-0.5)))
-		/((1-exp(5.0))*(1+exp(-10.0*(((2.0/1.0)*((x(34))/(1+x(34))))-0.5)))))-x(9)-u(5)*x(9)
-		... +u(2)*(1-x(16))
+		/*how the text should somewhat look like:
+		((-exp(5.0)+exp(-10.0*(((2.0/1.0)*((x34)/(1+x34)))-0.5)))
+		/((1-exp(5.0))*(1+exp(-10.0*(((2.0/1.0)*((x34)/(1+x34)))-0.5)))))-x9-u5*x9
+		... +u2*(1-x16)
 		"k12 - k5*x3*x2/(k6+x2) - k7*x4*x2/(k8+x2) - k9*x5*x2/(k10+x2) + x12" */
 		
 		return text;
