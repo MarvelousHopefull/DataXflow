@@ -5,8 +5,16 @@ import java.util.List;
 
 import javax.swing.table.AbstractTableModel;
 
+/**
+ * A Table Model used for JTable creation.
+ * Displays all Controls added in the D2D GUI. Allows deactivating these Controls/Regulations.
+ * @author Jan Krause
+ *
+ */
 public class ControlsTableModel extends AbstractTableModel {
 
+
+	private static final long serialVersionUID = 1L;
 	private List<Control> list;
 	private final String[] columnNames = new String[] {
 		"Name", "Regulation", "Active"

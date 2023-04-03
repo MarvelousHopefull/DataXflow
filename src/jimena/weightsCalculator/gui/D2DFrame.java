@@ -114,7 +114,7 @@ public class D2DFrame extends JFrame implements ActionListener{
 	private JTextField time;
 
 	
-	public D2DFrame() {
+	protected D2DFrame() {
 		super("D2D - ver. "+Main.ver);
 		setIconImage(new ImageIcon("images" + File.separator + "chart16.png").getImage());
 		setMinimumSize(new Dimension(500, 400));
@@ -123,6 +123,11 @@ public class D2DFrame extends JFrame implements ActionListener{
 		getContentPane().setLayout(new BorderLayout());
 	}
 	
+	/**
+	 * Creates the GUI for creating the Files needed for working with D2D.
+	 * @param currentFile The File of the current Network.
+	 * @throws Exception
+	 */
 	public D2DFrame(File currentFile) throws Exception {
 		this();
 		if(currentFile == null) {
@@ -280,8 +285,10 @@ public class D2DFrame extends JFrame implements ActionListener{
 	
 	}
 	
+	/**
+	 * Triggers for the creation of the D2D relevant Files.
+	 */
 	public void actionPerformed(ActionEvent e) {
-		
 		ArrayList<String> upRNList = new ArrayList<String>();
 		for (int i1 : posReg.getSelectedRows()) upRNList.add(posReg.getValueAt(i1, 0).toString());		
 		ArrayList<String> downRNList = new ArrayList<String>();
@@ -361,6 +368,10 @@ public class D2DFrame extends JFrame implements ActionListener{
 		}
 	}
 	
+	/**
+	 * Creates the Tool Bar at the bottom of the GUI.
+	 * @return The created ToolBar.
+	 */
 	private JToolBar createToolBar() {
 		JToolBar toolbar = new JToolBar();
 		//toolbar.setLayout(new FlowLayout(FlowLayout.LEFT));

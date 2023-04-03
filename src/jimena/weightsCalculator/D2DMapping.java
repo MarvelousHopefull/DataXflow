@@ -45,7 +45,7 @@ public class D2DMapping {
 	private double finalTime;
 	
 	/**
-	 * 
+	 * Creates a Mapping of different parameters to their alias; needed for D2D.
 	 * @param nodeMapping The alias mapping for the Nodes.
 	 * @param regulatorMapping The alias mapping for the up and down regulated Nodes.
 	 * @param parameterMapping The alias mapping for the different parameters.
@@ -62,26 +62,68 @@ public class D2DMapping {
 		this.finalTime = finalTime;
 	}
 	
+	/**
+	 * mapping to node alias (x1, x2, ...)
+	 * [i][0] := alias (x1|x2|...)
+	 * [i][1] := Node-Name
+	 * [i][2] := Node-Number(1|2|...)
+	 * @return
+	 */
 	public String[][] nodeMapping(){
 		return this.nodeMapping;
 	}
 	
+	/**
+	 * mapping of the regulated nodes, up regulated Nodes before down regulated Nodes
+	 * [i][0] := alias (u1|u2|...)
+	 * [i][1] := Node-Name
+	 * [i][2] := up or down (u|d)
+	 * [i][3] := delta-Alias	(delta_1|delta_2|...)
+	 * [i][4] := is Active (true|false)
+	 * [i][5] := alias Number (1|2|...)
+	 * @return
+	 */
 	public String[][] regualtorMapping(){
 		return this.regulatorMapping;
 	}
 	
+	/**
+	 * mapping of the parameters (k := source node number, j := node number)
+	 * alpha(a) and beta(b) represent edge weights between nodes (a : activating edge, b: inhibiting edge)
+	 * [i][0] := name of the i'te variable (a_k_j|b_k_j|h_j)
+	 * [i][1] := the node number j
+	 * [i][2] := -1 for h&gamma and the position of the input node for alpha&beta.
+	 * [i][3] := the parameter type (a|b|h)
+	 * [i][4] := the source node alias for a&b (xk) and h for h (h)
+	 * [i][5] := the source node number k
+	 * @return
+	 */
 	public String[][] parameterMapping(){
 		return this.parameterMapping;
 	}
 	
+	/**
+	 * Nodes that have a constant value.
+	 * @return
+	 */
 	public String[] constNodes() {
 		return this.constNodes;
 	}
 	
+	/**
+	 * The time length of the experiment.
+	 * @return
+	 */
 	public double finalTime() {
 		return this.finalTime;
 	}
 	
+	/**
+	 * Used for deactivating or reactivating of Regulations/Controls.
+	 * @param nodeName The regulated node.
+	 * @param regulation Up or down.
+	 * @param active If it should be activated(true) or deactivated(false).
+	 */
 	public void setActiveRegulatorMapping(String nodeName, String regulation, boolean active) {
 		for(int i = 0; i < regulatorMapping.length; i++) {
 			if(regulatorMapping[i][1].equals(nodeName) && regulatorMapping[i][2].equals(regulation)) {
@@ -96,8 +138,8 @@ public class D2DMapping {
 		}
 	}
 	
-	/**To add more u's (and delta's) to the mapping.
-	 * 
+	/**
+	 * To add more u's (and delta's) to the mapping.
 	 * @param newUs The new up or down regulated nodes. [i][0] := Node-Name, [i][1] := up or down (u|d)
 	 */
 	public void addRegulatorMapping(String[][] newUs) {

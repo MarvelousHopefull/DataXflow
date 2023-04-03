@@ -42,6 +42,11 @@ import jimena.weightsCalculator.gui.TableModel.ControlsTableModel;
 import jimena.weightsCalculator.gui.TableModel.NodeOfInterest;
 import jimena.weightsCalculator.gui.TableModel.NodesOfInterestTableModel;
 
+/**
+ * The GUI for loading the Data calculated by D2D and for creating the file needed for the ExternalStimuli.
+ * @author Jan Krause
+ *
+ */
 public class D2DExternalStimuliFrame extends JFrame implements ActionListener {
 
 	private static final long serialVersionUID = 1L;
@@ -71,7 +76,7 @@ public class D2DExternalStimuliFrame extends JFrame implements ActionListener {
 	
 	
 	
-	public D2DExternalStimuliFrame() {
+	protected D2DExternalStimuliFrame() {
 		super("D2DExternalStimuli - ver. "+Main.ver);
 		setIconImage(new ImageIcon("images" + File.separator + "chart16.png").getImage());
 		setMinimumSize(new Dimension(500, 400));
@@ -80,6 +85,11 @@ public class D2DExternalStimuliFrame extends JFrame implements ActionListener {
 		getContentPane().setLayout(new BorderLayout());		
 	}
 	
+	/**
+	 * Creates the GUI for the loading of the by D2D calculated values and the creation of the ExternalStimuli _main.m File.
+	 * @param currentFile The File of the current Network.
+	 * @throws Exception
+	 */
 	public D2DExternalStimuliFrame(File currentFile) throws Exception {
 		this();
 		if(currentFile == null) {
@@ -221,6 +231,9 @@ public class D2DExternalStimuliFrame extends JFrame implements ActionListener {
 		this.pack();
 	}
 	
+	/**
+	 * Triggers for the ExternalStimuli File creation.
+	 */
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		List<NodeOfInterest> nodesList = new ArrayList<NodeOfInterest>();
@@ -308,6 +321,10 @@ public class D2DExternalStimuliFrame extends JFrame implements ActionListener {
 
 	}
 	
+	/**
+	 * Creates the Tool Bar at the bottom of the GUI.
+	 * @return The created ToolBar.
+	 */
 	private JToolBar createToolBar() {
 		JToolBar toolbar = new JToolBar();
 		
@@ -404,12 +421,20 @@ public class D2DExternalStimuliFrame extends JFrame implements ActionListener {
 		return toolbar;
 	}
 	
+	/**
+	 * Loads the File with the by D2D calculated values into the GUI.
+	 * @param file The File with the values.
+	 */
 	private void loadD2DFile(File file) {
 		this.d2dFile = file;
 		d2dFileName = d2dFile.getName();
 		d2dF.setText(d2dFileName);
 	}
 	
+	/**
+	 * Loads the Mapping done by the D2D GUI into this GUI.
+	 * @param file The File with the mapping.
+	 */
 	private void loadMappingFile(File file) {
 		this.mappingFile = file;
 		mappingFileName = mappingFile.getName();

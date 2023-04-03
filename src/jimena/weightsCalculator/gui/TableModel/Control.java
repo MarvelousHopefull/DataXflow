@@ -1,5 +1,10 @@
 package jimena.weightsCalculator.gui.TableModel;
 
+/**
+ * Used for saving Regulations/Controls and if the should be considered(if Active).
+ * @author Jan Krause
+ *
+ */
 public class Control {
 	
 	public enum Regulation { up, down}
@@ -27,6 +32,10 @@ public class Control {
 		return this.regulation;
 	}
 	
+	/**
+	 * If the Control should be considered.
+	 * @return True if it should be considered. Otherwise False.
+	 */
 	public boolean getIsActive() {
 		return this.isActive;
 	}

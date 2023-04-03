@@ -4,7 +4,15 @@ import java.util.List;
 
 import javax.swing.table.AbstractTableModel;
 
+/**
+ * A Table Model used for JTable creation.
+ * Displays all nodes and allows to set a Targeted-Value for each node and a Weight, of how important the reaching of the Targeted-Value is, in comparison to others nodes Targeted-Values.
+ * @author Jan Krause
+ *
+ */
 public class NodesOfInterestTableModel extends AbstractTableModel {
+
+	private static final long serialVersionUID = 1L;
 
 	private List<NodeOfInterest> list;
 	
@@ -114,6 +122,11 @@ public class NodesOfInterestTableModel extends AbstractTableModel {
         return columnNames[column];
     }
 	
+	/**
+	 * If it should be considered. (a.k.a if the weight is greater than 0)
+	 * @param rowIndex
+	 * @return
+	 */
 	public boolean isNodeOfInterest(int rowIndex) {
 		return list.get(rowIndex).isNodeOfInterest();
 	}

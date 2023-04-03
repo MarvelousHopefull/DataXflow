@@ -9,6 +9,11 @@ import java.util.ArrayList;
 
 import jimena.weightsCalculator.D2DMapping;
 
+/**
+ * Used for creating the _main.m File needed for the ExternalStiumli interactions.
+ * @author Jan Krause
+ *
+ */
 public class D2DMappingFileInteractor {
 	
 	//text that shows up in the file, edit it here or problems with reading the file can occur

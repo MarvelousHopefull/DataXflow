@@ -1,5 +1,10 @@
 package jimena.weightsCalculator.gui.TableModel;
 
+/**
+ * Used to set Targeted-Values and weights (of how important the reaching of the value is) for nodes, in the D2DExternalStimuli GUI.
+ * @author Jan Krause
+ *
+ */
 public class NodeOfInterest {
 	private int nodeNumber;
 	private String nodeName;
