@@ -5,7 +5,6 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -124,53 +123,54 @@ public class ExternalStimuliFileCreator {
 		ArrayList<String> deltasList = new ArrayList<String>();
 		String text = "";
 		String parametersText = "";
-		BufferedReader reader = new BufferedReader(new FileReader(parametersPath));
-		String line = reader.readLine();
-		String parameterName = "";
-		String parameterValue = "";
-		int parameterLinesAmount = 0;
-		while(line != null) {
-			//not the title line 
-			if(!line.startsWith("parameterId")) {
-				String[] parts = line.split("\\	");
-				if(parts.length < 6) {
-					throw new Exception("Some Parameter seems to not have sufficient Informations in the Parameter File!");
-				}
-				//all non x parameters
-				if(!line.startsWith("init_x")) {
-					if(line.startsWith("delta_")) {
-						int i;
-						for(i = 0; i < regulatorMapping.length; i++) {
-							if(regulatorMapping[i][3].equals(parts[0])) {
-								break;
-							}
-						}
-						if(i == regulatorMapping.length) {
-							throw new Exception("Some Parameter doesn't appear in the mappint!");
-						}
-						if(regulatorMapping[i][4].equals("false")) {
-							line = reader.readLine();
-							continue;
-						}
-						deltasList.add(parts[0]);
+		try (BufferedReader reader = new BufferedReader(new FileReader(parametersPath))) {
+			String line = reader.readLine();
+			String parameterName = "";
+			String parameterValue = "";
+			int parameterLinesAmount = 0;
+			while(line != null) {
+				//not the title line 
+				if(!line.startsWith("parameterId")) {
+					String[] parts = line.split("\\	");
+					if(parts.length < 6) {
+						throw new Exception("Some Parameter seems to not have sufficient Informations in the Parameter File!");
 					}
-					parameterName = parts[0];
-					parameterValue = parts[5];
-					parametersText += parameterName + "=" + parameterValue + "\r\n";
-					parameterLinesAmount++;
+					//all non x parameters
+					if(!line.startsWith("init_x")) {
+						if(line.startsWith("delta_")) {
+							int i;
+							for(i = 0; i < regulatorMapping.length; i++) {
+								if(regulatorMapping[i][3].equals(parts[0])) {
+									break;
+								}
+							}
+							if(i == regulatorMapping.length) {
+								throw new Exception("Some Parameter doesn't appear in the mappint!");
+							}
+							if(regulatorMapping[i][4].equals("false")) {
+								line = reader.readLine();
+								continue;
+							}
+							deltasList.add(parts[0]);
+						}
+						parameterName = parts[0];
+						parameterValue = parts[5];
+						parametersText += parameterName + "=" + parameterValue + "\r\n";
+						parameterLinesAmount++;
+					}
+					
 				}
-				
+				line = reader.readLine();
 			}
-			line = reader.readLine();
-		}
-		if(parameterLinesAmount != parameterMapping.length) {
-			//throw new Exception("There seem to be an unequal amount of parameters in the referenced topology and the File provided by D2D!");
-		}
-		for(int i = 0; i < regulatorMapping.length; i++) {
-			if(!deltasList.contains(regulatorMapping[i][3]) && !regulatorMapping[i][4].equals("false")) {
-				parameterName = regulatorMapping[i][3];
-				parameterValue = "" + delta;
-				parametersText += parameterName + "=" + parameterValue + "\r\n";
+			if(parameterLinesAmount != parameterMapping.length) {
+				//throw new Exception("There seem to be an unequal amount of parameters in the referenced topology and the File provided by D2D!");
+			}
+			for(int i = 0; i < regulatorMapping.length; i++) {
+				if(!deltasList.contains(regulatorMapping[i][3]) && !regulatorMapping[i][4].equals("false")) {
+					parameterName = regulatorMapping[i][3];
+					parameterValue = "" + delta;
+					parametersText += parameterName + "=" + parameterValue + "\r\n";
+				}
 			}
 		}
 		parametersText += "\r\n";
@@ -199,44 +199,65 @@ public class ExternalStimuliFileCreator {
 	
 	private static String getOCP(String parametersPath, String[][] nodeMapping, String[][] regulatorMapping, double finalTime) throws Exception {
 		String text = "";
-		BufferedReader reader = new BufferedReader(new FileReader(parametersPath));
-		String line = reader.readLine();
-		String parameterValue = "";
-		String nodeValueText = "";
-		int numberOfNodes = 0;
-		int numberOfControls = 0;
-		while(line != null) {
-			//not the title line 
-			if(!line.startsWith("parameterId")) {
-				String[] parts = line.split("\\	");
-				if(parts.length < 6) {
-					throw new Exception("Some Parameter seems to not have sufficient Informations in the Parameter File!");
-				}
-				//x values
-				if(line.startsWith("init_x")) {
-					parameterValue = parts[5];
-					
-					if(nodeValueText != "") {
-						nodeValueText += ",";
+		try (BufferedReader reader = new BufferedReader(new FileReader(parametersPath))) {
+			String line = reader.readLine();
+			String parameterValue = "";
+			String nodeValueText = "";
+			int numberOfNodes = 0;
+			int numberOfControls = 0;
+			ArrayList<String> nodeList = new ArrayList<String>();
+			ArrayList<Integer> nodeIDs = new ArrayList<Integer>();
+			while(line != null) {
+				//not the title line 
+				if(!line.startsWith("parameterId")) {
+					String[] nodeParts = line.split("\\	");
+					if(nodeParts.length < 6) {
+						throw new Exception("Some Parameter seems to not have sufficient Informations in the Parameter File!");
 					}
-					nodeValueText += parameterValue;
-					numberOfNodes++;
+					//x values
+					if(line.startsWith("init_x")) {
+						String[] idString = nodeParts[0].split("_x");
+						int id = Integer.valueOf(idString[1]);
+						int i = 0;
+						//sorting by ID
+						while(i < nodeIDs.size()) {
+							if(nodeIDs.get(i) > id) {
+								break;
+							}
+							i++;
+						}
+						if(i == nodeIDs.size()) {
+							nodeList.add(nodeParts[5]);
+							nodeIDs.add(id);
+						}else {
+							nodeList.add(i, nodeParts[5]);
+							nodeIDs.add(i,id);
+						}
+					}
 				}
+				line = reader.readLine();
 			}
-			line = reader.readLine();
+			for(int i = 0; i < nodeList.size(); i++) {
+				if(nodeValueText != "") {
+					nodeValueText += ",";
+				}
+				parameterValue = nodeList.get(i);
+				nodeValueText += parameterValue;
+				numberOfNodes++;
+			}
+			if(numberOfNodes != nodeMapping.length) {
+				//throw new Exception("There seem to be an unequal amount of nodes in the referenced topology and the File provided by D2D!");
+			}
+			if(regulatorMapping != null) {
+				numberOfControls = regulatorMapping.length;
+			}
+			text += "OCP = struct('numNodes',"
+					+ numberOfNodes
+					+ ",'numControls',"
+					+ numberOfControls
+					+ ",'timeInterval',0.1,'timeHorizon'," + finalTime + ",'alpha',0,'initialState',[";
+			text += nodeValueText;
 		}
-		if(numberOfNodes != nodeMapping.length) {
-			//throw new Exception("There seem to be an unequal amount of nodes in the referenced topology and the File provided by D2D!");
-		}
-		if(regulatorMapping != null) {
-			numberOfControls = regulatorMapping.length;
-		}
-		text += "OCP = struct('numNodes',"
-				+ numberOfNodes
-				+ ",'numControls',"
-				+ numberOfControls
-				+ ",'timeInterval',0.1,'timeHorizon'," + finalTime + ",'alpha',0,'initialState',[";
-		text += nodeValueText;
 		text += "],'DataNoi',A);" + "\r\n"
 				+ "\r\n";
 		text += "xd = get_xd(OCP); %Creates the desired state in which the nodes of interest are expected to be" + "\r\n"

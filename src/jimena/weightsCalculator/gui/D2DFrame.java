@@ -26,7 +26,6 @@ import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.JToolBar;
 import javax.swing.border.Border;
-import javax.swing.table.TableRowSorter;
 
 import jimena.binaryrn.NetworkNode;
 import jimena.binaryrn.RegulatoryNetwork;

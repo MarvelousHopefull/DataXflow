@@ -190,5 +190,50 @@ public class D2DMapping {
 			regulatorMapping[i][5] = mapping.get(i).get(5);
 		}
 	}
+	
+	public String getNodeNameByAlias(String alias) {
+		for(int i = 0; i < nodeMapping.length; i++) {
+			if(nodeMapping[i][0].equals(alias)) {
+				return nodeMapping[i][1];
+			}
+		}
+		return null;
+	}
+	
+	public String getNodeNameByHAlias(String hAlias) {
+		String aliasNumber = "0";
+		for(int i = 0; i < parameterMapping.length; i++) {
+			if(parameterMapping[i][0].equals(hAlias)) {
+				aliasNumber = parameterMapping[i][1];
+				break;
+			}
+		}
+		for(int i = 0; i < nodeMapping.length; i++) {
+			if(nodeMapping[i][2].equals(aliasNumber)) {
+				return nodeMapping[i][1];
+			}
+		}
+		return null;
+	}
+	
+	public String getSourceNodeNameByWeightAlias(String weightAlias) {
+		String aliasNumber = weightAlias.split("_")[1];
+		for(int i = 0; i < nodeMapping.length; i++) {
+			if(nodeMapping[i][2].equals(aliasNumber)) {
+				return nodeMapping[i][1];
+			}
+		}
+		return null;
+	}
+	
+	public String getTargetNodeNameByWeightAlias(String weightAlias) {
+		String aliasNumber = weightAlias.split("_")[2];
+		for(int i = 0; i < nodeMapping.length; i++) {
+			if(nodeMapping[i][2].equals(aliasNumber)) {
+				return nodeMapping[i][1];
+			}
+		}
+		return null;
+	}
 
 }

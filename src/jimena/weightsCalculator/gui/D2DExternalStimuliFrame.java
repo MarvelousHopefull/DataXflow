@@ -27,13 +27,13 @@ import javax.swing.JTextField;
 import javax.swing.JToolBar;
 import javax.swing.border.Border;
 import javax.swing.filechooser.FileFilter;
-import javax.swing.table.TableRowSorter;
 
 import jimena.binaryrn.NetworkNode;
 import jimena.binaryrn.RegulatoryNetwork;
 import jimena.gui.main.Main;
 import jimena.solver.NodeTableModel;
 import jimena.weightsCalculator.D2DMapping;
+import jimena.weightsCalculator.D2DValuesSetter;
 import jimena.weightsCalculator.fileCreator.D2DMappingFileInteractor;
 import jimena.weightsCalculator.fileCreator.ExternalStimuliFileCreator;
 import jimena.weightsCalculator.gui.TableModel.Control;
@@ -55,7 +55,8 @@ public class D2DExternalStimuliFrame extends JFrame implements ActionListener {
 	private static int width = 900;	//x
 	private static int hight = 450;	//y
 
-	private File currentFile = null;
+	private RegulatoryNetwork network = null;
+	D2DMapping mapping = null;
 	
 	private JTable nodesTable;
 	private NodesOfInterestTableModel nModel;
@@ -90,17 +91,10 @@ public class D2DExternalStimuliFrame extends JFrame implements ActionListener {
 	 * @param currentFile The File of the current Network.
 	 * @throws Exception
 	 */
-	public D2DExternalStimuliFrame(File currentFile) throws Exception {
+	public D2DExternalStimuliFrame(RegulatoryNetwork network) throws Exception {
 		this();
-		if(currentFile == null) {
-			throw new Exception("No RN File selected!");
-		}
-		this.currentFile = currentFile;
-		
-		RegulatoryNetwork network = new RegulatoryNetwork();
-        // Load a yED GraphML file into the network
-        network.loadYEdFile(currentFile);
-		NetworkNode[] nodes = network.getNetworkNodes();
+		this.network = network;
+		NetworkNode[] nodes = this.network.getNetworkNodes();
 		//System.out.println(nodes.length);
 		List<NodeOfInterest> nodesOfInterest = new ArrayList<NodeOfInterest>();
 		for (int i = 0; i < nodes.length; i++) {
@@ -215,7 +209,7 @@ public class D2DExternalStimuliFrame extends JFrame implements ActionListener {
 		JPanel nodesControlVP = new JPanel();
 		nodesControlVP.add(nodesControlP, BorderLayout.CENTER);
 		
-		//separating nodes panels and dataNodes panel
+		//separating nodes&controls and regulation panel
 		JSplitPane nodesRegP = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
 		nodesRegP.add(nodesControlVP, JSplitPane.LEFT);
 		nodesRegP.add(regVP, JSplitPane.RIGHT);
@@ -285,11 +279,6 @@ public class D2DExternalStimuliFrame extends JFrame implements ActionListener {
 					downRNodes = downRNList.toArray(downRNodes);
 				}
 				
-				RegulatoryNetwork network = new RegulatoryNetwork();
-		        // Load a yED GraphML file into the network
-		        network.loadYEdFile(currentFile);
-				D2DMapping mapping = D2DMappingFileInteractor.getD2DMapping(mappingFile.toString());
-				
 				for(int i = 0; i < controlNodes.size(); i++) {
 					mapping.setActiveRegulatorMapping(controlNodes.get(i).get(0), controlNodes.get(i).get(1), false);
 				}
@@ -357,7 +346,7 @@ public class D2DExternalStimuliFrame extends JFrame implements ActionListener {
 		loadD2DFileBtn.setForeground(Color.MAGENTA.darker());
 		toolbar.add(loadD2DFileBtn, new GridBagConstraints(10,0,1,1,1.0,1.0,GridBagConstraints.SOUTHEAST,GridBagConstraints.NONE,new Insets(0,0,0,0),0,0));
 
-		JLabel labelTSVFile = new JLabel("D2D TSV-File:");
+		JLabel labelTSVFile = new JLabel("File:");
 		toolbar.add(labelTSVFile,new GridBagConstraints(0,0,1,1,1.0,1.0,GridBagConstraints.NORTHWEST,GridBagConstraints.NONE,new Insets(0,0,0,0),0,0));
 
 		if(d2dFile != null) {
@@ -370,7 +359,7 @@ public class D2DExternalStimuliFrame extends JFrame implements ActionListener {
 		toolbar.add(d2dF,new GridBagConstraints(1,0,3,1,1.0,1.0,GridBagConstraints.NORTHWEST,GridBagConstraints.NONE,new Insets(0,0,0,0),0,0));
 
 		//mapping
-		JButton loadMappingFileBtn = new JButton("Load D2D Parameter Mapping File");
+		JButton loadMappingFileBtn = new JButton("Load Mapping File");
 		loadMappingFileBtn.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent arg0) {
@@ -397,8 +386,8 @@ public class D2DExternalStimuliFrame extends JFrame implements ActionListener {
 		loadMappingFileBtn.setIcon(new ImageIcon("images" + File.separator + "chart16.png"));
 		loadMappingFileBtn.setForeground(Color.MAGENTA.darker());
 		toolbar.add(loadMappingFileBtn, new GridBagConstraints(10,1,1,1,1.0,1.0,GridBagConstraints.SOUTHEAST,GridBagConstraints.NONE,new Insets(0,0,0,0),0,0));
-
-		JLabel labelMappingFile = new JLabel("D2D TSV-File:");
+		
+		JLabel labelMappingFile = new JLabel("File:");
 		toolbar.add(labelMappingFile,new GridBagConstraints(0,1,1,1,1.0,1.0,GridBagConstraints.NORTHWEST,GridBagConstraints.NONE,new Insets(0,0,0,0),0,0));
 
 		if(mappingFile != null) {
@@ -409,6 +398,18 @@ public class D2DExternalStimuliFrame extends JFrame implements ActionListener {
 		mappingF.setPreferredSize(new Dimension(300, 20));
 		mappingF.setEditable(false);
 		toolbar.add(mappingF,new GridBagConstraints(1,1,3,1,1.0,1.0,GridBagConstraints.NORTHWEST,GridBagConstraints.NONE,new Insets(0,0,0,0),0,0));
+
+		//setting parameters
+		JButton setParametersBtn = new JButton("Use Parameters");
+		setParametersBtn.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent arg0) {
+            	setParameters();
+            }
+        });
+		setParametersBtn.setIcon(new ImageIcon("images" + File.separator + "chart16.png"));
+		setParametersBtn.setForeground(Color.MAGENTA.darker());
+		toolbar.add(setParametersBtn, new GridBagConstraints(10,1,1,1,1.0,1.0,GridBagConstraints.SOUTHEAST,GridBagConstraints.NONE,new Insets(0,0,0,0),0,0));
 
 		
 		JButton generateScriptBtn = new JButton("Generate");
@@ -440,7 +441,7 @@ public class D2DExternalStimuliFrame extends JFrame implements ActionListener {
 		mappingFileName = mappingFile.getName();
 		mappingF.setText(mappingFileName);
 		try {
-			D2DMapping mapping = D2DMappingFileInteractor.getD2DMapping(mappingFile.toString());
+			this.mapping = D2DMappingFileInteractor.getD2DMapping(mappingFile.toString());
 			String[][] regulatorMapping = mapping.regualtorMapping();
 			ArrayList<Control> controlsList = new ArrayList<Control>();
 			Regulation reg;
@@ -460,7 +461,10 @@ public class D2DExternalStimuliFrame extends JFrame implements ActionListener {
 		catch(Exception e) {
 			
 		}
-		
+	}
+	
+	private void setParameters() {
+		D2DValuesSetter.setNetworkValues(network, d2dFile, mapping);;
 	}
 	
 	private FileFilter tsvFilter = new FileFilter() {
