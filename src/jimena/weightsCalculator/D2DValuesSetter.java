@@ -8,6 +8,7 @@ import java.util.TreeSet;
 
 import jimena.binaryrn.NetworkNode;
 import jimena.binaryrn.RegulatoryNetwork;
+import jimena.gui.main.Main;
 
 /**
  * Used for setting the values and parameters in the network calculated by D2D.
@@ -27,9 +28,10 @@ public class D2DValuesSetter {
 	public static void setNetworkValues(RegulatoryNetwork network, File d2DParametersFile, D2DMapping mapping) {
 		
 		try {
-			setInitValues(network, d2DParametersFile, mapping);
+			//setInitValues(network, d2DParametersFile, mapping);
 			setSteepness(network, d2DParametersFile, mapping);
 			setWeights(network, d2DParametersFile, mapping);
+			setFinalTime(network, mapping);
 		}catch(Exception e) {
 			System.out.println(e.getMessage());
 		}
@@ -38,6 +40,7 @@ public class D2DValuesSetter {
 	
 	/**
 	 * Sets the initial values of the nodes.
+	 * Not used at the moment. Initial values set by the user or default values will be used.
 	 * @param network The network whose nodes are to be set.
 	 * @param d2DParametersFile The file where the values are saved.
 	 * @param mapping The mapping done for D2D.
@@ -161,5 +164,15 @@ public class D2DValuesSetter {
 				line = reader.readLine();
 			}
 		}
+	}
+	
+	/**
+	 * Sets the Time of the experiment.
+	 * @param network The network whose connections are to be set.
+	 * @param mapping The mapping done for D2D.
+	 * @throws Exception
+	 */
+	protected static void setFinalTime(RegulatoryNetwork network, D2DMapping mapping) throws Exception{
+		Main.textmaxt.setText(Double.toString(mapping.finalTime()));
 	}
 }
