@@ -13,21 +13,14 @@ import java.io.File;
 import java.io.IOException;
 import java.text.NumberFormat;
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.stream.Collectors;
 
-import javax.swing.BoxLayout;
-import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
-import javax.swing.JTextArea;
 import javax.swing.SwingConstants;
 import javax.swing.UIManager;
 import javax.swing.table.DefaultTableCellRenderer;
@@ -38,8 +31,9 @@ import javax.swing.table.TableModel;
 import jimena.libs.StringLib;
 import jimena.libs.TxtFileChooser;
 import jimena.solver.SolverFrame;
+import jimena.weightsCalculator.gui.AnalyserFrame;
+import jimena.binaryrn.RegulatoryNetwork;
 import jimena.gui.main.Main;
-import jimena.libs.OptimizeMatlab;
 
 /**
  * Shows a table of numbers in a modal dialog.
@@ -54,6 +48,10 @@ public class TableFrame extends JDialog {
     private String[] titles = null;
     private TableModel model = null;
     private File currentFile=null;
+    
+    //added by Jan Krause (April 2023)
+    private JPanel controlPanel = null;
+    private RegulatoryNetwork network = null;
 
     /**
      * Creates a export string of the selected rows in the table.
@@ -128,6 +126,7 @@ public class TableFrame extends JDialog {
     public TableFrame(JFrame parent, String title, ArrayList<Object[]> data, String[] titles, Class<?> type, String[] horizontal) {
     	this(parent,title,data,titles,type, horizontal, Main.currentFile); 
     }
+    
     /**
      * Creates a new table of numbers.
      *
@@ -144,9 +143,62 @@ public class TableFrame extends JDialog {
      * @param horizontal
      *            Titles of the columns if the data is displayed horizontally, null for a vertical presentation
      */
+    //edited by Jan Krause (April 2023)
     public TableFrame(JFrame parent, String title, ArrayList<Object[]> data, String[] titles, Class<?> type, String[] horizontal, File currentFile) {
         super(parent, title + " - Ctrl+C to copy a line - Export the data for better accuracy", false);
-        this.currentFile=currentFile;
+        setupTableFrame(title,data,titles,type,horizontal,currentFile);
+        addControlPanel();
+		pack();
+        setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+    }
+    
+    /**
+     * Creates a new table of numbers. And allows for extra button options for opening additional Analytic GUIs to be added.
+     * Be careful with the numbers of added GUIs.
+     * @param parent
+     *            Parent of the model dialog
+     * @param title
+     *            Title of the dialog
+     * @param data
+     *            The data to display
+     * @param titles
+     *            Names of the data arrays
+     * @param type
+     *            Type of the data in the ArrayList
+     * @param horizontal
+     *            Titles of the columns if the data is displayed horizontally, null for a vertical presentation
+     * @param currentFile The current file for the regulatory network.
+     * @param analyserFrames The extra button options that should be added, in the form of the Frames/GUIs that can be opened via that button.
+     * @param network 
+     */
+    //added by Jan Krause (April 2023)
+    public TableFrame(JFrame parent, String title, ArrayList<Object[]> data, String[] titles, Class<?> type, String[] horizontal, File currentFile, AnalyserFrame[] analyserFrames, RegulatoryNetwork network) {
+        super(parent, title + " - Ctrl+C to copy a line - Export the data for better accuracy", false);
+        this.network = network;
+        setupTableFrame(title,data,titles,type,horizontal,currentFile);
+        addControlPanel(analyserFrames);
+		pack();
+        setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+
+    }
+    
+    /**
+     * Called by the constructor to set up the TableFrame.    
+     * @param title
+     *            Title of the dialog
+     * @param data
+     *            The data to display
+     * @param titles
+     *            Names of the data arrays
+     * @param type
+     *            Type of the data in the ArrayList
+     * @param horizontal
+     *            Titles of the columns if the data is displayed horizontally, null for a vertical presentation
+     * @param currentFile The file of the regulatory network.
+     */
+    //added by Jan Krause (April 2023)
+    protected void setupTableFrame(String title, ArrayList<Object[]> data, String[] titles, Class<?> type, String[] horizontal, File currentFile) {
+    	this.currentFile=currentFile;
         this.titles = titles;
 
         // Checks are done by the table model
@@ -200,8 +252,14 @@ public class TableFrame extends JDialog {
 
         getContentPane().add(new JScrollPane(table), BorderLayout.CENTER);
 
-        // Add a control panel with buttons
-        JPanel controlPanel = new JPanel(new GridLayout(1, 3));
+    }
+    
+    /**
+     * Ads a control panel with buttons.
+     */
+    //added by Jan Krause (April 2023)
+    protected void addControlPanel() {
+    	controlPanel = new JPanel(new GridLayout(1, 3));
 
         JButton closeButton = new JButton("Close Window");
         closeButton.addActionListener(new ActionListener() {
@@ -244,14 +302,45 @@ public class TableFrame extends JDialog {
 
         getContentPane().add(controlPanel, BorderLayout.SOUTH);
 
-        pack();
-
         this.getRootPane().setDefaultButton(closeButton);
-
-        setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-
     }
 
+    /**
+     * Ads a control panel with all standard buttons, plus any buttons that open analytic GUIs given to this method.
+     * @param analyserFrames The extra GUIs.
+     */
+    //added by Jan Krause (April 2023)
+    protected void addControlPanel(AnalyserFrame[] analyserFrames) {
+    	addControlPanel();
+    	for(AnalyserFrame frame : analyserFrames) {
+    		JButton button = new JButton(frame.getName());
+    		button.setIcon(new ImageIcon("images" + File.separator + "chart16.png"));
+        	//d2dSwitchAnalyser.setForeground(this.getForeground().darker());
+    		button.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent arg0) {
+                	AnalyserFrame f = null;
+            		try {
+            			f = frame;
+            			f.editFrame(model, network);
+            		} catch (Exception e1) {			
+            			e1.printStackTrace();
+            		} 
+                	f.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+                	try {
+                		UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());    		
+                	} catch (Exception e) {
+                		e.printStackTrace();
+                	}
+                	f.pack();
+                	f.setLocationRelativeTo(null); 
+                	f.setVisible(true); 
+                }
+            });
+    		controlPanel.add(button);
+    	}
+    }
+    
     /**
      * Renders a double with more than 3 fraction digits
      *

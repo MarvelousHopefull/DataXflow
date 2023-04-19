@@ -35,7 +35,7 @@ import jimena.weightsCalculator.D2DMapping;
 import jimena.weightsCalculator.fileCreator.D2DMappingFileInteractor;
 import jimena.weightsCalculator.fileCreator.DefCreator;
 
-//The GUI is in some parts mostly copy&paste from SolverFrame. (Thanks Chunguang Liang!) 
+//The GUI is in parts based on the GUI from SolverFrame. (Thanks Chunguang Liang!) 
 /**
  * GUI for D2D. 
  * Used for creating the model.def, data.def, initValues.txt and DataNodeNames.csv files, needed when working with D2D.
@@ -61,7 +61,6 @@ public class D2DFrame extends JFrame implements ActionListener{
 	//to select Nodes that should be seen as having a constant value 
 	private JTable constantNodes;
 	
-	//private HashMap<Integer, Node> nodeMap = new HashMap<Integer, Node>(); // Network
 	private NetworkNode[] nodes = null;
 	private File currentFile = null;
 	
@@ -112,7 +111,9 @@ public class D2DFrame extends JFrame implements ActionListener{
 	
 	private JTextField time;
 
-	
+	/**
+	 * Creates the base GUI.
+	 */
 	protected D2DFrame() {
 		super("D2D - ver. "+Main.ver);
 		setIconImage(new ImageIcon("images" + File.separator + "chart16.png").getImage());

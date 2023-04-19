@@ -67,16 +67,17 @@ public class D2DExternalStimuliFrame extends JFrame implements ActionListener {
 	private JTable posReg;
 	private JTable negReg;
 	
-	private File d2dFile = null;
-	private String d2dFileName = "no File selected";
-	JTextField d2dF = null;
+	private File d2dParameterFile = null;
+	private String d2dParameterFileName = "no File selected";
+	JTextField d2dParameterF = null;
 	
 	private File mappingFile = null;
 	private String mappingFileName = "no File selected";
 	JTextField mappingF = null;
 	
-	
-	
+	/**
+	 * Creates the base GUI.
+	 */
 	protected D2DExternalStimuliFrame() {
 		super("D2DExternalStimuli - ver. "+Main.ver);
 		setIconImage(new ImageIcon("images" + File.separator + "chart16.png").getImage());
@@ -300,7 +301,7 @@ public class D2DExternalStimuliFrame extends JFrame implements ActionListener {
 					mapping.addRegulatorMapping(downNodes);
 				}    
 				
-				ExternalStimuliFileCreator.createFile(selectedFile.toString(), d2dFile.toString(), mapping, network, nodesList);
+				ExternalStimuliFileCreator.createFile(selectedFile.toString(), d2dParameterFile.toString(), mapping, network, nodesList);
 				
 			} catch (Exception ex) {
 				ex.printStackTrace();
@@ -318,7 +319,7 @@ public class D2DExternalStimuliFrame extends JFrame implements ActionListener {
 		JToolBar toolbar = new JToolBar();
 		
 		//D2D Parameter File
-		JButton loadD2DFileBtn = new JButton("Load D2D File");
+		JButton loadD2DFileBtn = new JButton("Load Parameter File");
 		loadD2DFileBtn.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent arg0) {
@@ -331,7 +332,7 @@ public class D2DExternalStimuliFrame extends JFrame implements ActionListener {
 
                 filechooser.addChoosableFileFilter(tsvFilter);
 
-                filechooser.setDialogTitle("Open D2D TSV-File");
+                filechooser.setDialogTitle("Open D2D Parameter TSV-File");
                 filechooser.setDialogType(JFileChooser.OPEN_DIALOG);
 
                 int returnVal = filechooser.showOpenDialog(D2DExternalStimuliFrame.this);
@@ -349,14 +350,14 @@ public class D2DExternalStimuliFrame extends JFrame implements ActionListener {
 		JLabel labelTSVFile = new JLabel("File:");
 		toolbar.add(labelTSVFile,new GridBagConstraints(0,0,1,1,1.0,1.0,GridBagConstraints.NORTHWEST,GridBagConstraints.NONE,new Insets(0,0,0,0),0,0));
 
-		if(d2dFile != null) {
-			d2dFileName = d2dFile.getName();
+		if(d2dParameterFile != null) {
+			d2dParameterFileName = d2dParameterFile.getName();
 		}
-		d2dF = new JTextField(d2dFileName);
-		d2dF.setSize(250, 20);
-		d2dF.setPreferredSize(new Dimension(300, 20));
-		d2dF.setEditable(false);
-		toolbar.add(d2dF,new GridBagConstraints(1,0,3,1,1.0,1.0,GridBagConstraints.NORTHWEST,GridBagConstraints.NONE,new Insets(0,0,0,0),0,0));
+		d2dParameterF = new JTextField(d2dParameterFileName);
+		d2dParameterF.setSize(250, 20);
+		d2dParameterF.setPreferredSize(new Dimension(300, 20));
+		d2dParameterF.setEditable(false);
+		toolbar.add(d2dParameterF,new GridBagConstraints(1,0,3,1,1.0,1.0,GridBagConstraints.NORTHWEST,GridBagConstraints.NONE,new Insets(0,0,0,0),0,0));
 
 		//mapping
 		JButton loadMappingFileBtn = new JButton("Load Mapping File");
@@ -427,9 +428,9 @@ public class D2DExternalStimuliFrame extends JFrame implements ActionListener {
 	 * @param file The File with the values.
 	 */
 	private void loadD2DFile(File file) {
-		this.d2dFile = file;
-		d2dFileName = d2dFile.getName();
-		d2dF.setText(d2dFileName);
+		this.d2dParameterFile = file;
+		d2dParameterFileName = d2dParameterFile.getName();
+		d2dParameterF.setText(d2dParameterFileName);
 	}
 	
 	/**
@@ -464,7 +465,7 @@ public class D2DExternalStimuliFrame extends JFrame implements ActionListener {
 	}
 	
 	private void setParameters() {
-		D2DValuesSetter.setNetworkValues(network, d2dFile, mapping);;
+		D2DValuesSetter.setNetworkValues(network, d2dParameterFile, mapping);;
 	}
 	
 	private FileFilter tsvFilter = new FileFilter() {

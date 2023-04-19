@@ -78,6 +78,7 @@ import jimena.sssearcher.RandomSearcher;
 import jimena.sssearcher.StepwiseSearcher;
 import jimena.weightsCalculator.gui.D2DExternalStimuliFrame;
 import jimena.weightsCalculator.gui.D2DFrame;
+import jimena.weightsCalculator.gui.D2DSwitchAnalyserFrame;
 
 /**
  * 
@@ -268,8 +269,14 @@ public class Main extends JFrame implements RegulatoryNetworkObserver {
             ArrayList<double[]> result = network.stableSteadyStates(getConvergenceParametersFromGUI(), maxTime * 1000, sssearcher);
 
             if (result != null) {
+            	//changes for D2D start
+            	D2DSwitchAnalyserFrame d2dSAFrame = new D2DSwitchAnalyserFrame();
+            	d2dSAFrame.setVisible(false);
+            	D2DSwitchAnalyserFrame[] frames = new D2DSwitchAnalyserFrame[1];
+            	frames[0] = d2dSAFrame;
                 (new TableFrame(Main.this, "-Stable States-", ArrayLib.doublesListToObjectsListUnchecked(result), network.getNodeNames(),
-                        Double.class, null,currentFile)).setVisible(true);
+                        Double.class, null,currentFile, frames, network)).setVisible(true);
+                //changes for D2D end
             }
         }
     }
