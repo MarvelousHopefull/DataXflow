@@ -301,7 +301,7 @@ public class D2DExternalStimuliFrame extends JFrame implements ActionListener {
 					mapping.addRegulatorMapping(downNodes);
 				}    
 				
-				ExternalStimuliFileCreator.createFile(selectedFile.toString(), d2dParameterFile.toString(), mapping, network, nodesList);
+				ExternalStimuliFileCreator.createExternalStimuliFile(selectedFile.toString(), d2dParameterFile.toString(), mapping, network, nodesList);
 				
 			} catch (Exception ex) {
 				ex.printStackTrace();

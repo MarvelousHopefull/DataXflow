@@ -8,6 +8,8 @@ import java.io.FileWriter;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.swing.table.TableModel;
+
 import jimena.binarybf.BinaryBooleanFunction;
 import jimena.binarybf.actinhibitf.ActivatorInhibitorFunction;
 import jimena.binaryrn.NetworkNode;
@@ -32,10 +34,10 @@ public class ExternalStimuliFileCreator {
 	 * @param parametersPath The String Path where the File, with the (by D2D) calculated values for the Parameters, is to be found.
 	 * @param mapping The saved mapping, done by the DefCreator Class, during the initial usage of the D2D-GUI.
 	 * @param network The Network in question. 
-	 * @param constantNodes The Nodes that have a constant value.
+	 * @param nodesOfInterestList
 	 * @throws Exception
 	 */
-	public static void createFile(String path, String parametersPath, D2DMapping mapping, RegulatoryNetwork network, List<NodeOfInterest> nodesOfInterestList) throws Exception {
+	public static void createExternalStimuliFile(String path, String parametersPath, D2DMapping mapping, RegulatoryNetwork network, List<NodeOfInterest> nodesOfInterestList) throws Exception {
 		if (!path.endsWith("_main.m")) {
 			path = path +"_main.m";
 		}
@@ -51,6 +53,42 @@ public class ExternalStimuliFileCreator {
 		text += getParameters(parametersPath, mapping.parameterMapping(), mapping.regualtorMapping());
 		text += getA(nodesOfInterestList);
 		text += getOCP(parametersPath, mapping.nodeMapping(), mapping.regualtorMapping(), finalTime);
+		text += getODEs(network, mapping, constantNodes);
+		text += getTextTail();
+		BufferedWriter fw = new BufferedWriter(new FileWriter(path));
+		
+		fw.write(text);
+		fw.close();
+	}
+	
+	/**
+	 * Creates the file for the Switch Analyser.
+	 * 
+	 * @param path The String Path where the new File should be saved to.
+	 * @param model The TableModel where the steady states are to be found.
+	 * @param initRow The row in the TableModel where the initial steady state is to be found.
+	 * @param targetRow The row in the TableModel where the targeted steady state is to be found.
+	 * @param parametersPath The String Path where the File, with the (by D2D) calculated values for the Parameters, is to be found.
+	 * @param mapping The saved mapping, done by the DefCreator Class, during the initial usage of the D2D-GUI.
+	 * @param network The Network in question. 
+	 * @throws Exception
+	 */
+	public static void createSwitchAnalyserFile(String path, TableModel model, int initRow, int targetRow, String parametersPath, D2DMapping mapping, RegulatoryNetwork network) throws Exception {
+		if (!path.endsWith("_main.m")) {
+			path = path +"_main.m";
+		}
+		File file = new File(path);
+		if(file.exists()) { 
+			file.delete();
+		}
+		
+		double finalTime = mapping.finalTime();
+		String[] constantNodes = mapping.constNodes();
+		
+		String text = getTextHeader();
+		text += getParameters(parametersPath, mapping.parameterMapping(), mapping.regualtorMapping());
+		text += getSwitchAnalyserOCP(model, initRow, mapping.nodeMapping(), mapping.regualtorMapping(), finalTime);
+		text += getSwitchAnalyserXD(model, targetRow);
 		text += getODEs(network, mapping, constantNodes);
 		text += getTextTail();
 		BufferedWriter fw = new BufferedWriter(new FileWriter(path));
@@ -261,6 +299,88 @@ public class ExternalStimuliFileCreator {
 		text += "],'DataNoi',A);" + "\r\n"
 				+ "\r\n";
 		text += "xd = get_xd(OCP); %Creates the desired state in which the nodes of interest are expected to be" + "\r\n"
+				+ "\r\n";
+		return text;
+	}
+	
+	/**
+	 * Creates the String representing the initial steady state.
+	 * @param model The TableModel where the steady states are to be found.
+	 * @param initRow The row in the TableModel where the initial steady state is to be found.
+	 * @param nodeMapping
+	 * @param regulatorMapping
+	 * @param finalTime
+	 * @return
+	 * @throws Exception
+	 */
+	private static String getSwitchAnalyserOCP(TableModel model, int initRow, String[][] nodeMapping, String[][] regulatorMapping, double finalTime) throws Exception {
+		String text = "";
+				
+		//BufferedReader reader = new BufferedReader(new FileReader(parametersPath))) {
+		//String line = reader.readLine();
+		String parameterValue = "";
+		String nodeValueText = "";
+		int numberOfNodes = 0;
+		int numberOfControls = 0;
+		ArrayList<String> nodeList = new ArrayList<String>();
+		for(int i = 0; i < model.getColumnCount(); i++) {
+			nodeList.add(model.getValueAt(initRow, i).toString());
+		}
+			
+		for(int i = 0; i < nodeList.size(); i++) {
+			if(nodeValueText != "") {
+				nodeValueText += ",";
+			}
+			parameterValue = nodeList.get(i);
+			nodeValueText += parameterValue;
+			numberOfNodes++;
+		}
+		if(numberOfNodes != nodeMapping.length) {
+			//throw new Exception("There seem to be an unequal amount of nodes in the referenced topology and the File provided by D2D!");
+		}
+		if(regulatorMapping != null) {
+			numberOfControls = regulatorMapping.length;
+		}
+		text += "OCP = struct('numNodes',"
+				+ numberOfNodes
+				+ ",'numControls',"
+				+ numberOfControls
+				+ ",'timeInterval',0.1,'timeHorizon'," + finalTime + ",'alpha',0,'initialState',[";
+		text += nodeValueText;
+		
+		text += "],'DataNoi',A);" + "\r\n"
+				+ "\r\n";
+		return text;
+	}
+	
+	/**
+	 * Creates the String representing the target steady state.
+	 * @param model The TableModel where the steady states are to be found.
+	 * @param targetRow The row in the TableModel where the targeted steady state is to be found.	 
+	 * @return
+	 */
+	private static String getSwitchAnalyserXD(TableModel model, int targetRow) {
+		String text = "";
+		
+		String parameterValue = "";
+		String nodeValueText = "";
+		
+		ArrayList<String> nodeList = new ArrayList<String>();
+		for(int i = 0; i < model.getColumnCount(); i++) {
+			nodeList.add(model.getValueAt(targetRow, i).toString());
+		}
+		
+		for(int i = 0; i < nodeList.size(); i++) {
+			if(nodeValueText != "") {
+				nodeValueText += ",";
+			}
+			parameterValue = nodeList.get(i);
+			nodeValueText += parameterValue;
+		}
+		
+		text += "xd = get_xd(";
+		text += nodeValueText;
+		text += ",OCP); %Creates the desired state in which the nodes of interest are expected to be" + "\r\n"
 				+ "\r\n";
 		return text;
 	}
