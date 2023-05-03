@@ -401,12 +401,14 @@ public class ExternalStimuliFileCreator {
 		String y;
 		String w;
 		boolean isConstant = false;
-		for(int i = 0; i < nodes.length; i++ ) {
+		for(int i = 0; i < nodeMapping.length; i++) {
+			int index = -1;
 			text1 = "";
 			nodeName = "";
-			for(int j = 0; j < nodeMapping.length; j++) {
-				if(nodeMapping[j][1].equals(nodes[i].getName())) {
-					nodeName = "x(" + nodeMapping[j][2] + ")";
+			for(int j = 0; j < nodes.length; j++) {
+				if(nodeMapping[i][1].equals(nodes[j].getName())) {
+					nodeName = "x(" + nodeMapping[i][2] + ")";
+					index = j;
 					break;
 				}
 			}
@@ -414,7 +416,7 @@ public class ExternalStimuliFileCreator {
 			if(constantNodes != null) {
 				isConstant = false;
 				for(int j = 0; j < constantNodes.length; j++) {
-					if(constantNodes[j].equals(nodes[i].getName())) {
+					if(constantNodes[j].equals(nodes[index].getName())) {
 						isConstant = true;
 						break;
 					}
@@ -422,7 +424,7 @@ public class ExternalStimuliFileCreator {
 				if(isConstant) {
 					text1 += "0";
 					//if last
-					if((i+1) == nodes.length) {
+					if((i+1) == nodeMapping.length) {
 						text1 += "};" + "\r\n";
 					}
 					else {
@@ -450,7 +452,7 @@ public class ExternalStimuliFileCreator {
 				}
 			}
 			
-			bbf = nodes[i].getFunction();
+			bbf = nodes[index].getFunction();
 			boolean[] activators = ((ActivatorInhibitorFunction)bbf).getActivators();
 			boolean hasActivators = false;
 			boolean hasInhibitors = false;
@@ -466,6 +468,7 @@ public class ExternalStimuliFileCreator {
 				}
 			}
 			
+			//activating/inhibiting inputs
 			String acti = "";
 			String aSum = ""; //Sum of alpha
 			String aWSum = ""; //Sum of weighted nodes
@@ -528,7 +531,7 @@ public class ExternalStimuliFileCreator {
 			if(rMapping != null) {
 				for(int j = 0; j <rMapping.length; j++) {
 					
-					if(rMapping[j][1].equals(nodes[i].getName())) {
+					if(rMapping[j][1].equals(nodes[index].getName())) {
 						if(rMapping[j][4].equals("false")) {
 							continue;
 						}
@@ -549,7 +552,7 @@ public class ExternalStimuliFileCreator {
 			if(up) { text1 += " + " + deltaAliasU + "*" + rAliasU + "*(1-" + nodeName + ")"; }
 			if(down) { text1 += " - " + deltaAliasD + "*" + rAliasD + "*" + nodeName; }
 			
-			if((i+1) == nodes.length) {
+			if((i+1) == nodeMapping.length) {
 				text1 += "};" + "\r\n";
 			}
 			else {
