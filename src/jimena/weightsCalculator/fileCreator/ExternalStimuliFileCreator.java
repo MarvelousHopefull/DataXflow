@@ -193,7 +193,7 @@ public class ExternalStimuliFileCreator {
 						}
 						parameterName = parts[0];
 						parameterValue = parts[5];
-						parametersText += parameterName + "=" + parameterValue + "\r\n";
+						parametersText += parameterName + "=" + parameterValue + ";\r\n";
 						parameterLinesAmount++;
 					}
 					
