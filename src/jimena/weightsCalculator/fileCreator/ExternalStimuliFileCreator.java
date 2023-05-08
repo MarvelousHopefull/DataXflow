@@ -491,11 +491,11 @@ public class ExternalStimuliFileCreator {
 					else if(kMapping[k][3].equals("b")) {
 						if(bSum.equals("")) {
 							bSum += kMapping[k][0];
-							bWSum += kMapping[k][0] + "*" + kMapping[k][4];
+							bWSum += kMapping[k][0] + "*x(" + kMapping[k][5] + ")";
 						}
 						else {
 							bSum += "+" + kMapping[k][0];
-							bWSum += "+" + kMapping[k][0] + "*" + kMapping[k][4];
+							bWSum += "+" + kMapping[k][0] + "*x(" + kMapping[k][5] + ")";
 						}
 					}
 				}
