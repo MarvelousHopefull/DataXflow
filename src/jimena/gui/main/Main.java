@@ -1338,7 +1338,7 @@ public class Main extends JFrame implements RegulatoryNetworkObserver {
     private void runD2DExternalStimuli() {    	
     	D2DExternalStimuliFrame f = null;
 		try {
-			f = new D2DExternalStimuliFrame(network);
+			f = new D2DExternalStimuliFrame(network,currentFile);
 		} catch (Exception e1) {			
 			e1.printStackTrace();
 		} 

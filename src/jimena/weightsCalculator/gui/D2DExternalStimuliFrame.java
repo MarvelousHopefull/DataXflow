@@ -92,11 +92,17 @@ public class D2DExternalStimuliFrame extends JFrame implements ActionListener {
 	 * @param currentFile The File of the current Network.
 	 * @throws Exception
 	 */
-	public D2DExternalStimuliFrame(RegulatoryNetwork network) throws Exception {
+	public D2DExternalStimuliFrame(RegulatoryNetwork network, File currentFile) throws Exception {
 		this();
 		this.network = network;
-		NetworkNode[] nodes = this.network.getNetworkNodes();
-		//System.out.println(nodes.length);
+		if(currentFile == null) {
+			throw new Exception("No RN File selected!");
+		}
+		RegulatoryNetwork localNetwork = new RegulatoryNetwork(); //needed to get unsorted nodes list ...
+        // Load a yED GraphML file into the network
+        localNetwork.loadYEdFile(currentFile);
+        
+		NetworkNode[] nodes = localNetwork.getNetworkNodes();
 		List<NodeOfInterest> nodesOfInterest = new ArrayList<NodeOfInterest>();
 		for (int i = 0; i < nodes.length; i++) {
 			nodesOfInterest.add(NodeOfInterest.createNode((i+1), nodes[i].getName()));
