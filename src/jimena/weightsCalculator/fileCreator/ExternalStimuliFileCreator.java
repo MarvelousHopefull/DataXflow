@@ -51,7 +51,7 @@ public class ExternalStimuliFileCreator {
 		
 		String text = getTextHeader();
 		text += getParameters(parametersPath, mapping.parameterMapping(), mapping.regualtorMapping());
-		text += getA(nodesOfInterestList);
+		text += getA(nodesOfInterestList, mapping);
 		text += getOCP(parametersPath, mapping.nodeMapping(), mapping.regualtorMapping(), finalTime);
 		text += getODEs(network, mapping, constantNodes);
 		text += getTextTail();
@@ -207,7 +207,7 @@ public class ExternalStimuliFileCreator {
 				if(!deltasList.contains(regulatorMapping[i][3]) && !regulatorMapping[i][4].equals("false")) {
 					parameterName = regulatorMapping[i][3];
 					parameterValue = "" + delta;
-					parametersText += parameterName + "=" + parameterValue + "\r\n";
+					parametersText += parameterName + "=" + parameterValue + ";\r\n";
 				}
 			}
 		}
@@ -216,10 +216,12 @@ public class ExternalStimuliFileCreator {
 		return text;
 	}
 	
-	private static String getA(List<NodeOfInterest> nodesOfInterestList) {
+	private static String getA(List<NodeOfInterest> nodesOfInterestList, D2DMapping mapping) {
 		String text = "";
 		String nodeValueText = "";
 		boolean firstElement = true;
+		int nodeNumber = -1;
+		String[][] nodes = mapping.nodeMapping();
 		for(NodeOfInterest node : nodesOfInterestList) {
 			if(!firstElement) {
 				nodeValueText += ";";
@@ -227,7 +229,13 @@ public class ExternalStimuliFileCreator {
 			else {
 				firstElement = false;
 			}
-			nodeValueText += node.getNodeNumber() + "," + node.getTargetedValue() + "," + node.getNodeWeight();
+			for(int i = 0; i < nodes.length; i++) {
+				if(nodes[i][1].equals(node.getNodeName())) {
+					nodeNumber = Integer.valueOf(nodes[i][2]);
+					break;
+				}
+			}
+			nodeValueText += nodeNumber + "," + node.getTargetedValue() + "," + node.getNodeWeight();
 		}
 		text += "A=[" + nodeValueText + "];";
 		text += "           %Matrix where each row is for a node of interest, first column is for its index which it has in the network, second column is its desired constant activity level, third column is its corresponding weight in the target functional\r\n";

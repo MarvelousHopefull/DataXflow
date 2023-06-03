@@ -162,7 +162,7 @@ public class D2DMapping {
 		for(int i = 0; i < newUs.length; i++) {
 			exists = false;
 			for(int j = 0; j < regulatorMapping.length; j++) {
-				//if same node and same regulation (both up(u) or both down(d))
+				//if same node(name) and same regulation (both up(u) or both down(d))
 				if(regulatorMapping[j][1].equals(newUs[i][0]) && regulatorMapping[j][2].equals(newUs[i][1])) {
 					exists = true;
 					break;

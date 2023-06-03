@@ -6,7 +6,7 @@ package jimena.weightsCalculator.gui.TableModel;
  *
  */
 public class NodeOfInterest {
-	private int nodeNumber;
+	private int nodeNumber;	//Jimena dependent index (seems to be alphabetical sorted)
 	private String nodeName;
 	private double nodeWeight = 0;
 	private double targetedValue = 0;
