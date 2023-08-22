@@ -31,7 +31,7 @@ import javax.swing.table.TableModel;
 import jimena.libs.StringLib;
 import jimena.libs.TxtFileChooser;
 import jimena.solver.SolverFrame;
-import jimena.weightsCalculator.gui.AnalyserFrame;
+import jimena.weightsCalculator.gui.AnalyzerFrame;
 import jimena.binaryrn.RegulatoryNetwork;
 import jimena.gui.main.Main;
 
@@ -172,11 +172,11 @@ public class TableFrame extends JDialog {
      * @param network 
      */
     //added by Jan Krause (April 2023)
-    public TableFrame(JFrame parent, String title, ArrayList<Object[]> data, String[] titles, Class<?> type, String[] horizontal, File currentFile, AnalyserFrame[] analyserFrames, RegulatoryNetwork network) {
+    public TableFrame(JFrame parent, String title, ArrayList<Object[]> data, String[] titles, Class<?> type, String[] horizontal, File currentFile, AnalyzerFrame[] analyzerFrames, RegulatoryNetwork network) {
         super(parent, title + " - Ctrl+C to copy a line - Export the data for better accuracy", false);
         this.network = network;
         setupTableFrame(title,data,titles,type,horizontal,currentFile);
-        addControlPanel(analyserFrames);
+        addControlPanel(analyzerFrames);
 		pack();
         setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 
@@ -310,16 +310,16 @@ public class TableFrame extends JDialog {
      * @param analyserFrames The extra GUIs.
      */
     //added by Jan Krause (April 2023)
-    protected void addControlPanel(AnalyserFrame[] analyserFrames) {
+    protected void addControlPanel(AnalyzerFrame[] analyzerFrames) {
     	addControlPanel();
-    	for(AnalyserFrame frame : analyserFrames) {
+    	for(AnalyzerFrame frame : analyzerFrames) {
     		JButton button = new JButton(frame.getName());
     		button.setIcon(new ImageIcon("images" + File.separator + "chart16.png"));
-        	//d2dSwitchAnalyser.setForeground(this.getForeground().darker());
+        	//d2dSwitchAnalyzer.setForeground(this.getForeground().darker());
     		button.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent arg0) {
-                	AnalyserFrame f = null;
+                	AnalyzerFrame f = null;
             		try {
             			f = frame;
             			f.editFrame(model, network);

@@ -14,14 +14,14 @@ import jimena.gui.main.Main;
  * @author Jan Krause (April 2023)
  *
  */
-public abstract class AnalyserFrame extends JFrame implements ActionListener {
+public abstract class AnalyzerFrame extends JFrame implements ActionListener {
 
 	private static final long serialVersionUID = 1L;
 	protected String frameName = "";
 
 	public abstract void editFrame(TableModel model, RegulatoryNetwork network);
 	
-	public AnalyserFrame(String text) {
+	public AnalyzerFrame(String text) {
 		super(text);
 	}
 	

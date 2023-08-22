@@ -494,7 +494,7 @@ public class D2DFrame extends JFrame implements ActionListener{
 		ubValueDelta.setEditable(true);
 		toolbar.add(ubValueDelta,new GridBagConstraints(7,2,1,1,2.0,1.0,GridBagConstraints.SOUTHWEST,GridBagConstraints.NONE,new Insets(0,0,0,0),0,0));
 
-		JLabel labelNodeValues = new JLabel("Init Node Values:");
+		JLabel labelNodeValues = new JLabel("Init Initial Values:");
 		toolbar.add(labelNodeValues);		
 		toolbar.add(labelNodeValues,new GridBagConstraints(8,0,1,1,1.0,1.0,GridBagConstraints.SOUTHWEST,GridBagConstraints.NONE,new Insets(0,0,0,0),0,0));
 		initValueX = new JTextField(Double.toString(initNodeValue));

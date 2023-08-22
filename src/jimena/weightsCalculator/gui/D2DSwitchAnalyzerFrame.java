@@ -49,7 +49,7 @@ import jimena.weightsCalculator.gui.TableModel.Control.Regulation;
 * @author Jan Krause
 * @since 13.01.2023
 * */
-public class D2DSwitchAnalyserFrame extends AnalyserFrame implements ActionListener{
+public class D2DSwitchAnalyzerFrame extends AnalyzerFrame implements ActionListener{
 
 	private static final long serialVersionUID = 1L;
 	
@@ -82,30 +82,30 @@ public class D2DSwitchAnalyserFrame extends AnalyserFrame implements ActionListe
 	/**
 	 * Creates the base GUI.
 	 */
-	public D2DSwitchAnalyserFrame() {
-		super("D2DSwitchAnalyserFrame - ver. "+Main.ver);
+	public D2DSwitchAnalyzerFrame() {
+		super("D2DSwitchAnalyzerFrame - ver. "+Main.ver);
 		setIconImage(new ImageIcon("images" + File.separator + "chart16.png").getImage());
 		setMinimumSize(new Dimension(500, 400));
 		this.setPreferredSize(new Dimension(width, hight));
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		getContentPane().setLayout(new BorderLayout());
-		this.frameName = "D2D Switch Analasyer";
+		this.frameName = "D2D Switch Analyzer";
 	}
 	
 	/**
-	 * Creates the GUI for the SwitchAnalyser used with D2D fitted parameters.
+	 * Creates the GUI for the SwitchAnalyzer used with D2D fitted parameters.
 	 * @param currentFile The File of the current Network.
 	 * @throws Exception
 	 */
-	public D2DSwitchAnalyserFrame(RegulatoryNetwork network) throws Exception {
+	public D2DSwitchAnalyzerFrame(RegulatoryNetwork network) throws Exception {
 		this();
 		this.network = network;
-		NetworkNode[] nodes = this.network.getNetworkNodes();
+		//NetworkNode[] nodes = this.network.getNetworkNodes();
 	
 	}
 	
 	/**
-	 * Triggers for the Switch Analyser File creation.
+	 * Triggers for the Switch Analyzer File creation.
 	 */
 	@Override
 	public void actionPerformed(ActionEvent e) {
@@ -315,7 +315,7 @@ public class D2DSwitchAnalyserFrame extends AnalyserFrame implements ActionListe
                 filechooser.setDialogTitle("Open D2D Parameter TSV-File");
                 filechooser.setDialogType(JFileChooser.OPEN_DIALOG);
 
-                int returnVal = filechooser.showOpenDialog(D2DSwitchAnalyserFrame.this);
+                int returnVal = filechooser.showOpenDialog(D2DSwitchAnalyzerFrame.this);
 
                 if (returnVal == JFileChooser.APPROVE_OPTION) {
                     loadD2DFile(filechooser.getSelectedFile());
@@ -356,7 +356,7 @@ public class D2DSwitchAnalyserFrame extends AnalyserFrame implements ActionListe
                 filechooser.setDialogTitle("Open D2D Parameter Mapping TSV-File");
                 filechooser.setDialogType(JFileChooser.OPEN_DIALOG);
 
-                int returnVal = filechooser.showOpenDialog(D2DSwitchAnalyserFrame.this);
+                int returnVal = filechooser.showOpenDialog(D2DSwitchAnalyzerFrame.this);
 
                 if (returnVal == JFileChooser.APPROVE_OPTION) {
                     loadMappingFile(filechooser.getSelectedFile());
