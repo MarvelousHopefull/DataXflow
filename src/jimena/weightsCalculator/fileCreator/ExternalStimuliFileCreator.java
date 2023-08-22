@@ -55,6 +55,7 @@ public class ExternalStimuliFileCreator {
 		text += getOCP(parametersPath, mapping.nodeMapping(), mapping.regualtorMapping(), finalTime);
 		text += getODEs(network, mapping, constantNodes);
 		text += getTextTail();
+		text += getNodeAlias(mapping);
 		BufferedWriter fw = new BufferedWriter(new FileWriter(path));
 		
 		fw.write(text);
@@ -617,6 +618,18 @@ public class ExternalStimuliFileCreator {
 				+ "dlmwrite('u.txt',[0:OCP.timeInterval:(round(OCP.timeHorizon/OCP.timeInterval)-1)*OCP.timeInterval;u]);           %Writes the external stimuli u in a text-file \"u.txt\" where the first row corresponds to the discrete time steps, separated by commas, row i=2,...,numControls+1 corresponds to external stimulus u(i), values in the columns, separated by commas, value of u(i) at the corresponding time step" + "\r\n"
 				+ "fprintf('Done!\\n');" + "\r\n"
 				+ "end" + "\r\n";
+		return text;
+	}
+	
+	private static String getNodeAlias(D2DMapping mapping) {
+		String[][] nodeMapping = mapping.nodeMapping();
+		String text = "\r\n"
+				+ "%Nodes:" + "\r\n";
+		for(int i = 0; i<nodeMapping.length; i++) {
+			text += "%" + nodeMapping[i][1] + "	" + nodeMapping[i][0] + "\r\n";
+		}
+				
+		
 		return text;
 	}
 }
