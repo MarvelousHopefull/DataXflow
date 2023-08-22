@@ -449,7 +449,7 @@ public class D2DExternalStimuliFrame extends JFrame implements ActionListener {
 		mappingF.setText(mappingFileName);
 		try {
 			this.mapping = D2DMappingFileInteractor.getD2DMapping(mappingFile.toString());
-			String[][] regulatorMapping = mapping.regualtorMapping();
+			String[][] regulatorMapping = mapping.regulatorMapping();
 			ArrayList<Control> controlsList = new ArrayList<Control>();
 			Regulation reg;
 			for(int i = 0; i < regulatorMapping.length; i++) {

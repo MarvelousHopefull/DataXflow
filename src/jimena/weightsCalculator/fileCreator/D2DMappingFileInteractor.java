@@ -219,7 +219,7 @@ public class D2DMappingFileInteractor {
 		}
 		
 		String[][] nodeMapping = mapping.nodeMapping();
-		String[][] regulatorMapping = mapping.regualtorMapping();
+		String[][] regulatorMapping = mapping.regulatorMapping();
 		String[][] parameterMapping = mapping.parameterMapping();
 		String[] constNodes = mapping.constNodes();
 		double finalTime = mapping.finalTime();

@@ -157,7 +157,7 @@ public class D2DSwitchAnalyzerFrame extends AnalyzerFrame implements ActionListe
 					mapping.addRegulatorMapping(downNodes);
 				}    
 				
-				ExternalStimuliFileCreator.createSwitchAnalyserFile(selectedFile.toString(),dataModel,initR,targetR, d2dParameterFile.toString(), mapping, network);
+				ExternalStimuliFileCreator.createSwitchAnalyzerFile(selectedFile.toString(),dataModel,initR,targetR, d2dParameterFile.toString(), mapping, network);
 				
 				
 			} catch (Exception ex) {

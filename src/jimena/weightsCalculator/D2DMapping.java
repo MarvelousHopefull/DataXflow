@@ -83,7 +83,7 @@ public class D2DMapping {
 	 * [i][5] := alias Number (1|2|...)
 	 * @return
 	 */
-	public String[][] regualtorMapping(){
+	public String[][] regulatorMapping(){
 		return this.regulatorMapping;
 	}
 	

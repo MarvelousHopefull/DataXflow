@@ -50,12 +50,12 @@ public class ExternalStimuliFileCreator {
 		String[] constantNodes = mapping.constNodes();
 		
 		String text = getTextHeader();
-		text += getParameters(parametersPath, mapping.parameterMapping(), mapping.regualtorMapping());
+		text += getParameters(parametersPath, mapping.parameterMapping(), mapping.regulatorMapping());
 		text += getA(nodesOfInterestList, mapping);
-		text += getOCP(parametersPath, mapping.nodeMapping(), mapping.regualtorMapping(), finalTime);
+		text += getOCP(parametersPath, mapping.nodeMapping(), mapping.regulatorMapping(), finalTime);
 		text += getODEs(network, mapping, constantNodes);
 		text += getTextTail();
-		text += getNodeAlias(mapping);
+		text += getNodeAndUAlias(mapping);
 		BufferedWriter fw = new BufferedWriter(new FileWriter(path));
 		
 		fw.write(text);
@@ -63,7 +63,7 @@ public class ExternalStimuliFileCreator {
 	}
 	
 	/**
-	 * Creates the file for the Switch Analyser.
+	 * Creates the file for the Switch Analyzer.
 	 * 
 	 * @param path The String Path where the new File should be saved to.
 	 * @param model The TableModel where the steady states are to be found.
@@ -74,7 +74,7 @@ public class ExternalStimuliFileCreator {
 	 * @param network The Network in question. 
 	 * @throws Exception
 	 */
-	public static void createSwitchAnalyserFile(String path, TableModel model, int initRow, int targetRow, String parametersPath, D2DMapping mapping, RegulatoryNetwork network) throws Exception {
+	public static void createSwitchAnalyzerFile(String path, TableModel model, int initRow, int targetRow, String parametersPath, D2DMapping mapping, RegulatoryNetwork network) throws Exception {
 		if (!path.endsWith("_main.m")) {
 			path = path +"_main.m";
 		}
@@ -87,9 +87,9 @@ public class ExternalStimuliFileCreator {
 		String[] constantNodes = mapping.constNodes();
 		
 		String text = getTextHeader();
-		text += getParameters(parametersPath, mapping.parameterMapping(), mapping.regualtorMapping());
-		text += getSwitchAnalyserOCP(model, initRow, mapping.nodeMapping(), mapping.regualtorMapping(), finalTime);
-		text += getSwitchAnalyserXD(model, targetRow);
+		text += getParameters(parametersPath, mapping.parameterMapping(), mapping.regulatorMapping());
+		text += getSwitchAnalyzerOCP(model, initRow, mapping.nodeMapping(), mapping.regulatorMapping(), finalTime);
+		text += getSwitchAnalyzerXD(model, targetRow);
 		text += getODEs(network, mapping, constantNodes);
 		text += getTextTail();
 		BufferedWriter fw = new BufferedWriter(new FileWriter(path));
@@ -322,7 +322,7 @@ public class ExternalStimuliFileCreator {
 	 * @return
 	 * @throws Exception
 	 */
-	private static String getSwitchAnalyserOCP(TableModel model, int initRow, String[][] nodeMapping, String[][] regulatorMapping, double finalTime) throws Exception {
+	private static String getSwitchAnalyzerOCP(TableModel model, int initRow, String[][] nodeMapping, String[][] regulatorMapping, double finalTime) throws Exception {
 		String text = "";
 				
 		//BufferedReader reader = new BufferedReader(new FileReader(parametersPath))) {
@@ -368,7 +368,7 @@ public class ExternalStimuliFileCreator {
 	 * @param targetRow The row in the TableModel where the targeted steady state is to be found.	 
 	 * @return
 	 */
-	private static String getSwitchAnalyserXD(TableModel model, int targetRow) {
+	private static String getSwitchAnalyzerXD(TableModel model, int targetRow) {
 		String text = "";
 		
 		String parameterValue = "";
@@ -401,7 +401,7 @@ public class ExternalStimuliFileCreator {
 		String text1 = "";
 		NetworkNode[] nodes = network.getNetworkNodes();
 		String[][] nodeMapping = mapping.nodeMapping();
-		String[][] rMapping = mapping.regualtorMapping();
+		String[][] rMapping = mapping.regulatorMapping();
 		String[][] kMapping = mapping.parameterMapping();
 		
 		BinaryBooleanFunction bbf;
@@ -621,12 +621,25 @@ public class ExternalStimuliFileCreator {
 		return text;
 	}
 	
-	private static String getNodeAlias(D2DMapping mapping) {
+	private static String getNodeAndUAlias(D2DMapping mapping) {
 		String[][] nodeMapping = mapping.nodeMapping();
+		String[][] uMapping = mapping.regulatorMapping();
 		String text = "\r\n"
 				+ "%Nodes:" + "\r\n";
 		for(int i = 0; i<nodeMapping.length; i++) {
 			text += "%" + nodeMapping[i][1] + "	" + nodeMapping[i][0] + "\r\n";
+		}
+		text += "\r\n"
+				+ "%Regulated Nodes:" + "\r\n";
+		for(int i = 0; i<uMapping.length; i++) {
+			text += "%" + uMapping[i][1] + "	" + uMapping[i][0] + "	"; 
+			if(uMapping[i][2].equals("u")) {
+				text += "up";
+			}
+			else {
+				text += "down";
+			}
+			text += "\r\n";
 		}
 				
 		
