@@ -8,7 +8,8 @@ https://www.biozentrum.uni-wuerzburg.de/bioinfo/computing/jimena/
 
 The Jimena-To-D2D extension is meant as a tool to bridge the usage of Jimena and D2D.
 D2D allows to test and fit the graph used in Jimena to collected experimental data.
-The added GUIs help with the generation of files needed for the usage of D2D.
+The added GUIs help with the generation of files needed for the usage of D2D. 
+You can find the D2D software here: https://github.com/Data2Dynamics/d2d
 
 ## Installation
 Downloading the JimenaE.jar file provided in the master branch gives you access to the complete Jimena software 
