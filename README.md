@@ -12,5 +12,5 @@ The added GUIs help with the generation of files needed for the usage of D2D.
 You can find the D2D software here: https://github.com/Data2Dynamics/d2d
 
 ## Installation
-Downloading the JimenaE.jar file provided in the master branch gives you access to the complete Jimena software 
+Downloading this respository provided in the master branch gives you access to the complete Jimena software 
 including the additions needed for working with D2D. The JimenaE.jar file can be used like any other executable file, openenig the Jimena GUI.
