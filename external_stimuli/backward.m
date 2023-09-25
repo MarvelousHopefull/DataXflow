@@ -26,7 +26,7 @@ nonzeroel=find(cmx(1,:));                                                       
 for j=Nt-1:-1:1                                                                 %Loop over all time steps backwards starting from Nt-1 because of the final time condition p(T)=x-xd
     eval_deriv=cmx;                                                             %Set the derivatives which are equal zero to zero and the other equal 1
     eval_deriv(nonzeroel)=cellfun(@(c) c(x(:,j)',u(:,j)'),df_x(1,nonzeroel));   %Substitute the ones with the value of the corresponding non-zero derivative, evaluate the Jacobi matrix at (x(:,j),u(:,j)), the values of x and u at time j, cellfun(@(c) c(x,u),df_x) applies the argument (x,u) to each function handle df_x{i,j}
-    eval_deriv=sparse(reshape(eval_deriv,[N,N])');                              %Reshape vector to a matrix and transfrom it into a sparse one
+    eval_deriv=sparse(reshape(eval_deriv,[N,N])');                              %Reshape vector to a matrix and transform it into a sparse one
     p(:,j)=p(:,j)+p(:,j+1)+dt*eval_deriv(:,:)'*p(:,j+1);                        %Solve adjoint equation backward in time with an explicit Euler scheme   
 end
 

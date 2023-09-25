@@ -1,10 +1,10 @@
 function [ures] = combinatorial_method(f,xd,max_Num,intv,OCP)
 %Returns a i x round(OCP.T/OCP.timeInterval) matrix A, i=1,...,max_Num, containing a combination of
 %external stimuli, each with the same constant value, causing the smallest target functional value. 
-%Textoutput: The index of active external stimuli and their corresponding
+%Text output: The index of active external stimuli and their corresponding
 %target functional value
 
-valu=1/intv:1/intv:1;                                           %Devide range of the external stimuli [0,1] into number of intervals
+valu=1/intv:1/intv:1;                                           %Divide range of the external stimuli [0,1] into number of intervals
 T=OCP.timeHorizon;
 dt=OCP.timeInterval;
 Nt=round(T/dt);
@@ -13,21 +13,21 @@ wNoi=OCP.DataNoi(:,3);                                          %Read out their 
 u0=zeros(OCP.numControls,Nt);                                   %Initial guess for the external stimuli by constant zero functions
 ures=u0;                                                        %ures: current combination of external stimuli with the smallest target functional value
 x=forward(f,u0,OCP);                                            %Calculating the state x corresponding to the external stimuli u
-Jmin=0.5*dt*sum(wNoi'.*sum(transpose((x(numNoi,:)-xd).^2)));    %Calculates the correponding target functional value
+Jmin=0.5*dt*sum(wNoi'.*sum(transpose((x(numNoi,:)-xd).^2)));    %Calculates the corresponding target functional value
 fprintf('\n');
 fprintf('The target functional value with no active stimulus is %d\n\n',Jmin);
 for i=1:max_Num                                                 %Going through all possible length of combinations from length i=1 to i=max_Num
     fprintf('Combinations with %i external stimuli are being tested...\n',i)
     tic                                                         %Start time for the calculation of all combinations with i external stimuli
     Combis=nchoosek(1:OCP.numControls,i);                       %Making all the combinations of i different controls out of numControls many external stimuli
-    B=size(Combis);                                             %B(1,1) number of different combinations, B(1,2)=i lenght of the combination
-    J=zeros(B(1,1),1);                                          %Initialize vector for the targetfunctional value for each combination
+    B=size(Combis);                                             %B(1,1) number of different combinations, B(1,2)=i length of the combination
+    J=zeros(B(1,1),1);                                          %Initialize vector for the target-functional value for each combination
     numCon=B(1,2);                                              %Bufferen due to the parallelization with parfor
     for k=1:max(size(valu))                                     %Loop over all values for each combination
-        Valu=valu(k);                                           %k-th value of the interval into which the range of the external stimuli is devided into
+        Valu=valu(k);                                           %k-th value of the interval into which the range of the external stimuli is divided into
         parfor j=1:B(1,1)                                       %Loop over all combination; parfor causes parallel calculation of the target functional values of corresponding combination
-            B=size(Combis);                                     %B(1,1) number of different combinations, B(1,2)=i lenght of the combination, has to be defined again because of parallel computing
-            u=u0;                                               %Intialize u
+            B=size(Combis);                                     %B(1,1) number of different combinations, B(1,2)=i length of the combination, has to be defined again because of parallel computing
+            u=u0;                                               %Initialize u
             u(Combis(j,:),:)=Valu*ones(B(1,2),Nt);              %Activate just the external stimuli corresponding to combination combis(j,:) by setting them to the value Valu for all time steps
             x=forward(f,u,OCP);                                 %Calculating the state x corresponding to the external stimuli u
             J(j)=0.5*dt*sum(wNoi'.*sum(transpose((x(numNoi,:)-xd).^2)))+dt*OCP.alpha*sum(sum(u(Combis(j,:),:))); %Calculates corresponding target functional value
@@ -55,7 +55,7 @@ fprintf('Combination with smaller target functional value than inactive external
     end
     fprintf('\n');
 fprintf('The constant value of all external stimuli is %d\n',constant_value);
-fprintf('Combination of exteranl stimuli found by combinatorial method has target functional value J=%d\n',Jmin);
+fprintf('Combination of external stimuli found by combinatorial method has target functional value J=%d\n',Jmin);
 end
 
 end

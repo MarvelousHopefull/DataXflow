@@ -15,8 +15,8 @@ tic;                                                        %Start time to measu
 %Derivative of f with respct to x
 parfor i=1:N                                                %If no Parallel Computing Toolbox is installed, use for instead of parfor                                   
     for j=1:N
-        if(max(ismember(symvar(f{i}(x,u)),x(j)))==1)        %Ceck if f{i} depends on the variable x(j), if yes calculate derivative, else set it to the zero function
-            h_x=diff(f{i}(x,u),x(j));                       %Derivate f_i with respct to x_j
+        if(max(ismember(symvar(f{i}(x,u)),x(j)))==1)        %Check if f{i} depends on the variable x(j), if yes calculate derivative, else set it to the zero function
+            h_x=diff(f{i}(x,u),x(j));                       %Derivate f_i with respect to x_j
             df_x{i,j}=matlabFunction(h_x,'vars',{x,u});     %Create function handle from symbolic expression
             cmx(i,j)=1                                      %Note that the derivative f_i depends on x_j
         else
@@ -29,8 +29,8 @@ end
 %Derivative of f with respect to u
 parfor i=1:N                                                %If no Parallel Computing Toolbox is installed, use for instead of parfor
     for j=1:M
-        if(max(ismember(symvar(f{i}(x,u)),u(j)))==1)        %Ceck if f{i} depends on the variable u(j), if yes calculate derivative, else set it to the zero function
-            h_u=diff(f{i}(x,u),u(j));                       %Derivate f_i with respct to u_j
+        if(max(ismember(symvar(f{i}(x,u)),u(j)))==1)        %Check if f{i} depends on the variable u(j), if yes calculate derivative, else set it to the zero function
+            h_u=diff(f{i}(x,u),u(j));                       %Derivate f_i with respect to u_j
             df_u{i,j}=matlabFunction(h_u,'vars',{x,u});     %Create function handle from symbolic expression
             cmu(i,j)=1                                      %Note that the derivative f_i depends on u_j
         else

@@ -14,22 +14,22 @@ function [  ] = main_effective_treatment()
 %initialState:  1 x numNodes row vector, The steady state the network is in at the beginning, that is time t=0
 
 %Tolerance parameters
-tol2=10^-14;            %Tolerance for the stopping criterion for the squential quadratic Hamiltonian method, input in function SQH_method
+tol2=10^-14;            %Tolerance for the stopping criterion for the sequential quadratic Hamiltonian method, input in function SQH_method
 tol3=10^-4;             %Tolerance for the stopping criterion for the projected gradient method, input in function projected_gradient_method
-max_Num=7;              %Intput in function combinatorial_method, Maximum number of external stimuli applied at once to the network in order to find a set of external stimuli that cause the desired switch, max_Num = 1,...,numControls
+max_Num=7;              %Input in function combinatorial_method, Maximum number of external stimuli applied at once to the network in order to find a set of external stimuli that cause the desired switch, max_Num = 1,...,numControls
 max_iter=10000;         %Maximum number of updates on the control for the sequential quadratic Hamiltonian method or maximum number of iterations of the projected gradient method
 
-numColu=2;              %Time curves of the active external stimuli are plottet in a window with two columns
-numColx=2;              %Time curves of the nodes of interest are plottet in a window with two columns
-intv=3;                 %Number of intervals of equal length into which the range of the external stimuli [0,1] is devided
+numColu=2;              %Time curves of the active external stimuli are plotted in a window with two columns
+numColx=2;              %Time curves of the nodes of interest are plotted in a window with two columns
+intv=3;                 %Number of intervals of equal length into which the range of the external stimuli [0,1] is divided
 
 %flags
-combi_method=1;                 %If flag equals 1, a combinatorical search with the function combinatorial_method by trial and error search is performed in ordert to determine external stimuli causing the desired switch, if flag equals 0 it is not performed
+combi_method=1;                 %If flag equals 1, a combinatorial search with the function combinatorial_method by trial and error search is performed in order to determine external stimuli causing the desired switch, if flag equals 0 it is not performed
 local_optimization_method=1;    %If flag equals 0, no local optimization method is performed, if local_optimization_method equals 1, then the sequential quadratic Hamiltonian (SQH) method is performed, if local_optimization_method equals 2, then a projected gradient method is performed
 
 
 %Variables
-%x:         numNodes x ((timeHorizon/timeInterval)+1)-matrix, state of the netword, row i corresponds 
+%x:         numNodes x ((timeHorizon/timeInterval)+1)-matrix, state of the network, row i corresponds 
 %           to the  node i, i=1,...,numNodes, column j corresponds to
 %           the time t=(j-1)*timeInterval, j=1,...,((timeHorizon/timeInterval)+1), entry (i,j) corresponds to value x(i) of the i-th
 %           node at time t=(j-1)*timeInterval
@@ -77,7 +77,7 @@ f={@(x,u)-x(1),...
    @(x,u)((-exp(5)+exp(-10*(((7/6)*6*x(22)/(1+6*x(22)))-0.5)))/((1-exp(5))*(1+exp(-10*(((7/6)*6*x(22)/(1+6*x(22)))-0.5)))))-x(25),...
    @(x,u)(1-x(26))};
 
-u=zeros(OCP.numControls,round(OCP.timeHorizon/OCP.timeInterval));   %Initial guess for the controls if no heuristical search is performed before the local optimization framework, any control can be set to any value between 0 and 1 for an initial guess for example ones() instead of zeros() 
+u=zeros(OCP.numControls,round(OCP.timeHorizon/OCP.timeInterval));   %Initial guess for the controls if no heuristic search is performed before the local optimization framework, any control can be set to any value between 0 and 1 for an initial guess for example ones() instead of zeros() 
 
 if(combi_method==1)                                                 %Block for the combinatorial method
     u=combinatorial_method(f,xd,max_Num,intv,OCP);
@@ -89,16 +89,16 @@ if(local_optimization_method==1 || local_optimization_method==2)                
         u=SQH_method( @get_J_SQH,f,df_x,cmx,df_u,cmu,tol2,u,xd,max_iter,OCP); %Sequential quadratic Hamiltonian method as a local optimization scheme, returns u, u the external stimuli optimizing the target functional
                                                                               %Input: @get_J function handle for the target functional, f right hand-side of the ordinary differential equation corresponding to the network with dx/dt=f(x(t),u(t))
                                                                               %df_x function handle for the derivative of f with respect to x, cmx notes the nonzero elements of df_x, df_u function handle for the derivative of f with respect to u, cmu notes the nonzero elements of df_u, see output function createJacobian
-                                                                              %u inital guess for the external stimuli, can be taken from the combinatorial method 
+                                                                              %u initial guess for the external stimuli, can be taken from the combinatorial method 
                                                                               %xd desired state for the values x of the corresponding nodes, tol2 stopping criterion, max_iter maximum number of updates on the control u of the sequential quadratic Hamiltonian
     end                                                              
                                                                                                                                                             
     if (local_optimization_method==2)
-        [u,~,~]=projected_gradient_method( @get_gradient, @projection, @get_J,f,df_x,cmx,df_u,cmu, u, xd, tol3, max_iter, OCP );    %Prjected gradient method as a local optimization scheme, returns [u,J,count], u the external stimuli optimizing the target functional
-                                                                                                                                    %Input:@get_gradient function handle for the gradient of the reduced target funcitonal, @projection function handel of the projection, projects u into [0,1] 
+        [u,~,~]=projected_gradient_method( @get_gradient, @projection, @get_J,f,df_x,cmx,df_u,cmu, u, xd, tol3, max_iter, OCP );    %Projected gradient method as a local optimization scheme, returns [u,J,count], u the external stimuli optimizing the target functional
+                                                                                                                                    %Input:@get_gradient function handle for the gradient of the reduced target functional, @projection function handle of the projection, projects u into [0,1] 
                                                                                                                                     %@get_J function handle for the target functional, f right hand-side of the ordinary differential equation corresponding to the network with dx/dt=f(x(t),u(t))
                                                                                                                                     %df_x function handle for the derivative of f with respect to x, cmx notes the nonzero elements of df_x, df_u function handle for the derivative of f with respect to u, cmu notes the nonzero elements of df_u, see output function createJacobian
-                                                                                                                                    %u inital guess for the external stimuli, can be taken from the combinatorial method 
+                                                                                                                                    %u initial guess for the external stimuli, can be taken from the combinatorial method 
                                                                                                                                     %xd desired state for the values x of the corresponding nodes, tol2 stopping criterion, max_iter maximum iteration number of the projected gradient method  
     end
 end
@@ -112,8 +112,8 @@ drawStates(x,numColx,OCP);              %Draws time curves of the activity level
 
 fprintf('\n');
 fprintf('Save data to file...\n');
-dlmwrite('x.txt',[0:OCP.timeInterval:round(OCP.timeHorizon/OCP.timeInterval)*OCP.timeInterval;x]);               %Writes the state x in a text-file "x.txt" where the first row corresponds to the discrete time steps, separated by commas, row i=2,...,numNode+1 corresponds to state x(i-1), values in the colums, separated by commas, value of x(i) at the corresponding time step  
-dlmwrite('u.txt',[0:OCP.timeInterval:(round(OCP.timeHorizon/OCP.timeInterval)-1)*OCP.timeInterval;u]);           %Writes the external stimuli u in a text-file "u.txt" where the first row corresponds to the discrete time steps, separated by commas, row i=2,...,numControls+1 corresponds to external stimlus u(i), values in the colums, separated by commas, value of u(i) at the corresponding time step
+dlmwrite('x.txt',[0:OCP.timeInterval:round(OCP.timeHorizon/OCP.timeInterval)*OCP.timeInterval;x]);               %Writes the state x in a text-file "x.txt" where the first row corresponds to the discrete time steps, separated by commas, row i=2,...,numNode+1 corresponds to state x(i-1), values in the columns, separated by commas, value of x(i) at the corresponding time step  
+dlmwrite('u.txt',[0:OCP.timeInterval:(round(OCP.timeHorizon/OCP.timeInterval)-1)*OCP.timeInterval;u]);           %Writes the external stimuli u in a text-file "u.txt" where the first row corresponds to the discrete time steps, separated by commas, row i=2,...,numControls+1 corresponds to external stimulus u(i), values in the columns, separated by commas, value of u(i) at the corresponding time step
 fprintf('Done!\n');
 end
 

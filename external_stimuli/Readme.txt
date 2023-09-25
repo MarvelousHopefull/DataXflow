@@ -1,4 +1,4 @@
-Basic Mathworks Matlab implementations for the myocardiocyte experimetns of Section 6.3 and Section 6.4
+Basic Mathworks Matlab implementations for the myocardiocyte experiments of Section 6.3 and Section 6.4
 supplementing the dissertation 
 "A mathematical optimal control based approach to pharmacological modulation with regulatory networks
 and external stimuli" by Tim Breitenbach
@@ -15,7 +15,7 @@ main_effective_treatment.m	Template main file for the experiments in Section 6.4
 				an effective treatment.
 
 forward.m		Solves for given time curves of external stimuli u the model equations for
-			the  state varialbe x to obtain the corresponding time curve
+			the  state variable x to obtain the corresponding time curve
 
 get_xd.m 		Sets the desired steady state
 
@@ -23,7 +23,7 @@ combinatorial_method.m	Is the implementation of Algorithm 5.4; a heuristic metho
 			stimuli that have a lower target functional value than the unperturbed time 
 			evolution of the model
 
-projected_gradient_method.m	Implementatioin of the projected gradient method; Algorithm 5.1
+projected_gradient_method.m	Implementation of the projected gradient method; Algorithm 5.1
 
 SQH_method.m		Implementation of the sequential quadratic Hamiltonian method; Algorithm 5.2
 
@@ -35,13 +35,13 @@ projection.m		Projects each component of u into [0,1]
 setControls.m		Sets the value of the external stimuli to 1 for a certain period of time, 
 			else zero
 
-backward.m		Solves the adjoint equation for the projected gradient methdod
+backward.m		Solves the adjoint equation for the projected gradient method
 
-backward_SQH.m		Solves the adjoint equation for the sequential quadratic Hamilonian method
+backward_SQH.m		Solves the adjoint equation for the sequential quadratic Hamiltonian method
 
 get_J.m			Calculates the target functional value for the projected gradient method
 
-get_J_SQH.m		Calculates the traget functional value for the sequential quadratic Hamiltonian 
+get_J_SQH.m		Calculates the target functional value for the sequential quadratic Hamiltonian 
 			method
 
 get_gradient.m		Assembles the gradient for the projected gradient method
@@ -50,6 +50,6 @@ drawStimuli.m		Draws the time curves of the resulting external stimuli u
 
 drawStates.m		Draws the time curves of the resulting states x
 
-In order to execute the Matlabfile, one needs a Matlab version with a symbolic math toolbox. 
+In order to execute the Matlab-file, one needs a Matlab version with a symbolic math toolbox. 
 Additionally the parallel computing toolbox is recommended. If this toolbox is not available, 
-then just put “for” instead of “parfor” in the function createJacobian.m.
+then just put ï¿½forï¿½ instead of ï¿½parforï¿½ in the function createJacobian.m.
