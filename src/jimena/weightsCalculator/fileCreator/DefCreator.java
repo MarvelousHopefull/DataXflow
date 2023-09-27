@@ -210,8 +210,7 @@ public class DefCreator {
 		
 		//description
 		String text = "DESCRIPTION" + 
-				"\n" + "\"" + "Potterswheel Data Test" +"\"" +
-				"\n" + "\"" + "by Jan" + "\"" +
+				"\n" + "\"" + "D2D Data" +"\"" +
 				"\n" + "\"" + "Date: " + currentYear + "\"" +
 				"\n" + "\"" + "Version: 1.0" + "\"" +
 				"\n";
@@ -312,8 +311,7 @@ public class DefCreator {
 		
 		//description
 		String text = "DESCRIPTION" + 
-				"\n" + "\"" + "Potterswheel Model Test" +"\"" +
-				"\n" + "\"" + "by Jan" + "\"" +
+				"\n" + "\"" + "D2D Model" +"\"" +
 				"\n" + "\"" + "Date: " + currentYear + "\"" +
 				"\n" + "\"" + "Version: 1.0" + "\"" +
 				"\n";

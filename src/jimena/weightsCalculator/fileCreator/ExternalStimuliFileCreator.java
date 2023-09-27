@@ -239,7 +239,7 @@ public class ExternalStimuliFileCreator {
 			nodeValueText += nodeNumber + "," + node.getTargetedValue() + "," + node.getNodeWeight();
 		}
 		text += "A=[" + nodeValueText + "];";
-		text += "           %Matrix where each row is for a node of interest, first column is for its index which it has in the network, second column is its desired constant activity level, third column is its corresponding weight in the target functional\r\n";
+		text += "           %Matrix where each row represents a node of interest. The first column corresponds to the nodes index which it has in the network. The second column represents its desired constant activity level. The third column represents its corresponding weight in the target functional.\r\n";
 		text += "\r\n";
 		return text;
 	}

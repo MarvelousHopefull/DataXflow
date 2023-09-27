@@ -205,7 +205,7 @@ public class D2DExternalStimuliFrame extends JFrame implements ActionListener {
 		JPanel regVP = new JPanel();
 		regVP.add(regP, BorderLayout.CENTER);
 		
-		Border regulationBorder = BorderFactory.createTitledBorder("Regulations (press ctl to select)");
+		Border regulationBorder = BorderFactory.createTitledBorder("Regulations (press ctrl to select)");
 		regVP.setBorder(regulationBorder);
 		
 		//separating nodes of interest and control nodes

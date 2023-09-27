@@ -219,7 +219,7 @@ public class D2DFrame extends JFrame implements ActionListener{
 		dataNodesP.add(dataNodesTB, BorderLayout.NORTH);
 		dataNodesP.add(dataNodesSP, BorderLayout.CENTER);	
 		
-		Border dataNodesBorder = BorderFactory.createTitledBorder("Data Nodes (press ctl to select)");
+		Border dataNodesBorder = BorderFactory.createTitledBorder("Data Nodes (press ctrl to select)");
 		dataNodesP.setBorder(dataNodesBorder);
 		
 		// Constant Nodes
@@ -243,7 +243,7 @@ public class D2DFrame extends JFrame implements ActionListener{
 		constantNodesP.add(constantNodesTB, BorderLayout.NORTH);
 		constantNodesP.add(constantNodesSP, BorderLayout.CENTER);	
 				
-		Border constantNodesBorder = BorderFactory.createTitledBorder("Constant Nodes (press ctl to select)");
+		Border constantNodesBorder = BorderFactory.createTitledBorder("Constant Nodes (press ctrl to select)");
 		constantNodesP.setBorder(constantNodesBorder);
 				
 		
@@ -256,7 +256,7 @@ public class D2DFrame extends JFrame implements ActionListener{
 		JPanel regVP = new JPanel();
 		regVP.add(regP, BorderLayout.CENTER);
 		
-		Border regulationBorder = BorderFactory.createTitledBorder("Regulations (press ctl to select)");
+		Border regulationBorder = BorderFactory.createTitledBorder("Regulations (press ctrl to select)");
 		regVP.setBorder(regulationBorder);
 		
 		//separating regulation panels and dataNodes panel

@@ -280,7 +280,7 @@ public class D2DSwitchAnalyzerFrame extends AnalyzerFrame implements ActionListe
 		JPanel regVP = new JPanel();
 		regVP.add(regP, BorderLayout.CENTER);
 		
-		Border regulationBorder = BorderFactory.createTitledBorder("Regulations (press ctl to select)");
+		Border regulationBorder = BorderFactory.createTitledBorder("Regulations (press ctrl to select)");
 		regVP.setBorder(regulationBorder);
 		
 		mainPanel.add(regVP);
