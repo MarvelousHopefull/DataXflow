@@ -1,1 +1,1 @@
-
+In this folder, example scripts are provided to generate the data for the fitting process. The scripts output a csv file with the best values and standard deviation for some nodes of the topology and the time points. For an example, please see the data.csv in the Example folder.
