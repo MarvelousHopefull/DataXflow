@@ -1,18 +1,5 @@
-Basic Mathworks Matlab implementations for the myocardiocyte experiments of Section 6.3 and Section 6.4
-supplementing the dissertation 
-"A mathematical optimal control based approach to pharmacological modulation with regulatory networks
-and external stimuli" by Tim Breitenbach
-
-main_comp_therapies.m	Template main file for the experiments in Section 6.3 in which all the relevant 
-			settings can be made and the model with its external stimuli are given. Execution
-			with Matlab where the other functions have to be in the same folder. Set for the
-			results depicted in Figure 6.3.3
-
-main_effective_treatment.m	Template main file for the experiments in Section 6.4 in which all the 
-				relevant settings can be made and the model with its external stimuli 
-				are given. Execution with Matlab where the other functions have to be in 
-				the same folder. Set for the results depicted in Figure 6.4.8 to determine
-				an effective treatment.
+main.m 			Needs to be generated with the JimenaE framework and exected in the same folder where the 
+			helper functions below are saved.
 
 forward.m		Solves for given time curves of external stimuli u the model equations for
 			the  state variable x to obtain the corresponding time curve
@@ -52,4 +39,4 @@ drawStates.m		Draws the time curves of the resulting states x
 
 In order to execute the Matlab-file, one needs a Matlab version with a symbolic math toolbox. 
 Additionally the parallel computing toolbox is recommended. If this toolbox is not available, 
-then just put �for� instead of �parfor� in the function createJacobian.m.
+then just put "for" instead of "parfor" in the function createJacobian.m.
