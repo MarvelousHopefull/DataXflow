@@ -1,1 +1,1 @@
-
+In this folder, scripts are provided that allow for setting inital guesses of the parameters to be fit by the D2D framework as well as setting best values from a previous optimization run of D2D. Such a script is in particular useful if after changing some parts of the topology not all parameters are to be fit from the scratch from default values.
