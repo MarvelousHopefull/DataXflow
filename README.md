@@ -8,7 +8,7 @@ https://www.biozentrum.uni-wuerzburg.de/bioinfo/computing/jimena/
 DataXflow is bridges the usage of Jimena and D2D.
 D2D allows to translate a graph modelling the interaction of agents of a network used by Jimena into model equations and fit their paramters to experimental data.
 The added graphical user inferfaces help with the generation of files needed for the usage of D2D. 
-You can find the D2D software here: https://github.com/Data2Dynamics/d2d
+You can find the D2D software here: https://github.com/Data2Dynamics/d2d.
 
 To further analyze an optimal intervention for the network to steer it from an inital state to a desired state, the external stimuli framework is intergrated into DataXflow in order to exploit the information encoded into the fitted parameters puposefully. The original work about external stimuli can be found here https://opus.bibliothek.uni-wuerzburg.de/frontdoor/index/index/docId/17436.
 
