@@ -16,4 +16,4 @@ For detailed explanations, please see the corresponding paper, availaber under .
 
 ## Installation
 Downloading this respository provided in the master branch gives you access to the complete Jimena software 
-including the additions needed for working with D2D. The JimenaE.jar file can be used like any other executable file, openenig the Jimena GUI.
+including the additions needed for working with D2D and external stimuli. The JimenaE.jar file can be used like any other executable file, openenig the Jimena GUI.
