@@ -1,6 +1,6 @@
 # DataXflow
 DataXflow is a software pipeline for data-driven modelling and optimal external stimuli calculation developed by the Bioinformatics chair of the Julius-Maximilians-University-Wuerzburg. 
-For an extensive ivesitigation and modelling of experimental data, the pipeline integrates different tools ranging from best parameter fitting (D2D) to optimal external stimuli calculation (optimal control) into a graphical user interface (Jimena), which makes data analysis esier since specific programming skills are reduced. 
+For an extensive investigation and modelling of experimental data, the pipeline integrates different tools ranging from best parameter fitting (D2D) to optimal external stimuli calculation (optimal control) into a graphical user interface (Jimena), which makes data analysis esier since specific programming skills are reduced. 
 
 You can find the original Jimena software, which allows also other analysis, like dynamic simulations and network stability. These networks are represented as graphs. A more detailed explanation of Jimena can be found here:
 https://www.biozentrum.uni-wuerzburg.de/bioinfo/computing/jimena/
