@@ -1,0 +1,111 @@
+Mapping of Nodes
+Node-Alias	Node-Name	Node-Number
+x1	KRAS	1	
+x2	proliferation	2	
+x3	apoptosis	3	
+x4	CD44	4	
+x5	CDH1	5	
+x6	PIK3CA	6	
+x7	MYC	7	
+x8	BAX	8	
+x9	BCL2	9	
+x10	NFE2L2	10	
+x11	CTNNB1	11	
+x12	EP300	12	
+x13	FBXW7	13	
+x14	MET	14	
+x15	TGFBR1	15	
+x16	EGFR	16	
+x17	STK11	17	
+x18	FOS	18	
+x19	AURKA	19	
+x20	GSK3B	20	
+x21	TPX2	21	
+x22	DYRK2	22	
+x23	TP53	23	
+
+Mapping of Regulated Nodes
+Regulated-Alias	Node-Name	up or down	delta-Alias	is Active	Alias-Number
+u1	MYC	u	delta_1	true	1	
+u2	BAX	d	delta_2	true	2	
+
+Mapping of Parameters
+Parameter-Alias	Node-Number	i'te Connection(or -1)	Parameter-Type	Source-Node-Alias(or Parameter-Type)	Source-Node-Number(or 0)
+h_1	1	-1	h	h	0	
+a_19_1	1	0	a	x19	19	
+a_15_1	1	1	a	x15	15	
+a_14_1	1	2	a	x14	14	
+a_16_1	1	3	a	x16	16	
+h_2	2	-1	h	h	0	
+a_6_2	2	0	a	x6	6	
+a_10_2	2	1	a	x10	10	
+a_7_2	2	2	a	x7	7	
+b_5_2	2	3	b	x5	5	
+a_17_2	2	4	a	x17	17	
+a_18_2	2	5	a	x18	18	
+h_3	3	-1	h	h	0	
+a_8_3	3	0	a	x8	8	
+b_10_3	3	1	b	x10	10	
+h_4	4	-1	h	h	0	
+b_5_4	4	0	b	x5	5	
+a_19_4	4	1	a	x19	19	
+a_11_4	4	2	a	x11	11	
+h_5	5	-1	h	h	0	
+a_7_5	5	0	a	x7	7	
+b_11_5	5	1	b	x11	11	
+a_12_5	5	2	a	x12	12	
+a_6_5	5	3	a	x6	6	
+h_6	6	-1	h	h	0	
+a_4_6	6	0	a	x4	4	
+a_1_6	6	1	a	x1	1	
+a_15_6	6	2	a	x15	15	
+a_16_6	6	3	a	x16	16	
+a_14_6	6	4	a	x14	14	
+h_7	7	-1	h	h	0	
+a_1_7	7	0	a	x1	1	
+a_6_7	7	1	a	x6	6	
+b_20_7	7	2	b	x20	20	
+h_8	8	-1	h	h	0	
+a_7_8	8	0	a	x7	7	
+b_9_8	8	1	b	x9	9	
+a_12_8	8	2	a	x12	12	
+a_20_8	8	3	a	x20	20	
+h_9	9	-1	h	h	0	
+a_6_9	9	0	a	x6	6	
+a_19_9	9	1	a	x19	19	
+b_7_9	9	2	b	x7	7	
+h_10	10	-1	h	h	0	
+a_6_10	10	0	a	x6	6	
+a_17_10	10	1	a	x17	17	
+h_11	11	-1	h	h	0	
+a_19_11	11	0	a	x19	19	
+a_15_11	11	1	a	x15	15	
+h_12	12	-1	h	h	0	
+a_6_12	12	0	a	x6	6	
+h_13	13	-1	h	h	0	
+a_12_13	13	0	a	x12	12	
+b_22_13	13	1	b	x22	22	
+h_14	14	-1	h	h	0	
+a_4_14	14	0	a	x4	4	
+b_23_14	14	1	b	x23	23	
+h_15	15	-1	h	h	0	
+a_4_15	15	0	a	x4	4	
+b_17_15	15	1	b	x17	17	
+h_16	16	-1	h	h	0	
+a_4_16	16	0	a	x4	4	
+h_17	17	-1	h	h	0	
+a_19_17	17	0	a	x19	19	
+h_18	18	-1	h	h	0	
+a_1_18	18	0	a	x1	1	
+h_19	19	-1	h	h	0	
+a_6_19	19	0	a	x6	6	
+b_13_19	19	1	b	x13	13	
+a_21_19	19	2	a	x21	21	
+h_20	20	-1	h	h	0	
+a_19_20	20	0	a	x19	19	
+b_5_20	20	1	b	x5	5	
+
+List of Nodes that are constant
+
+The final Time
+10.0
