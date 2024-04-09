@@ -12,7 +12,7 @@ You can find the D2D software here: https://github.com/Data2Dynamics/d2d.
 
 To further analyze an optimal intervention for the network to steer it from an inital state to a desired state, the external stimuli framework is intergrated into DataXflow in order to exploit the information encoded into the fitted parameters puposefully. The original work about external stimuli can be found here https://opus.bibliothek.uni-wuerzburg.de/frontdoor/index/index/docId/17436.
 
-For detailed explanations, please see the corresponding paper, available under ..., in course of which this pipeline was developed. If you use DataXflow or inspires you for further research, we are happy if you cite our paper.
+For detailed explanations, please see the corresponding paper, available under https://doi.org/10.1016/j.csbj.2024.04.010, in course of which this pipeline was developed. If you use DataXflow or if it inspires you for further research, we are happy if you cite our paper.
 
 ## Installation
 Downloading this respository provided in the master branch gives you access to the complete JimenaE software 
