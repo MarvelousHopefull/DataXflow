@@ -10,13 +10,19 @@ import jimena.binaryrn.RegulatoryNetwork;
 
 
 /**
- * To get a list of all Node Names in the network as a .csv file.
+ * To get a list of all Node names in the network as a .csv file.
  * 
  * @author Jan Krause
  * @since 23.11.2022
  * */
 public class CSVNodeNamesCreator {
 
+	/**
+	 * Creates/Overwrites a csv (comma separated values) file of a RegulatoryNetwork, which lists all node names.
+	 * @param path Where the file should be saved to.
+	 * @param network The RegulatoryNetwork from which the file should be created.
+	 * @throws IOException
+	 */
 	public static void createFile(String path, RegulatoryNetwork network) throws IOException{
 		
 		

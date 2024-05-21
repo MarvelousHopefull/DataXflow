@@ -26,6 +26,12 @@ public class D2DMappingFileInteractor {
 	static String constNodesStart = "List of Nodes that are constant";
 	static String finalTimeStart = "The final Time";
 	
+	/**
+	 * Creates a D2DMapping from a given D2DMapping file.
+	 * @param path Where the file is saved.
+	 * @return A D2DMapping which allows linking of node alias and parameter alias to the original nodes and parameters.
+	 * @throws Exception
+	 */
 	public static D2DMapping getD2DMapping(String path) throws Exception{
 		File file = new File(path);
 		if(!file.exists()) { 
@@ -209,6 +215,13 @@ public class D2DMappingFileInteractor {
 		return new D2DMapping(nodeMapping,regulatorMapping,parameterMapping,constNodes,finalTime);
 	}
 	
+	/**
+	 * Creates/overrides a tsv (Tab Separated Values) file that can later be used to recreate the D2DMapping.
+	 * @param path Where the new file should be stored.
+	 * @param mapping The D2DMapping that should be saved in the file.
+	 * @return The path.
+	 * @throws Exception
+	 */
 	public static String createD2DMappingFile(String path, D2DMapping mapping) throws Exception {
 		if (!path.endsWith("_D2DMapping.tsv")) {
 			path = path +"_D2DMapping.tsv";

@@ -17,10 +17,26 @@ public class NodeOfInterest {
 		setNodeOfInterest(nodeWeight, targetedValue);
 	}
 	
+	/**
+	 * In stead of a constructor this method allows the creation of a blank NodeOfInterst. (Values of 0)
+	 * @param nodeNumber The Jimena dependent index number representing the node.
+	 * @param nodeName The Name of the node.
+	 * @return The newly created blank NodeOfInterest, with weight and targeted Value of 0.
+	 * @throws Exception but not in this case.
+	 */
 	public static NodeOfInterest createNode(int nodeNumber, String nodeName) throws Exception {
 		return new NodeOfInterest(nodeNumber, nodeName, 0, 0);
 	}
 	
+	/**
+	 * In stead of a constructor this method allows the creation of a NodeOfInterst.
+	 * @param nodeNumberThe Jimena dependent index number representing the node.
+	 * @param nodeName The Name of the node.
+	 * @param nodeWeight How important it is for this node to achieve the targetedValue.
+	 * @param targetedValue The value this node should be stirred to.
+	 * @return The newly created NodeOfInterest, with set weights and targetedValues.
+	 * @throws Exception in the case of invalid values (below 0) for nodeWeight or targetedValue.
+	 */
 	public static NodeOfInterest createNodeOfInterest(int nodeNumber, String nodeName, double nodeWeight, double targetedValue) throws Exception {
 		return new NodeOfInterest(nodeNumber, nodeName, nodeWeight, targetedValue);
 	}
@@ -52,6 +68,13 @@ public class NodeOfInterest {
 		this.targetedValue = value;
 	}
 	
+	/**
+	 * Allows for changing the nodes weight and targetedValue.
+	 * @param weight How important it is for this node to achieve the targetedValue.
+	 * @param targetedValue The value this node should be stirred to.
+	 * @throws Exception in the case of invalid values (below 0) for weight or targetedValue.
+	 */
+	
 	public void setNodeOfInterest(double weight, double targetedValue) throws Exception {
 		try {
 			setNodeWeight(weight);
@@ -59,14 +82,12 @@ public class NodeOfInterest {
 		}
 		catch(Exception e){
 			this.nodeWeight = 0;
-			//this.targetedValue = 0;
 			throw new Exception(e.getMessage());
 		}
 	}
 	
 	public void removeNodeOfInterest() {
 		this.nodeWeight = 0;
-		//this.targetedValue = 0;
 	}
 	
 	public boolean isNodeOfInterest() {
