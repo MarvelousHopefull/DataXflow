@@ -32,8 +32,8 @@ public class DefCreator {
 	
 	/**
 	 * Creates a model.def, a data.def, a initValues.txt and a dataNodeNames.csv (if needed) file from a given Network in the format that is requested by D2D.
-	 * The four files will be saved as name_model.def, name_data.def, name_initValues.txt and name_DataNodeNames.csv. Where name stands for the selected file name.
-	 * If in the folder there are already files with those names they will be overridden.
+	 * The four files will be saved as name_model.def, name_data.def, name_initValues.txt and name_DataNodeNames.csv. Where name stands for the selected/created file name.
+	 * If there are already files with those names in the folder they will be overridden!
 	 * @param path The String Path where the new Files should be saved to.
 	 * @param network The Network in question. 
 	 * @param dataNodes Nodes where there exist experiment data.
@@ -222,7 +222,7 @@ public class DefCreator {
 	}
 	
 	/**
-	 * missing: a check if the correspondent nodes are actual nodes 
+	 * missing: a check if the correspondent nodes are actual nodes, seems to work fine though 
 	 * @param rMapping The mapping of the regulated Nodes to their alias.
 	 * @return The String that are the Inputs.
 	 */
@@ -324,7 +324,7 @@ public class DefCreator {
 	
 	/**
 	 * 
-	 * @return The String that represents the Compartments Part for the Document.
+	 * @return The string that represents the Compartments Part for the Document.
 	 */
 	private static String getModelCompartments(){
 		
@@ -341,9 +341,9 @@ public class DefCreator {
 	
 	/**
 	 * 
-	 * @param mapping The Mapping of the Node Names to their alias.
+	 * @param mapping The Mapping of the Node names to their alias.
 	 * @param network The Network.
-	 * @return The String that is the list of Nodes in the Network.
+	 * @return The string that is the list of Nodes in the Network.
 	 */
 	private static String getModelStates(String[][] mapping, RegulatoryNetwork network){
 		
@@ -369,7 +369,7 @@ public class DefCreator {
 	}
 	
 	/**
-	 * missing: a check if the correspondent nodes are actual nodes 
+	 * missing: a check if the correspondent nodes are actual nodes, seems to work fine though 
 	 * @param rMapping The mapping of the regulated Nodes to their alias.
 	 * @return The String that are the Inputs.
 	 */
@@ -488,12 +488,12 @@ public class DefCreator {
 	
 	/**
 	 * 
-	 * @param network
+	 * @param network The RegualtoryNetwork.
 	 * @param mapping
-	 * @param kMapping
+	 * @param kMapping The mapping of parameters to their nodes and/or position (only alpha and beta parameters).
 	 * @param rMapping
 	 * @param constantNodes
-	 * @return
+	 * @return The string representing the ODEs.
 	 */
 	private static String getModelODEs(RegulatoryNetwork network, String[][] mapping, String[][] kMapping, String[][] rMapping, String[] constantNodes){
 		String text = "\n" + "ODES" + 
@@ -640,11 +640,6 @@ public class DefCreator {
 			text += "\"";
 		}
 		text = text + "\n";
-		/*how the text should somewhat look like:
-		((-exp(5.0)+exp(-10.0*(((2.0/1.0)*((x34)/(1+x34)))-0.5)))
-		/((1-exp(5.0))*(1+exp(-10.0*(((2.0/1.0)*((x34)/(1+x34)))-0.5)))))-x9-u5*x9
-		... +u2*(1-x16)
-		"k12 - k5*x3*x2/(k6+x2) - k7*x4*x2/(k8+x2) - k9*x5*x2/(k10+x2) + x12" */
 		
 		return text;
 	}
@@ -666,44 +661,5 @@ public class DefCreator {
 	}
 	
 	
-	public static void main(String[] args) throws IOException{
-		String text = "a";
-		try {
-			
-			RegulatoryNetwork network = new RegulatoryNetwork();
-
-	        // Load a yED GraphML file into the network
-	        network.loadYEdFile(new File("C:\\Uni\\Job\\Jimena\\ExampleGraphs\\WorkingGraphs\\20221221_lungcancer_D2D_short.graphml"));
-	        text = "b";
-	        //String[] upRNodes = null;
-	        String[] upRNodes = new String[1];
-	        upRNodes[0] = "TGFR";
-			String[] downRNodes = null;
-			
-			String[] dataNodes = null;
-			//String[] dataNodes = new String[1];
-			//dataNodes[0] = "TRPM7";
-			
-			String[] constantNodes = null;
-			//String[] constantNodes = new String[1];
-			//constantNodes[0] = "TGFR";
-			
-			String path = "C:\\Uni\\Job\\Jimena\\ExampleGraphs\\WorkingGraphs\\test.txt";
-			String parameterPath = "C:\\Uni\\Job\\Jimena\\JimenaDocs\\Rueckweg\\20230302_ErsterVersuch_parameters.tsv";
-	        // specify where to put the new File and how to name it, it will override any existing file with the same name at the same place
-			D2DMapping mapping = createFiles(path, network, dataNodes, upRNodes, downRNodes, null, constantNodes, 10);
-			String mappingFile = D2DMappingFileInteractor.createD2DMappingFile(path, mapping);
-			text = "c";
-			D2DMapping recreatedMapping = D2DMappingFileInteractor.getD2DMapping(mappingFile);
-			text = "c1";
-			ExternalStimuliFileCreator.createExternalStimuliFile(path, parameterPath, recreatedMapping, network,null);
-			text = "d";
-		}
-		catch(Exception e) {
-			System.out.print(text + "\n" + e.getMessage());
-		}
-		
-		
-	}
 
 }

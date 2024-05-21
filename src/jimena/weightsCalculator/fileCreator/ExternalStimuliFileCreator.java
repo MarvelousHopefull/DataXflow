@@ -18,7 +18,7 @@ import jimena.weightsCalculator.D2DMapping;
 import jimena.weightsCalculator.gui.TableModel.NodeOfInterest;
 
 /**
- * Used for creating the main.m file for the External Stimuli. Can only be used together with D2D, as some here needed configuration are provided by D2D.
+ * Used for creating the main.m files for the External Stimuli and Switch Analyzer. Is intended to be used together with D2D, as some here needed configuration are provided by D2D.
  * 
  * @author Jan Krause
  * @since 07.03.2023
@@ -51,11 +51,11 @@ public class ExternalStimuliFileCreator {
 		
 		String text = getTextHeader();
 		text += getParameters(parametersPath, mapping.parameterMapping(), mapping.regulatorMapping());
-		text += getA(nodesOfInterestList, mapping);
-		text += getOCP(parametersPath, mapping.nodeMapping(), mapping.regulatorMapping(), finalTime);
+		text += getExternalStimuliA(nodesOfInterestList, mapping);
+		text += getExternalStimuliOCP(parametersPath, mapping.nodeMapping(), mapping.regulatorMapping(), finalTime);
 		text += getODEs(network, mapping, constantNodes);
 		text += getTextTail();
-		text += getNodeAndUAlias(mapping);
+		text += getExternalStimuliNodeAndUAlias(mapping);
 		BufferedWriter fw = new BufferedWriter(new FileWriter(path));
 		
 		fw.write(text);
@@ -98,6 +98,10 @@ public class ExternalStimuliFileCreator {
 		fw.close();
 	}
 	
+	/**
+	 * 
+	 * @return The string at the beginning of either document.
+	 */
 	private static String getTextHeader() {
 		String text = "function [  ] = main_comp_therapies()" + "\r\n";
 		
@@ -153,6 +157,14 @@ public class ExternalStimuliFileCreator {
 		return text;
 	}
 	
+	/**
+	 * 
+	 * @param parametersPath The place the parameter file (created by D2D) is saved. 
+	 * @param parameterMapping
+	 * @param regulatorMapping
+	 * @return The string listing the parameter names.
+	 * @throws Exception
+	 */
 	private static String getParameters(String parametersPath, String[][] parameterMapping, String[][] regulatorMapping) throws Exception {
 		File file = new File(parametersPath);
 		if(!file.exists()) { 
@@ -217,7 +229,13 @@ public class ExternalStimuliFileCreator {
 		return text;
 	}
 	
-	private static String getA(List<NodeOfInterest> nodesOfInterestList, D2DMapping mapping) {
+	/**
+	 * 
+	 * @param nodesOfInterestList
+	 * @param mapping
+	 * @return A string where for each node a weight and a targeted value is denoted.
+	 */
+	private static String getExternalStimuliA(List<NodeOfInterest> nodesOfInterestList, D2DMapping mapping) {
 		String text = "";
 		String nodeValueText = "";
 		boolean firstElement = true;
@@ -244,7 +262,7 @@ public class ExternalStimuliFileCreator {
 		return text;
 	}
 	
-	private static String getOCP(String parametersPath, String[][] nodeMapping, String[][] regulatorMapping, double finalTime) throws Exception {
+	private static String getExternalStimuliOCP(String parametersPath, String[][] nodeMapping, String[][] regulatorMapping, double finalTime) throws Exception {
 		String text = "";
 		try (BufferedReader reader = new BufferedReader(new FileReader(parametersPath))) {
 			String line = reader.readLine();
@@ -394,6 +412,13 @@ public class ExternalStimuliFileCreator {
 		return text;
 	}
 	
+	/**
+	 * 
+	 * @param network The RegulatroyNetwork.
+	 * @param mapping The mapping of node alias and parameter alias used in the string representation of ODEs to the original nodes and parameters. 
+	 * @param constantNodes 
+	 * @return The string representing the ODEs representing the equations, which dynamically calculate the node values.
+	 */
 	private static String getODEs(RegulatoryNetwork network, D2DMapping mapping, String[] constantNodes) {
 		String text = "";
 		text += "%f is the right hand-side of the ordinary differential equation dx(t)/dt=f(x(t),u(t)) corresponding to the network, here as a list of function handles" + "\r\n";
@@ -578,6 +603,10 @@ public class ExternalStimuliFileCreator {
 		return text;
 	}
 	
+	/**
+	 * 
+	 * @return The string at the end of either type of document.
+	 */
 	private static String getTextTail() {
 		String text = "u=zeros(OCP.numControls,round(OCP.timeHorizon/OCP.timeInterval));   %Initial guess for the controls if no heuristical search is performed before the local optimization framework, any control can be set to any value between 0 and 1 for an initial guess for example ones() instead of zeros()" + "\r\n"
 				+ "\r\n"
@@ -621,7 +650,7 @@ public class ExternalStimuliFileCreator {
 		return text;
 	}
 	
-	private static String getNodeAndUAlias(D2DMapping mapping) {
+	private static String getExternalStimuliNodeAndUAlias(D2DMapping mapping) {
 		String[][] nodeMapping = mapping.nodeMapping();
 		String[][] uMapping = mapping.regulatorMapping();
 		String text = "\r\n"
