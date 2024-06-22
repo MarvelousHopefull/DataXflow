@@ -90,7 +90,7 @@ public class TableFrame extends JDialog {
     }
     
 
-    private void runSolverEvent() {    	
+    /*private void runSolverEvent() {    	
     	SolverFrame f = null;
 		try {
 			f = new SolverFrame(getExportString(), this.model, currentFile);
@@ -108,7 +108,7 @@ public class TableFrame extends JDialog {
     	f.pack();
     	f.setLocationRelativeTo(null); 
     	f.setVisible(true);    	    	
-    }
+    }*/
 
     /**
      * Exports the selected rows of the table to a file.
@@ -280,7 +280,7 @@ public class TableFrame extends JDialog {
         controlPanel.add(exportFile);
 
         
-        JButton runAnalyzer = new JButton("Switch Analyzer (data-driven method)");
+        /* JButton runAnalyzer = new JButton("Switch Analyzer (data-driven method)");
         runAnalyzer.setIcon(new ImageIcon("images" + File.separator + "chart16.png"));
         runAnalyzer.setForeground(this.getForeground().darker());
         runAnalyzer.addActionListener(new ActionListener() {
@@ -289,7 +289,7 @@ public class TableFrame extends JDialog {
             	runSolverEvent();
             }
         });
-        controlPanel.add(runAnalyzer);
+        controlPanel.add(runAnalyzer);*/
         
         JButton exportClipboard = new JButton("Export to Clipboard");
         exportClipboard.addActionListener(new ActionListener() {

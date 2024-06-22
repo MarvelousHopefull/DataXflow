@@ -23,7 +23,7 @@ import java.io.File;
  * @author Jan Krause
  * @since 23.11.2022
  * */
-public class DefCreator {
+public class DefFileCreator {
 	
 	private static boolean fileExists(String path) {
 		File file = new File(path);
@@ -42,7 +42,9 @@ public class DefCreator {
 	 * @param initValues The list of initial values and upper and lower bounds as needed by the InitialValuesFileCreator class. Has to be 13 values in the correct order! If not 13 values, the default values will be used.
 	 * @param constantNodes The Nodes that have a constant value.
 	 * @param finalTime The finish time of the experiment.
+	 * @return The mapping of the parameters and nodes to their used alias in the D2DMapping format.
 	 * @throws IOException
+	 * @throws Exception
 	 */
 	public static D2DMapping createFiles(String path, RegulatoryNetwork network, String[] dataNodes , String[] upRNodes, String[] downRNodes, double[] initValues, String[] constantNodes, double finalTime) throws IOException, Exception{
 		//if(fileExists(path)) { return; }

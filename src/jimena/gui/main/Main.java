@@ -73,9 +73,10 @@ import jimena.simulationmethods.HillCubeMethod;
 import jimena.simulationmethods.NormalizedHillCubeMethod;
 import jimena.simulationmethods.SQUADMethod;
 import jimena.simulationmethods.SimulationMethod;
-import jimena.solver.SolverFrame;
+import jimena.solver.SolverFrameNew;
 import jimena.sssearcher.RandomSearcher;
 import jimena.sssearcher.StepwiseSearcher;
+import jimena.weightsCalculator.gui.AnalyzerFrame;
 import jimena.weightsCalculator.gui.D2DExternalStimuliFrame;
 import jimena.weightsCalculator.gui.D2DFrame;
 import jimena.weightsCalculator.gui.D2DSwitchAnalyzerFrame;
@@ -272,8 +273,11 @@ public class Main extends JFrame implements RegulatoryNetworkObserver {
             	//changes for D2D start
             	D2DSwitchAnalyzerFrame d2dSAFrame = new D2DSwitchAnalyzerFrame();
             	d2dSAFrame.setVisible(false);
-            	D2DSwitchAnalyzerFrame[] frames = new D2DSwitchAnalyzerFrame[1];
+            	SolverFrameNew solverFrameNew = new SolverFrameNew();
+            	solverFrameNew.setVisible(false);
+            	AnalyzerFrame[] frames = new AnalyzerFrame[2];
             	frames[0] = d2dSAFrame;
+            	frames[1] = solverFrameNew;
                 (new TableFrame(Main.this, "-Stable States-", ArrayLib.doublesListToObjectsListUnchecked(result), network.getNodeNames(),
                         Double.class, null,currentFile, frames, network)).setVisible(true);
                 //changes for D2D end
@@ -331,10 +335,18 @@ public class Main extends JFrame implements RegulatoryNetworkObserver {
                 if (stableSteadyState != null) {
                     ArrayList<double[]> resultAsList = new ArrayList<double[]>();
                     resultAsList.add(stableSteadyState);
-
-                    (new TableFrame(Main.this, "Discrete Stable States", ArrayLib.doublesListToObjectsListUnchecked(resultAsList),
-                            network.getNodeNames(), Double.class, null)).setVisible(true);
-
+                    //D2D changes
+                    D2DSwitchAnalyzerFrame d2dSAFrame = new D2DSwitchAnalyzerFrame();
+                	d2dSAFrame.setVisible(false);
+                	SolverFrameNew solverFrameNew = new SolverFrameNew();
+                	solverFrameNew.setVisible(false);
+                	AnalyzerFrame[] frames = new AnalyzerFrame[2];
+                	frames[0] = d2dSAFrame;
+                	frames[1] = solverFrameNew;
+                    /*(new TableFrame(Main.this, "Discrete Stable States", ArrayLib.doublesListToObjectsListUnchecked(resultAsList),
+                            network.getNodeNames(), Double.class, null)).setVisible(true);*/
+                    (new TableFrame(Main.this, "-Stable States-", ArrayLib.doublesListToObjectsListUnchecked(resultAsList), network.getNodeNames(),
+                            Double.class, null,currentFile, frames, network)).setVisible(true);
                 } else {
                     JOptionPane.showMessageDialog(null, "The simulation did not converge in the specified time.",
                             "Simulation Did Not Converge", JOptionPane.INFORMATION_MESSAGE);
@@ -355,8 +367,18 @@ public class Main extends JFrame implements RegulatoryNetworkObserver {
     private class DiscreteSSSThread extends Calculation {
         @Override
         void doCalculation() {
-            (new TableFrame(Main.this, "Discrete Stable States", ArrayLib.bytesListToObjectsListUnchecked(network
-                    .discreteStableSteadyStates()), network.getNodeNames(), Byte.class, null)).setVisible(true);
+        	//D2D changes
+        	D2DSwitchAnalyzerFrame d2dSAFrame = new D2DSwitchAnalyzerFrame();
+        	d2dSAFrame.setVisible(false);
+        	SolverFrameNew solverFrameNew = new SolverFrameNew();
+        	solverFrameNew.setVisible(false);
+        	AnalyzerFrame[] frames = new AnalyzerFrame[2];
+        	frames[0] = d2dSAFrame;
+        	frames[1] = solverFrameNew;
+        	/*(new TableFrame(Main.this, "Discrete Stable States", ArrayLib.bytesListToObjectsListUnchecked(network
+                    .discreteStableSteadyStates()), network.getNodeNames(), Byte.class, null)).setVisible(true);*/
+            (new TableFrame(Main.this, "-Stable States-", ArrayLib.bytesListToObjectsListUnchecked(network.discreteStableSteadyStates()), 
+            		network.getNodeNames(), Double.class, null,currentFile, frames, network)).setVisible(true);
         }
     }
 

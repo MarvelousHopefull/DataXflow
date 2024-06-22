@@ -15,7 +15,7 @@ import jimena.binaryrn.RegulatoryNetwork;
  * @author Jan Krause
  * @since 23.11.2022
  * */
-public class CSVNodeNamesCreator {
+public class CSVNodeNamesFileCreator {
 
 	/**
 	 * Creates/Overwrites a csv (comma separated values) file of a RegulatoryNetwork, which lists all node names.

@@ -33,7 +33,7 @@ import jimena.gui.main.Main;
 import jimena.solver.NodeTableModel;
 import jimena.weightsCalculator.D2DMapping;
 import jimena.weightsCalculator.fileCreator.D2DMappingFileInteractor;
-import jimena.weightsCalculator.fileCreator.DefCreator;
+import jimena.weightsCalculator.fileCreator.DefFileCreator;
 
 //The GUI is in parts based on the GUI from SolverFrame. (Thanks Chunguang Liang!) 
 /**
@@ -136,7 +136,7 @@ public class D2DFrame extends JFrame implements ActionListener{
 		this.currentFile = currentFile;
 		RegulatoryNetwork network = new RegulatoryNetwork();
         // Load a yED GraphML file into the network
-        network.loadYEdFile(currentFile);
+        network.loadYEdFile(currentFile);	//(rather cumbersome way of getting the nodes ...)
         
         nodes = network.getNetworkNodes();
         
@@ -359,7 +359,7 @@ public class D2DFrame extends JFrame implements ActionListener{
 		        // Load a yED GraphML file into the network
 		        network.loadYEdFile(currentFile);
 				
-				D2DMapping mapping = DefCreator.createFiles(selectedFile.toString(), network, dataNodes, upRNodes, downRNodes, initValues, constantNodes, fTime);
+				D2DMapping mapping = DefFileCreator.createFiles(selectedFile.toString(), network, dataNodes, upRNodes, downRNodes, initValues, constantNodes, fTime);
 				D2DMappingFileInteractor.createD2DMappingFile(selectedFile.toString(), mapping);
 			} catch (Exception ex) {
 				ex.printStackTrace();

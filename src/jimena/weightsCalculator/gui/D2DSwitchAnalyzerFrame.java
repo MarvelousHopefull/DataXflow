@@ -67,8 +67,8 @@ public class D2DSwitchAnalyzerFrame extends AnalyzerFrame implements ActionListe
 	private JTable negReg;
 	
 	private RegulatoryNetwork network = null;
-	D2DMapping mapping = null;
-	TableModel dataModel;
+	private D2DMapping mapping = null;
+	private TableModel dataModel;
 
 	private File d2dParameterFile = null;
 	private String d2dParameterFileName = "no File selected";
